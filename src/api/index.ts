@@ -1,0 +1,89 @@
+import { http } from '@/utils/request';
+import type {
+    LerpApiResponse,
+    LerpBannerItem,
+    LerpGoodsItem,
+    LerpNewsItem,
+    LerpPageResult
+} from './types';
+
+export interface UserInfo {
+    reg_type: number; //账号类型：1手机注册，2用户名注册
+    username: string; //账号或手机号
+    area_code: string; //区号，reg_type=1时有值
+    phone: string; //手机号，reg_type=1时有值
+    lev: number; //等级
+    balance: string; //账户余额  可交易
+    balance_t: string; //提现余额 可提现
+    agent_id: number; //代理ID、
+    p1: number; //上1级ID
+    p2: number; //上2级iD
+    p3: number; //上3级ID
+    auth_status: number; //实名状态：0未提交 ，1待审核，2通过，3拒绝
+    invite_code_status: number; //邀请码状态
+    recharge_total: string; //累计充值金额
+    credit_num: number; //信用分
+    avatar: string; //头像
+    c_total: number; //可用抽奖次数
+    invite_code: string; //邀请码。在invite_code_status且累计充值>0时为真实邀请码
+    is_payassword: number; //是否已设置了提现密码。1已设置，0未设置
+    lev_info: {
+        //等级信息
+        id: number;
+        lev: number; //等级
+        name: string; //等级名称
+        icon: string; //图标
+        daily_job_num: number; //每日可刷单次数
+        limit_amount: string; //单次最小提现金额
+        min_withdrawal: string; //单次最小提现金额
+        max_withdrawal: string; //单次最大提现金额
+        commission_rate: string; //佣金比例。示例0.00115即0.115%
+        withdrawal_fee_rate: string; //提现手续费。示例0.03即3%
+    };
+}
+
+//获取主页配置
+export function getHomeConfig() {
+    return http<any>({
+        method: 'GET',
+        url: 'Index/index'
+    });
+}
+
+/**
+ * 目标站点（https://www.lcst-lerp.com/#/）首页接口
+ *
+ * 你已做反向代理，因此这里**不写死域名**，只写接口路径。
+ * 默认按目标站点接口形态拼：/api/v1/xxx
+ * 而本项目拦截器会在开发态拼接为：/api/api/{url}
+ * 所以这里传 `v1/...`，最终会变成：
+ * - dev:  /api/api/v1/...   (由你的反代转发到 /api/v1/...)
+ * - prod: /api/v1/...
+ */
+
+// banner 列表
+export function lerpGetBannerList() {
+    return http<any>({
+        method: 'GET',
+        url: 'v1/banner/list'
+    });
+}
+
+// 公告/新闻列表（站点首页用于跑马灯/公告）
+export function lerpGetNewsList() {
+    return http<any>({
+        method: 'GET',
+        url: 'v1/newsInfo/list'
+    });
+}
+
+// 商品列表（站点首页：page=1&limit=20）
+export function lerpGetShopGoodsList(params?: { page?: number; limit?: number }) {
+    const page = params?.page ?? 1;
+    const limit = params?.limit ?? 20;
+    return http<LerpApiResponse<LerpPageResult<LerpGoodsItem> | LerpGoodsItem[]>>({
+        method: 'GET',
+        url: 'v1/shopGoods/list',
+        data: { page, limit }
+    });
+}

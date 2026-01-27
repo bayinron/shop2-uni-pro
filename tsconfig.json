@@ -1,0 +1,16 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",  // 支持 import.meta
+    "verbatimModuleSyntax": true, // 使用新的选项
+    "ignoreDeprecations": "5.0",  // 忽略弃用警告（可选）
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": ["esnext", "dom"],
+    "types": ["@dcloudio/types"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/types/**/*.d.ts"]
+}

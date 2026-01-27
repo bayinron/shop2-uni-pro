@@ -1,0 +1,280 @@
+body {
+    font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, \\5FAE\8F6F\96C5\9ED1, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -moz-osx-font-smoothing: grayscale;
+}
+.h-textarea:hover, input.h-input:hover, input[type=number]:hover, input[type=password]:hover, input[type=search]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover, textarea:hover {
+    border-color: #6ac79d;
+}
+view {
+    box-sizing: border-box;
+}
+.breakcss {
+    white-space: nowrap;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.notdata {
+    color: #fff;
+    line-height: 30rpx;
+    text-align: center;
+    font-size: 28rpx;
+    padding-top: 100rpx;
+}
+.container {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    background: #eff9ff;
+}
+input:-internal-autofill-previewed,
+input:-internal-autofill-selected {
+  -webkit-text-fill-color: red !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px red inset !important;
+    -webkit-text-fill-color: black !important;
+}
+div{
+    box-sizing: border-box;
+}
+page, view, input ,image,img{
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+.uv-upload{
+    box-sizing: border-box;    
+}
+body {
+    font-family: PingFangSC-Regular, Roboto, Helvetica Neue, Helvetica, Tahoma, Arial, PingFang SC-Light, Microsoft YaHei;
+    margin: 0;
+}
+button {
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    outline: none;
+    background-color: transparent;
+}
+
+button:active {
+    opacity: 0.6;
+}
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+.justify-start {
+    display: flex;
+    justify-content: flex-start;
+}
+.justify-center {
+    display: flex;
+    justify-content: center;
+}
+
+.justify-end {
+    display: flex;
+    justify-content: flex-end;
+}
+.justify-evenly {
+    display: flex;
+    justify-content: space-evenly;
+}
+.justify-around {
+    display: flex;
+    justify-content: space-around;
+}
+.justify-between {
+    display: flex;
+    justify-content: space-between;
+}
+.align-start {
+    display: flex;
+    align-items: flex-start;
+}
+.align-center {
+    display: flex;
+    align-items: center;
+}
+.align-end {
+    display: flex;
+    align-items: flex-end;
+}
+
+body {
+    font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, \\5FAE\8F6F\96C5\9ED1, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -moz-osx-font-smoothing: grayscale;
+}
+.h-textarea:hover, input.h-input:hover, input[type=number]:hover, input[type=password]:hover, input[type=search]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover, textarea:hover {
+    border-color: #6ac79d;
+}
+view {
+    box-sizing: border-box;
+}
+.breakcss {
+    white-space: nowrap;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.notdata {
+    color: #fff;
+    line-height: 30rpx;
+    text-align: center;
+    font-size: 28rpx;
+    padding-top: 100rpx;
+}
+.container {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    background: #eff9ff;
+}
+input:-internal-autofill-previewed,
+input:-internal-autofill-selected {
+  -webkit-text-fill-color: red !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px red inset !important;
+    -webkit-text-fill-color: black !important;
+}
+div{
+    box-sizing: border-box;
+}
+page, view, input ,image,img{
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+.uv-upload{
+    box-sizing: border-box;    
+}
+body {
+    font-family: PingFangSC-Regular, Roboto, Helvetica Neue, Helvetica, Tahoma, Arial, PingFang SC-Light, Microsoft YaHei;
+    margin: 0;
+}
+button {
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    outline: none;
+    background-color: transparent;
+}
+
+button:active {
+    opacity: 0.6;
+}
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+.justify-start {
+    display: flex;
+    justify-content: flex-start;
+}
+.justify-center {
+    display: flex;
+    justify-content: center;
+}
+
+.justify-end {
+    display: flex;
+    justify-content: flex-end;
+}
+.justify-evenly {
+    display: flex;
+    justify-content: space-evenly;
+}
+.justify-around {
+    display: flex;
+    justify-content: space-around;
+}
+.justify-between {
+    display: flex;
+    justify-content: space-between;
+}
+.align-start {
+    display: flex;
+    align-items: flex-start;
+}
+.align-center {
+    display: flex;
+    align-items: center;
+}
+.align-end {
+    display: flex;
+    align-items: flex-end;
+}
+.flex_row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex_column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex_center {
+    align-items: center;
+}
+
+.flex_wrap {
+    flex-wrap: wrap;
+}
+
+.flex_1 {
+    flex: 1;
+}
+
+.flex_2 {
+    flex: 2;
+}
+
+.ml_auto {
+    margin-left: auto;
+}
+.mr_auto {
+    margin-right: auto;
+}
+.mr_10{margin-right: 10px;}
+.mb_5{margin-bottom: 5px;}
+.mb_10{margin-bottom: 10px;}
+.c_666{color:#666;}
+.c_999{color:#999;}
+.c_red{color:#f00;}
+.c_main{color:#16cee5;}
+.c_orange{color:orange;}
+.c_666{color:#666;}
+.xmlistbox{
+	padding:10px 15px;
+	.li{
+		padding:15px 15px;background: #fff;border-radius: 10px;margin-bottom: 10px;
+		.name{font-size: 1.2em;font-weight: bold;padding-bottom: 5px;}
+	}
+	.li:last-child{margin-bottom: 0;}
+}
+.mainbtn{text-align: center;color:#fff;background: #16cee5;min-width: 60px;padding:0 15px;border-radius: 10px;height:32px;line-height: 32px;}
+.mainbtn.mainbtn_qx{background: #e4e4e4;color:#333;}
+.relative{position: relative;}
+.absolute{position: absolute;}
+.body100{height: 100vh;overflow: hidden;}
+

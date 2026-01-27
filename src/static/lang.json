@@ -1,0 +1,1857 @@
+{
+    "登录": {
+        "zh": "登录",
+        "en": "Login",
+        "th": "เข้าสู่ระบบ",
+        "la": "ລ໋ອກເຂົ້າ",
+        "ms": "Log masuk"
+    },
+    "手机号": {
+        "zh": "手机号",
+        "en": "Phone Number",
+        "th": "หมายเลขโทรศัพท์",
+        "la": "ເບີໂທລະສັບ",
+        "ms": "Nombor telefon"
+    },
+    "用户名": {
+        "zh": "用户名",
+        "en": "Username",
+        "th": "ชື່ຜູ້ໃຊ້",
+        "la": "ຊື່ຜູ້ໃຊ້",
+        "ms": "Nama pengguna"
+    },
+    "密码": {
+        "zh": "密码",
+        "en": "Password",
+        "th": "รຫັດຜ່ານ",
+        "la": "ລະຫັດຜ່ານ",
+        "ms": "Kata laluan"
+    },
+    "确认密码": {
+        "zh": "确认密码",
+        "en": "Confirm Password",
+        "th": "ຢືນຢັນລະຫັດຜ່ານ",
+        "la": "ຢືນຢັນລະຫັດຜ່ານ",
+        "ms": "Sahkan kata laluan"
+    },
+    "邀请码": {
+        "zh": "邀请码",
+        "en": "Invitation Code",
+        "th": "รຫັດແນະນຳ",
+        "la": "ຣຫັດແນະນຳ",
+        "ms": "Kod jemputan"
+    },
+    "注册": {
+        "zh": "注册",
+        "en": "Register",
+        "th": "ลงทะเบียน",
+        "la": "ລົງທະບຽນ",
+        "ms": "Daftar"
+    },
+    "退出登录": {
+        "zh": "退出登录",
+        "en": "Logout",
+        "th": "ออกจากระบบ",
+        "la": "ອອກຈາກລະບົບ",
+        "ms": "Log keluar"
+    },
+    "首页": {
+        "zh": "首页",
+        "en": "Home",
+        "th": "หน้าแรก",
+        "la": "ໜ້າຫຼັກ",
+        "ms": "Laman utama"
+    },
+    "我的": {
+        "zh": "我的",
+        "en": "Profile",
+        "th": "โปรไฟล์",
+        "la": "ໂປຣໄຟລ໌",
+        "ms": "Profil saya"
+    },
+    "查看教程":{
+        "zh": "查看教程",
+        "en": "View Tutorial",
+        "th": "ดูวิธีใช้",
+        "la": "ດູວິຘີໃຊ້",
+        "ms": "Lihat Tutorial"
+    },
+    "设置": {
+        "zh": "设置",
+        "en": "Settings",
+        "th": "การตั้งค่า",
+        "la": "ການຕັ້ງຄ່າ",
+        "ms": "Tetapan"
+    },
+    "语言": {
+        "zh": "语言",
+        "en": "Language",
+        "th": "ภาษา",
+        "la": "ພາສາ",
+        "ms": "Bahasa"
+    },
+    "确定": {
+        "zh": "确定",
+        "en": "Confirm",
+        "th": "ยืนยัน",
+        "la": "ຢືນຢັນ",
+        "ms": "Sahkan"
+    },
+    "取消": {
+        "zh": "取消",
+        "en": "Cancel",
+        "th": "ยกเลิก",
+        "la": "ຍົກເລີກ",
+        "ms": "Batal"
+    },
+    "保存": {
+        "zh": "保存",
+        "en": "Save",
+        "th": "บันทึก",
+        "la": "ບັນທຶກ",
+        "ms": "Simpan"
+    },
+    "编辑": {
+        "zh": "编辑",
+        "en": "Edit",
+        "th": "แก้ไข",
+        "la": "ແກ້ໄຂ",
+        "ms": "Edit"
+    },
+    "删除": {
+        "zh": "删除",
+        "en": "Delete",
+        "th": "ลบ",
+        "la": "ລຶບ",
+        "ms": "Padam"
+    },
+    "提交": {
+        "zh": "提交",
+        "en": "Submit",
+        "th": "ส่ง",
+        "la": "ສົ່ງ",
+        "ms": "Hantar"
+    },
+    "加载中": {
+        "zh": "加载中...",
+        "en": "Loading...",
+        "th": "กำลังโหลด...",
+        "la": "ກຳລັງໂຫຼດ...",
+        "ms": "Sedang memuatkan"
+    },
+    "网络错误": {
+        "zh": "网络错误",
+        "en": "Network Error",
+        "th": "ข้อผิดพลาดเครือข่าย",
+        "la": "ຂໍ້ຜິດພາດເຄືອຂ່າຍ",
+        "ms": "Ralat rangkaian"
+    },
+    "操作成功": {
+        "zh": "操作成功",
+        "en": "Success",
+        "th": "สำเร็จ",
+        "la": "ສຳເລັດ",
+        "ms": "Berjaya"
+    },
+    "操作失败": {
+        "zh": "操作失败",
+        "en": "Failed",
+        "th": "ล้มเหลว",
+        "la": "ລົ້ມເຫຼວ",
+        "ms": "Gagal"
+    },
+    "余额": {
+        "zh": "余额",
+        "en": "Balance",
+        "th": "ยอดเงิน",
+        "la": "ຍອດເງິນ",
+        "ms": "Baki"
+    },
+    "充值": {
+        "zh": "充值",
+        "en": "Recharge",
+        "th": "เติมเงิน",
+        "la": "ເຕີມເງິນ",
+        "ms": "Tambah nilai"
+    },
+    "提现": {
+        "zh": "提现",
+        "en": "Withdraw",
+        "th": "ถอนเงิน",
+        "la": "ຖອນເງິນ",
+        "ms": "Pengeluaran"
+    },
+    "订单": {
+        "zh": "订单",
+        "en": "Order",
+        "th": "คำสั่งซื้อ",
+        "la": "ຄຳສັ່ງຊື້",
+        "ms": "Pesanan"
+    },
+    "历史记录": {
+        "zh": "历史记录",
+        "en": "History",
+        "th": "ประวัติ",
+        "la": "ປະຫວັດ",
+        "ms": "Sejarah"
+    },
+    "客服": {
+        "zh": "客服",
+        "en": "Customer Service",
+        "th": "บริการลูกค้า",
+        "la": "ບໍລິການລູກຄ້າ",
+        "ms": "Khidmat pelanggan"
+    },
+    "关于我们": {
+        "zh": "关于我们",
+        "en": "About Us",
+        "th": "เกี่ยวกับเรา",
+        "la": "ກ່ຽວກັບພວກເຮົາ",
+        "ms": "Tentang kami"
+    },
+    "版本": {
+        "zh": "版本",
+        "en": "Version",
+        "th": "เวอร์ชัน",
+        "la": "ເວີຊັນ",
+        "ms": "Versi"
+    },
+    "检查更新": {
+        "zh": "检查更新",
+        "en": "Check Update",
+        "th": "ตรวจสอบการอัปเดต",
+        "la": "ກວດສອບການອັບເດດ",
+        "ms": "Semak kemas kini"
+    },
+    "清除缓存": {
+        "zh": "清除缓存",
+        "en": "Clear Cache",
+        "th": "ล้างแคช",
+        "la": "ລ້າງແຄດ",
+        "ms": "Kosongkan cache"
+    },
+    "请输入手机号": {
+        "zh": "请输入手机号",
+        "en": "Please enter phone number",
+        "th": "กรุณาใส่หมายเลขโทรศัพท์",
+        "la": "ກະລຸນາໃສ່ເບີໂທລະສັບ",
+        "ms": "Sila masukkan nombor telefon"
+    },
+    "请输入密码": {
+        "zh": "请输入密码",
+        "en": "Please enter password",
+        "th": "กรุณาใส่รหัสผ่าน",
+        "la": "ກະລຸນາໃສ່ລະຫັດຜ່ານ",
+        "ms": "Sila masukkan kata laluan"
+    },
+    "请输入用户名": {
+        "zh": "请输入用户名",
+        "en": "Please enter username",
+        "th": "กรุณาใส่ชื่อผู้ใช้",
+        "la": "ກະລຸນາໃສ່ຊື່ຜູ້ໃຊ້",
+        "ms": "Sila masukkan nama pengguna"
+    },
+    "忘记密码?": {
+        "zh": "忘记密码?",
+        "en": "Forgot password?",
+        "th": "ลืมรหัสผ่าน?",
+        "la": "ລືມລະຫັດຜ່ານ?",
+        "ms": "Lupa kata laluan?"
+    },
+    "没有账号？": {
+        "zh": "没有账号？",
+        "en": "No account?",
+        "th": "ไม่มีบัญชี?",
+        "la": "ບໍ່ມີບັນຊີ?",
+        "ms": "Tiada akaun?"
+    },
+    "去注册": {
+        "zh": "去注册",
+        "en": "Register",
+        "th": "สมัครสมาชิก",
+        "la": "ລົງທະບຽນ",
+        "ms": "Daftar"
+    },
+    "登录失败，请检查账号密码": {
+        "zh": "登录失败，请检查账号密码",
+        "en": "Login failed, please check account and password",
+        "th": "เข้าสู่ระบบล้มเหลว กรุณาตรวจสอบบัญชีและรหัสผ่าน",
+        "la": "ລ໋ອກເຂົ້າລົ້ມເຫຼວ ກະລຸນາກວດສອບບັນຊີແລະລະຫັດຜ່ານ",
+        "ms": "Log masuk gagal, sila semak akaun dan kata laluan"
+    },
+    "请联系管理员找回密码": {
+        "zh": "请联系管理员找回密码",
+        "en": "Please contact administrator to recover password",
+        "th": "กรุณาติดต่อผู้ดูแลระบบเพื่อกู้คืนรหัสผ่าน",
+        "la": "ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບເພື່ອກູ້ຄືນລະຫັດຜ່ານ",
+        "ms": "Sila hubungi pentadbir untuk mendapatkan semula kata laluan"
+    },
+    "请确认密码": {
+        "zh": "请确认密码",
+        "en": "Please confirm password",
+        "th": "กรุณายืนยันรหัสผ่าน",
+        "la": "ກະລຸນາຢືນຢັນລະຫັດຜ່ານ",
+        "ms": "Sila sahkan kata laluan"
+    },
+    "请输入邀请码": {
+        "zh": "请输入邀请码",
+        "en": "Please enter invitation code",
+        "th": "กรุณาใส่รหัสเชิญ",
+        "la": "ກະລຸນາໃສ່ຣຫັດແນະນຳ",
+        "ms": "Sila masukkan kod jemputan"
+    },
+    "请输入确认密码": {
+        "zh": "请输入确认密码",
+        "en": "Please enter confirm password",
+        "th": "กรุณาใส่รหัสผ่านยืนยัน",
+        "la": "ກະລຸນາໃສ່ລະຫັດຜ່ານຢືນຢັນ",
+        "ms": "Please enter confirm password"
+    },
+    "密码不能纯数字或字母，且长度为6-12个字符": {
+        "zh": "密码不能纯数字或字母，且长度为6-12个字符",
+        "en": "Password cannot be pure numbers or letters, and must be 6-12 characters",
+        "th": "รหัสผ่านไม่สามารถเป็นตัวเลขหรือตัวอักษรล้วนๆ และต้องมีความยาว 6-12 ตัวอักษร",
+        "la": "ລະຫັດຜ່ານບໍ່ສາມາດເປັນຕົວເລກຫຼືຕົວອັກສອນລ້ວນໆ ແລະຕ້ອງມີຄວາມຍາວ 6-12 ຕົວອັກສອນ",
+        "ms": "Password cannot be pure numbers or letters, and must be 6-12 characters"
+    },
+    "两次输入密码不一致": {
+        "zh": "两次输入密码不一致",
+        "en": "Passwords do not match",
+        "th": "รหัสผ่านไม่ตรงกัน",
+        "la": "ລະຫັດຜ່ານບໍ່ກົງກັນ",
+        "ms": "Passwords do not match"
+    },
+    "注册成功": {
+        "zh": "注册成功",
+        "en": "Registration successful",
+        "th": "ลงทะเบียนสำเร็จ",
+        "la": "ລົງທະບຽນສຳເລັດ",
+        "ms": "Registration successful"
+    },
+    "有账号？": {
+        "zh": "有账号？",
+        "en": "Have an account?",
+        "th": "มีบัญชีแล้ว?",
+        "la": "ມີບັນຊີແລ້ວ?",
+        "ms": "Have an account?"
+    },
+    "去登录": {
+        "zh": "去登录",
+        "en": "Login",
+        "th": "เข้าสู่ระบบ",
+        "la": "ລ໋ອກເຂົ້າ",
+        "ms": "Login"
+    },
+    "美国": {
+        "zh": "美国",
+        "en": "United States",
+        "th": "สหรัฐอเมริกา",
+        "la": "ສະຫະລັດອະເມລິກາ",
+        "ms": "United States"
+    },
+    "中国": {
+        "zh": "中国",
+        "en": "China",
+        "th": "จีน",
+        "la": "ຈີນ",
+        "ms": "China"
+    },
+    "泰国": {
+        "zh": "泰国",
+        "en": "Thailand",
+        "th": "ไทย",
+        "la": "ໄທ",
+        "ms": "Thailand"
+    },
+    "老挝": {
+        "zh": "老挝",
+        "en": "Laos",
+        "th": "ลาว",
+        "la": "ລາວ",
+        "ms": "Laos"
+    },
+    "新加坡": {
+        "zh": "新加坡",
+        "en": "Singapore",
+        "th": "สิงคโปร์",
+        "la": "ສິງຄໂປເຣ",
+        "ms": "Singapore"
+    },
+    "邀请码：": {
+        "zh": "邀请码：",
+        "en": "Invitation Code:",
+        "th": "รหัสเชิญ:",
+        "la": "ຣຫັດແນະນຳ:",
+        "ms": "Invitation Code:"
+    },
+    "今日收益": {
+        "zh": "今日收益",
+        "en": "Today's Earnings",
+        "th": "รายได้วันนี้",
+        "la": "ລາຍໄດ້ມື້ນີ້",
+        "ms": "Today's Earnings"
+    },
+    "总金额": {
+        "zh": "总金额",
+        "en": "Total Amount",
+        "th": "จำนวนเงินทั้งหมด",
+        "la": "ຈຳນວນເງິນທັງໝົດ",
+        "ms": "Total Amount"
+    },
+    "资金明细": {
+        "zh": "资金明细",
+        "en": "Fund Detail",
+        "th": "รายละเอียดเงินทุน",
+        "la": "ລາຍລະອຽດເງິນທຶນ",
+        "ms": "Fund Detail"
+    },
+    "提现地址": {
+        "zh": "提现地址",
+        "en": "Address",
+        "th": "ที่อยู่",
+        "la": "ທີ່ຢູ່",
+        "ms": "Address"
+    },
+    "我的团队": {
+        "zh": "我的团队",
+        "en": "My Team",
+        "th": "ทีมของฉัน",
+        "la": "ທີມງານຂອງຂ້ອຍ",
+        "ms": "My Team"
+    },
+    "投资报告": {
+        "zh": "投资报告",
+        "en": "Investment Report",
+        "th": "รายงานการลงทุน",
+        "la": "ລາຍງານການລົງທຶນ",
+        "ms": "Investment Report"
+    },
+    "个人资料": {
+        "zh": "个人资料",
+        "en": "Personal Information",
+        "th": "ข้อมูลส่วนตัว",
+        "la": "ຂໍ້ມູນສ່ວນຕົວ",
+        "ms": "Personal Information"
+    },
+    "网络客服": {
+        "zh": "网络客服",
+        "en": "Online Customer Service",
+        "th": "บริการลูกค้าออนไลน์",
+        "la": "ບໍລິການລູກຄ້າອອນລາຍ",
+        "ms": "Online Customer Service"
+    },
+    "视频中心": {
+        "zh": "视频中心",
+        "en": "Video Center",
+        "th": "ศูนย์วิดีโอ",
+        "la": "ສູນວິດີໂອ",
+        "ms": "Video Center"
+    },
+    "邀请好友": {
+        "zh": "邀请好友",
+        "en": "Invite Friends",
+        "th": "เชิญเพื่อน",
+        "la": "ເຊີນໝູ່ເພື່ອນ",
+        "ms": "Invite Friends"
+    },
+    "系统语言": {
+        "zh": "系统语言",
+        "en": "System Language",
+        "th": "ภาษาของระบบ",
+        "la": "ພາສາຂອງລະບົບ",
+        "ms": "System Language"
+    },
+    "简体中文": {
+        "zh": "简体中文",
+        "en": "Simplified Chinese",
+        "th": "จีนตัวย่อ",
+        "la": "ຈີນຕົວຫຍໍ້",
+        "ms": "Simplified Chinese"
+    },
+    "已切换到": {
+        "zh": "已切换到",
+        "en": "Switched to",
+        "th": "เปลี่ยนเป็น",
+        "la": "ປ່ຽນເປັນ",
+        "ms": "Switched to"
+    },
+    "可用余额": {
+        "zh": "可用余额",
+        "en": "Available Balance",
+        "th": "ยอดเงินคงเหลือ",
+        "la": "ຍອດເງິນຄ້າງເຫຼືອ",
+        "ms": "Available Balance"
+    },
+    "选择钱包地址": {
+        "zh": "选择钱包地址",
+        "en": "Select Wallet Address",
+        "th": "เลือกที่อยู่กระเป๋าเงิน",
+        "la": "ເລືອກທີ່ຢູ່ກະເປົ໋າເງິນ",
+        "ms": "Select Wallet Address"
+    },
+    "充值记录": {
+        "zh": "充值记录",
+        "en": "Recharge Records",
+        "th": "บันทึกการเติมเงิน",
+        "la": "ບັນທຶກການເຕີມເງິນ",
+        "ms": "Recharge Records"
+    },
+    "提现记录": {
+        "zh": "提现记录",
+        "en": "Withdrawal Records",
+        "th": "บันทึกการถอนเงิน",
+        "la": "ບັນທຶກການຖອນເງິນ",
+        "ms": "Withdrawal Records"
+    },
+    "充值前请联系客服获取充值地址：": {
+        "zh": "充值前请联系客服获取充值地址：",
+        "en": "Please contact customer service for recharge address before recharging:",
+        "th": "กรุณาติดต่อบริการลูกค้าเพื่อขอที่อยู่เติมเงินก่อนเติมเงิน:",
+        "la": "ກະລຸນາຕິດຕໍ່ບໍລິການລູກຄ້າເພື່ອຂໍທີ່ຢູ່ເຕີມເງິນກ່ອນເຕີມເງິນ:",
+        "ms": "Please contact customer service for recharge address before recharging:"
+    },
+    "立刻联系客服": {
+        "zh": "立刻联系客服",
+        "en": "Contact Customer Service Now",
+        "th": "ติดต่อบริการลูกค้าตอนนี้",
+        "la": "ຕິດຕໍ່ບໍລິການລູກຄ້າດຽວນີ້",
+        "ms": "Contact Customer Service Now"
+    },
+    "充值金额": {
+        "zh": "充值金额",
+        "en": "Recharge Amount",
+        "th": "จำนวนเงินเติม",
+        "la": "ຈຳນວນເງິນເຕີມ",
+        "ms": "Recharge Amount"
+    },
+    "请输入充值金额": {
+        "zh": "请输入充值金额",
+        "en": "Please enter recharge amount",
+        "th": "กรุณาใส่จำนวนเงินเติม",
+        "la": "ກະລຸນາໃສ່ຈຳນວນເງິນເຕີມ",
+        "ms": "Please enter recharge amount"
+    },
+    "充值凭证": {
+        "zh": "充值凭证",
+        "en": "Recharge Voucher",
+        "th": "หลักฐานการเติมเงิน",
+        "la": "ໃບຢັ້ງຢືນການເຕີມເງິນ",
+        "ms": "Recharge Voucher"
+    },
+    "请上传充值凭证": {
+        "zh": "请上传充值凭证",
+        "en": "Please upload recharge voucher",
+        "th": "กรุณาอัปโหลดหลักฐานการเติมเงิน",
+        "la": "ກະລຸນາອັບໂຫຼດໃບຢັ້ງຢືນການເຕີມເງິນ",
+        "ms": "Please upload recharge voucher"
+    },
+    "提交成功": {
+        "zh": "提交成功",
+        "en": "Submitted successfully",
+        "th": "ส่งสำเร็จ",
+        "la": "ສົ່ງສຳເລັດ",
+        "ms": "Submitted successfully"
+    },
+    "充值金额：": {
+        "zh": "充值金额：",
+        "en": "Recharge Amount:",
+        "th": "จำนวนเงินเติม:",
+        "la": "ຈຳນວນເງິນເຕີມ:",
+        "ms": "Recharge Amount:"
+    },
+    "币种：": {
+        "zh": "币种：",
+        "en": "Currency:",
+        "th": "สกุลเงิน:",
+        "la": "ສະກຸນເງິນ:",
+        "ms": "Currency:"
+    },
+    "提交时间：": {
+        "zh": "提交时间：",
+        "en": "Submit Time:",
+        "th": "เวลาส่ง:",
+        "la": "ເວລາສົ່ງ:",
+        "ms": "Submit Time:"
+    },
+    "成功": {
+        "zh": "成功",
+        "en": "Success",
+        "th": "สำเร็จ",
+        "la": "ສຳເລັດ",
+        "ms": "Success"
+    },
+    "审核中": {
+        "zh": "审核中",
+        "en": "Under Review",
+        "th": "กำลังตรวจสอบ",
+        "la": "ກຳລັງກວດສອບ",
+        "ms": "Under Review"
+    },
+    "失败": {
+        "zh": "失败",
+        "en": "Failed",
+        "th": "ล้มเหลว",
+        "la": "ລົ້ມເຫຼວ",
+        "ms": "Failed"
+    },
+    "暂无数据": {
+        "zh": "暂无数据",
+        "en": "No Data",
+        "th": "ไม่มีข้อมูล",
+        "la": "ບໍ່ມີຂໍ້ມູນ",
+        "ms": "No Data"
+    },
+    "提现前请联系客服获取提现地址：": {
+        "zh": "提现前请联系客服获取提现地址：",
+        "en": "Please contact customer service for withdrawal address before withdrawing:",
+        "th": "กรุณาติดต่อบริการลูกค้าเพื่อขอที่อยู่ถอนเงินก่อนถอนเงิน:",
+        "la": "ກະລຸນາຕິດຕໍ່ບໍລິການລູກຄ້າເພື່ອຂໍທີ່ຢູ່ຖອນເງິນກ່ອນຖອນເງິນ:",
+        "ms": "Please contact customer service for withdrawal address before withdrawing:"
+    },
+    "提现方式": {
+        "zh": "提现方式",
+        "en": "Withdrawal Method",
+        "th": "วิธีการถอนเงิน",
+        "la": "ວິທີການຖອນເງິນ",
+        "ms": "Withdrawal Method"
+    },
+    "请选择提现方式": {
+        "zh": "请选择提现方式",
+        "en": "Please select withdrawal method",
+        "th": "กรุณาเลือกวิธีการถอนเงิน",
+        "la": "ກະລຸນາເລືອກວິທີການຖອນເງິນ",
+        "ms": "Please select withdrawal method"
+    },
+    "提现金额": {
+        "zh": "提现金额",
+        "en": "Withdrawal Amount",
+        "th": "จำนวนเงินถอน",
+        "la": "ຈຳນວນເງິນຖອນ",
+        "ms": "Withdrawal Amount"
+    },
+    "请输入提现金额": {
+        "zh": "请输入提现金额",
+        "en": "Please enter withdrawal amount",
+        "th": "กรุณาใส่จำนวนเงินถอน",
+        "la": "ກະລຸນາໃສ່ຈຳນວນເງິນຖອນ",
+        "ms": "Please enter withdrawal amount"
+    },
+    "安全密码": {
+        "zh": "安全密码",
+        "en": "Security Password",
+        "th": "รหัสผ่านความปลอดภัย",
+        "la": "ລະຫັດຜ່ານຄວາມປອດໄພ",
+        "ms": "Security Password"
+    },
+    "请输入安全密码": {
+        "zh": "请输入安全密码",
+        "en": "Please enter security password",
+        "th": "กรุณาใส่รหัสผ่านความปลอดภัย",
+        "la": "ກະລຸນາໃສ່ລະຫັດຜ່ານຄວາມປອດໄພ",
+        "ms": "Please enter security password"
+    },
+    "提现申请提交成功，请等待审核": {
+        "zh": "提现申请提交成功，请等待审核",
+        "en": "Withdrawal application submitted successfully, please wait for review",
+        "th": "ส่งคำขอถอนเงินสำเร็จ กรุณารอการตรวจสอบ",
+        "la": "ສົ່ງຄຳຂໍຖອນເງິນສຳເລັດ ກະລຸນາລໍຖ້າການກວດສອບ",
+        "ms": "Withdrawal application submitted successfully, please wait for review"
+    },
+    "请先添加提现地址": {
+        "zh": "请先添加提现地址",
+        "en": "Please add withdrawal address first",
+        "th": "กรุณาเพิ่มที่อยู่ถอนเงินก่อน",
+        "la": "ກະລຸນາເພີ່ມທີ່ຢູ່ຖອນເງິນກ່ອນ",
+        "ms": "Please add withdrawal address first"
+    },
+    "银行卡": {
+        "zh": "银行卡",
+        "en": "Bank Card",
+        "th": "บัตรธนาคาร",
+        "la": "ບັດທະນາຄານ",
+        "ms": "Bank Card"
+    },
+    "提现金额：": {
+        "zh": "提现金额：",
+        "en": "Withdrawal Amount:",
+        "th": "จำนวนเงินถอน:",
+        "la": "ຈຳນວນເງິນຖອນ:",
+        "ms": "Withdrawal Amount:"
+    },
+    "所需等级:": {
+        "zh": "所需等级:",
+        "en": "Required Level:",
+        "th": "ระดับที่ต้องการ:",
+        "la": "ລະດັບທີ່ຕ້ອງການ:",
+        "ms": "Required Level:"
+    },
+    "订单完成数:": {
+        "zh": "订单完成数:",
+        "en": "Orders Completed:",
+        "th": "คำสั่งซื้อที่เสร็จสิ้น:",
+        "la": "ຄຳສັ່ງຊື້ທີ່ສຳເລັດ:",
+        "ms": "Orders Completed:"
+    },
+    "余额要求:": {
+        "zh": "余额要求:",
+        "en": "Balance Requirement:",
+        "th": "ความต้องการยอดเงิน:",
+        "la": "ຄວາມຕ້ອງການຍອດເງິນ:",
+        "ms": "Balance Requirement:"
+    },
+    "全部": {
+        "zh": "全部",
+        "en": "All",
+        "th": "ทั้งหมด",
+        "la": "ທັງໝົດ",
+        "ms": "All"
+    },
+    "待支付": {
+        "zh": "待支付",
+        "en": "Pending Payment",
+        "th": "รอการชำระเงิน",
+        "la": "ລໍຖ້າການຊຳລະເງິນ",
+        "ms": "Pending Payment"
+    },
+    "已支付": {
+        "zh": "已支付",
+        "en": "Paid",
+        "th": "ชำระเงินแล้ว",
+        "la": "ຊຳລະເງິນແລ້ວ",
+        "ms": "Paid"
+    },
+    "订单号": {
+        "zh": "订单号",
+        "en": "Order Number",
+        "th": "หมายเลขคำสั่งซื้อ",
+        "la": "ເລກທີຄຳສັ່ງຊື້",
+        "ms": "Order Number"
+    },
+    "下单时间": {
+        "zh": "下单时间",
+        "en": "Order Time",
+        "th": "เวลาสั่งซื้อ",
+        "la": "ເວລາສັ່ງຊື້",
+        "ms": "Order Time"
+    },
+    "订单金额": {
+        "zh": "订单金额",
+        "en": "Order Amount",
+        "th": "จำนวนเงินคำสั่งซื้อ",
+        "la": "ຈຳນວນເງິນຄຳສັ່ງຊື້",
+        "ms": "Order Amount"
+    },
+    "收益": {
+        "zh": "收益",
+        "en": "Profit",
+        "th": "กำไร",
+        "la": "ກຳໄລ",
+        "ms": "Profit"
+    },
+    "去支付": {
+        "zh": "去支付",
+        "en": "Pay Now",
+        "th": "ชำระเงิน",
+        "la": "ຊຳລະເງິນ",
+        "ms": "Pay Now"
+    },
+    "暂无订单": {
+        "zh": "暂无订单",
+        "en": "No Orders",
+        "th": "ไม่มีคำสั่งซื้อ",
+        "la": "ບໍ່ມີຄຳສັ່ງຊື້",
+        "ms": "No Orders"
+    },
+    "加载中...": {
+        "zh": "加载中...",
+        "en": "Loading...",
+        "th": "กำลังโหลด...",
+        "la": "ກຳລັງໂຫຼດ...",
+        "ms": "Loading..."
+    },
+    "加载更多": {
+        "zh": "加载更多",
+        "en": "Load More",
+        "th": "โหลดเพิ่มเติม",
+        "la": "ໂຫຼດເພີ່ມເຕີມ",
+        "ms": "Load More"
+    },
+    "下级人数": {
+        "zh": "下级人数",
+        "en": "Subordinate Count",
+        "th": "จำนวนผู้ใต้บังคับบัญชา",
+        "la": "ຈຳນວນຜູ້ລຸ່ນລຸ່ມ",
+        "ms": "Subordinate Count"
+    },
+    "昨日新增": {
+        "zh": "昨日新增",
+        "en": "Yesterday Added",
+        "th": "เพิ่มเมื่อวาน",
+        "la": "ເພີ່ມມື້ວານ",
+        "ms": "Yesterday Added"
+    },
+    "累计佣金": {
+        "zh": "累计佣金",
+        "en": "Total Commission",
+        "th": "ค่าคอมมิชชันสะสม",
+        "la": "ຄ່າຄອມມິດຊັນສະສົມ",
+        "ms": "Total Commission"
+    },
+    "规则说明": {
+        "zh": "规则说明",
+        "en": "Rules",
+        "th": "คำอธิบายกฎ",
+        "la": "ຄຳອະທິບາຍກົດລະບຽບ",
+        "ms": "Rules"
+    },
+    "累计佣金收益": {
+        "zh": "累计佣金收益",
+        "en": "Total Commission Income",
+        "th": "รายได้ค่าคอมมิชชันสะสม",
+        "la": "ລາຍໄດ້ຄ່າຄອມມິດຊັນສະສົມ",
+        "ms": "Total Commission Income"
+    },
+    "昨日佣金收益": {
+        "zh": "昨日佣金收益",
+        "en": "Yesterday Commission Income",
+        "th": "รายได้ค่าคอมมิชชันเมื่อวาน",
+        "la": "ລາຍໄດ້ຄ່າຄອມມິດຊັນມື້ວານ",
+        "ms": "Yesterday Commission Income"
+    },
+    "一级代理佣金": {
+        "zh": "一级代理佣金",
+        "en": "Level 1 Agent Commission",
+        "th": "ค่าคอมมิชชันตัวแทนระดับ 1",
+        "la": "ຄ່າຄອມມິດຊັນຕົວແທນລະດັບ 1",
+        "ms": "Level 1 Agent Commission"
+    },
+    "二级代理佣金": {
+        "zh": "二级代理佣金",
+        "en": "Level 2 Agent Commission",
+        "th": "ค่าคอมมิชชันตัวแทนระดับ 2",
+        "la": "ຄ່າຄອມມິດຊັນຕົວແທນລະດັບ 2",
+        "ms": "Level 2 Agent Commission"
+    },
+    "三级代理佣金": {
+        "zh": "三级代理佣金",
+        "en": "Level 3 Agent Commission",
+        "th": "ค่าคอมมิชชันตัวแทนระดับ 3",
+        "la": "ຄ່າຄອມມິດຊັນຕົວແທນລະດັບ 3",
+        "ms": "Level 3 Agent Commission"
+    },
+    "我的邀请码：": {
+        "zh": "我的邀请码：",
+        "en": "My Invitation Code:",
+        "th": "รหัสเชิญของฉัน:",
+        "la": "ຣຫັດແນະນຳຂອງຂ້ອຍ:",
+        "ms": "My Invitation Code:"
+    },
+    "待完成": {
+        "zh": "待完成",
+        "en": "Pending",
+        "th": "รอเสร็จสิ้น",
+        "la": "ລໍຖ້າສຳເລັດ",
+        "ms": "Pending"
+    },
+    "房间": {
+        "zh": "房间",
+        "en": "Room",
+        "th": "ห้อง",
+        "la": "ຫ້ອງ",
+        "ms": "Room"
+    },
+    "等级要求": {
+        "zh": "等级要求",
+        "en": "Level Requirement",
+        "th": "ความต้องการระดับ",
+        "la": "ຄວາມຕ້ອງການລະດັບ",
+        "ms": "Level Requirement"
+    },
+    "金额要求": {
+        "zh": "金额要求",
+        "en": "Amount Requirement",
+        "th": "ความต้องการจำนวนเงิน",
+        "la": "ຄວາມຕ້ອງການຈຳນວນເງິນ",
+        "ms": "Amount Requirement"
+    },
+    "用户余额": {
+        "zh": "用户余额",
+        "en": "User Balance",
+        "th": "ยอดเงินผู้ใช้",
+        "la": "ຍອດເງິນຜູ້ໃຊ້",
+        "ms": "User Balance"
+    },
+    "系统将每日自动更新收益": {
+        "zh": "系统将每日自动更新收益",
+        "en": "System will automatically update earnings daily",
+        "th": "ระบบจะอัปเดตรายได้อัตโนมัติทุกวัน",
+        "la": "ລະບົບຈະອັບເດດລາຍໄດ້ອັດຕະໂນມັດທຸກມື້",
+        "ms": "System will automatically update earnings daily"
+    },
+    "任务收益加入资产余额": {
+        "zh": "任务收益加入资产余额",
+        "en": "Task earnings added to asset balance",
+        "th": "รายได้จากงานเพิ่มในยอดเงินสินทรัพย์",
+        "la": "ລາຍໄດ້ຈາກວຽກເພີ່ມໃນຍອດເງິນຊັບສິນ",
+        "ms": "Task earnings added to asset balance"
+    },
+    "开始": {
+        "zh": "开始",
+        "en": "Start",
+        "th": "เริ่ม",
+        "la": "ເລີ່ມ",
+        "ms": "Start"
+    },
+    "重要提示": {
+        "zh": "重要提示",
+        "en": "Important Notice",
+        "th": "ข้อความสำคัญ",
+        "la": "ຂໍ້ຄວາມສຳຄັນ",
+        "ms": "Important Notice"
+    },
+    "如有疑问，请联系我们的在线服务人员获取更多信息！": {
+        "zh": "如有疑问，请联系我们的在线服务人员获取更多信息！",
+        "en": "If you have any questions, please contact our online service staff for more information!",
+        "th": "หากมีข้อสงสัย กรุณาติดต่อเจ้าหน้าที่บริการออนไลน์ของเราเพื่อขอข้อมูลเพิ่มเติม!",
+        "la": "ຖ້າມີຄຳຖາມ ກະລຸນາຕິດຕໍ່ພະນັກງານບໍລິການອອນລາຍຂອງພວກເຮົາເພື່ອຂໍຂໍ້ມູນເພີ່ມເຕີມ!",
+        "ms": "If you have any questions, please contact our online service staff for more information!"
+    },
+    "完成订单": {
+        "zh": "完成订单",
+        "en": "Complete Order",
+        "th": "เสร็จสิ้นคำสั่งซื้อ",
+        "la": "ສຳເລັດຄຳສັ່ງຊື້",
+        "ms": "Complete Order"
+    },
+    "复制邀请码": {
+        "zh": "复制邀请码",
+        "en": "Copy Invitation Code",
+        "th": "คัดลอกรหัสเชิญ",
+        "la": "ຄັດລອກຣຫັດແນະນຳ",
+        "ms": "Copy Invitation Code"
+    },
+    "复制推广链接": {
+        "zh": "复制推广链接",
+        "en": "Copy Promotion Link",
+        "th": "คัดลอกลิงก์โปรโมชั่น",
+        "la": "ຄັດລອກລິ້ງໂປຣໂມຊັນ",
+        "ms": "Copy Promotion Link"
+    },
+    "请先前往充值": {
+        "zh": "请先前往充值",
+        "en": "Please recharge first",
+        "th": "กรุณาเติมเงินก่อน",
+        "la": "ກະລຸນາເຕີມເງິນກ່ອນ",
+        "ms": "Please recharge first"
+    },
+    "原密码": {
+        "zh": "原密码",
+        "en": "Original Password",
+        "th": "รหัสผ่านเดิม",
+        "la": "ລະຫັດຜ່ານເດີມ",
+        "ms": "Original Password"
+    },
+    "请输入原密码": {
+        "zh": "请输入原密码",
+        "en": "Please enter original password",
+        "th": "กรุณาใส่รหัสผ่านเดิม",
+        "la": "ກະລຸນາໃສ່ລະຫັດຜ່ານເດີມ",
+        "ms": "Please enter original password"
+    },
+    "新密码": {
+        "zh": "新密码",
+        "en": "New Password",
+        "th": "รหัสผ่านใหม่",
+        "la": "ລະຫັດຜ່ານໃໝ່",
+        "ms": "New Password"
+    },
+    "请输入新密码": {
+        "zh": "请输入新密码",
+        "en": "Please enter new password",
+        "th": "กรุณาใส่รหัสผ่านใหม่",
+        "la": "ກະລຸນາໃສ່ລະຫັດຜ່ານໃໝ່",
+        "ms": "Please enter new password"
+    },
+    "请再次确认密码": {
+        "zh": "请再次确认密码",
+        "en": "Please confirm password again",
+        "th": "กรุณายืนยันรหัสผ่านอีกครั้ง",
+        "la": "ກະລຸນາຢືນຢັນລະຫັດຜ່ານອີກຄັ້ງ",
+        "ms": "Please confirm password again"
+    },
+    "密码长度最小为6,且必须包含数字和字母组合;": {
+        "zh": "密码长度最小为6,且必须包含数字和字母组合;",
+        "en": "Password must be at least 6 characters and contain both numbers and letters;",
+        "th": "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษรและต้องมีทั้งตัวเลขและตัวอักษร;",
+        "la": "ລະຫັດຜ່ານຕ້ອງມີຄວາມຍາວຢ່າງໜ້ອງ 6 ຕົວອັກສອນແລະຕ້ອງມີທັງຕົວເລກແລະຕົວອັກສອນ;",
+        "ms": "Password must be at least 6 characters and contain both numbers and letters;"
+    },
+    "安全密码用于保护您的账户安全,请妥善保管;": {
+        "zh": "安全密码用于保护您的账户安全,请妥善保管;",
+        "en": "Security password is used to protect your account security, please keep it safe;",
+        "th": "รหัสผ่านความปลอดภัยใช้เพื่อปกป้องความปลอดภัยของบัญชีของคุณ กรุณาเก็บรักษาไว้อย่างดี;",
+        "la": "ລະຫັດຜ່ານຄວາມປອດໄພໃຊ້ເພື່ອປົກປ້ອງຄວາມປອດໄພຂອງບັນຊີຂອງທ່ານ ກະລຸນາເກັບຮັກສາໄວ້ຢ່າງດີ;",
+        "ms": "Security password is used to protect your account security, please keep it safe;"
+    },
+    "星认购": {
+        "zh": "星认购",
+        "en": "Star Subscription",
+        "th": "ดาวสมัครสมาชิก",
+        "la": "ດາວສະມັກສະມາຊິກ",
+        "ms": "Star Subscription"
+    },
+    "到期返本 · 每日收益": {
+        "zh": "到期返本 · 每日收益",
+        "en": "Principal return at maturity · Daily income",
+        "th": "คืนเงินต้นเมื่อครบกำหนด · รายได้รายวัน",
+        "la": "ຄືນເງິນຕົ້ນເມື່ອຄົບກຳນົດ · ລາຍໄດ້ປະຈຳວັນ",
+        "ms": "Principal return at maturity · Daily income"
+    },
+    "最低购买金额": {
+        "zh": "最低购买金额",
+        "en": "Minimum Purchase Amount",
+        "th": "จำนวนเงินซื้อขั้นต่ำ",
+        "la": "ຈຳນວນເງິນຊື້ຂັ້ນຕໍ່າ",
+        "ms": "Minimum Purchase Amount"
+    },
+    "当前最大可认购金额": {
+        "zh": "当前最大可认购金额",
+        "en": "Current Maximum Subscription Amount",
+        "th": "จำนวนเงินสมัครสมาชิกสูงสุดปัจจุบัน",
+        "la": "ຈຳນວນເງິນສະມັກສະມາຊິກສູງສຸດປັດຈຸບັນ",
+        "ms": "Current Maximum Subscription Amount"
+    },
+    "天": {
+        "zh": "天",
+        "en": "Days",
+        "th": "วัน",
+        "la": "ມື້",
+        "ms": "Days"
+    },
+    "发行时间": {
+        "zh": "发行时间",
+        "en": "Release Time",
+        "th": "เวลาปล่อย",
+        "la": "ເວລາປ່ອຍ",
+        "ms": "Release Time"
+    },
+    "立即认购": {
+        "zh": "立即认购",
+        "en": "Subscribe Now",
+        "th": "สมัครสมาชิกทันที",
+        "la": "ສະມັກສະມາຊິກທັນທີ",
+        "ms": "Subscribe Now"
+    },
+    "没有更多数据了": {
+        "zh": "没有更多数据了",
+        "en": "No more data",
+        "th": "ไม่มีข้อมูลเพิ่มเติม",
+        "la": "ບໍ່ມີຂໍ້ມູນເພີ່ມເຕີມ",
+        "ms": "No more data"
+    },
+    "投资金额": {
+        "zh": "投资金额",
+        "en": "Investment Amount",
+        "th": "จำนวนเงินลงทุน",
+        "la": "ຈຳນວນເງິນລົງທຶນ",
+        "ms": "Investment Amount"
+    },
+    "总预期收益": {
+        "zh": "总预期收益",
+        "en": "Total Expected Return",
+        "th": "รายได้ที่คาดหวังรวม",
+        "la": "ລາຍໄດ້ທີ່ຄາດຫວັງລວມ",
+        "ms": "Total Expected Return"
+    },
+    "当前总收益": {
+        "zh": "当前总收益",
+        "en": "Current Total Return",
+        "th": "รายได้รวมปัจจุบัน",
+        "la": "ລາຍໄດ້ລວມປັດຈຸບັນ",
+        "ms": "Current Total Return"
+    },
+    "投资周期(天)": {
+        "zh": "投资周期(天)",
+        "en": "Investment Period (Days)",
+        "th": "ระยะเวลาลงทุน (วัน)",
+        "la": "ໄລຍະເວລາລົງທຶນ (ມື້)",
+        "ms": "Investment Period (Days)"
+    },
+    "投资时间": {
+        "zh": "投资时间",
+        "en": "Investment Time",
+        "th": "เวลาลงทุน",
+        "la": "ເວລາລົງທຶນ",
+        "ms": "Investment Time"
+    },
+    "到期时间": {
+        "zh": "到期时间",
+        "en": "Maturity Time",
+        "th": "เวลาครบกำหนด",
+        "la": "ເວລາຄົບກຳນົດ",
+        "ms": "Maturity Time"
+    },
+    "星": {
+        "zh": "星",
+        "en": "Star",
+        "th": "ดาว",
+        "la": "ດາວ",
+        "ms": "Star"
+    },
+    "每次任务收益率": {
+        "zh": "每次任务收益率",
+        "en": "Task Return Rate",
+        "th": "อัตราผลตอบแทนงานแต่ละครั้ง",
+        "la": "ອັດຕາຜົນຕອບແທນວຽກແຕ່ລະຄັ້ງ",
+        "ms": "Task Return Rate"
+    },
+    "每日任务数": {
+        "zh": "每日任务数",
+        "en": "Daily Tasks",
+        "th": "จำนวนงานรายวัน",
+        "la": "ຈຳນວນວຽກປະຈຳວັນ",
+        "ms": "Daily Tasks"
+    },
+    "任务限制金额": {
+        "zh": "任务限制金额",
+        "en": "Task Limit Amount",
+        "th": "จำนวนเงินจำกัดงาน",
+        "la": "ຈຳນວນເງິນຈຳກັດວຽກ",
+        "ms": "Task Limit Amount"
+    },
+    "邀请链接": {
+        "zh": "邀请链接",
+        "en": "Invitation Link",
+        "th": "ลิงก์เชิญ",
+        "la": "ລິ້ງແນະນຳ",
+        "ms": "Invitation Link"
+    },
+    "复制成功": {
+        "zh": "复制成功",
+        "en": "Copied successfully",
+        "th": "คัดลอกสำเร็จ",
+        "la": "ຄັດລອກສຳເລັດ",
+        "ms": "Copied successfully"
+    },
+    "持有人：": {
+        "zh": "持有人：",
+        "en": "Holder:",
+        "th": "ผู้ถือ:",
+        "la": "ຜູ້ຖື:",
+        "ms": "Holder:"
+    },
+    "网络：": {
+        "zh": "网络：",
+        "en": "Network:",
+        "th": "เครือข่าย:",
+        "la": "ເຄືອຂ່າຍ:",
+        "ms": "Network:"
+    },
+    "地址：": {
+        "zh": "地址：",
+        "en": "Address:",
+        "th": "ที่อยู่:",
+        "la": "ທີ່ຢູ່:",
+        "ms": "Address:"
+    },
+    "添加地址": {
+        "zh": "添加地址",
+        "en": "Add Address",
+        "th": "เพิ่มที่อยู่",
+        "la": "ເພີ່ມທີ່ຢູ່",
+        "ms": "Add Address"
+    },
+    "交易金额": {
+        "zh": "交易金额",
+        "en": "Transaction Amount",
+        "th": "จำนวนเงินธุรกรรม",
+        "la": "ຈຳນວນເງິນທຸລະກຳ",
+        "ms": "Transaction Amount"
+    },
+    "交易类型": {
+        "zh": "交易类型",
+        "en": "Transaction Type",
+        "th": "ประเภทธุรกรรม",
+        "la": "ປະເພດທຸລະກຳ",
+        "ms": "Transaction Type"
+    },
+    "创建时间": {
+        "zh": "创建时间",
+        "en": "Creation Time",
+        "th": "เวลาสร้าง",
+        "la": "ເວລາສ້າງ",
+        "ms": "Creation Time"
+    },
+    "开始赚取收益": {
+        "zh": "开始赚取收益",
+        "en": "Start Earning",
+        "th": "เริ่มสร้างรายได้",
+        "la": "ເລີ່ມສ້າງລາຍໄດ້",
+        "ms": "Start Earning"
+    },
+    "星级": {
+        "zh": "星级",
+        "en": "VIP Level",
+        "th": "ระดับ VIP",
+        "la": "ລະດັບ VIP",
+        "ms": "VIP Level"
+    },
+    "查看全部": {
+        "zh": "查看全部",
+        "en": "View All",
+        "th": "ดูทั้งหมด",
+        "la": "ເບິ່ງທັງໝົດ",
+        "ms": "View All"
+    },
+    "产品介绍": {
+        "zh": "产品介绍",
+        "en": "Product Introduction",
+        "th": "แนะนำผลิตภัณฑ์",
+        "la": "ການແນະນຳຜະລິດຕະພັນ",
+        "ms": "Product Introduction"
+    },
+    "常用工具": {
+        "zh": "常用工具",
+        "en": "Common Tools",
+        "th": "เครื่องมือทั่วไป",
+        "la": "ເຄື່ອງມືທົ່ວໄປ",
+        "ms": "Common Tools"
+    },
+    "证书": {
+        "zh": "证书",
+        "en": "Certificate",
+        "th": "ใบรับรอง",
+        "la": "ໃບຢັ້ງຢືນ",
+        "ms": "Certificate"
+    },
+    "服务条款": {
+        "zh": "服务条款",
+        "en": "Service Terms",
+        "th": "ข้อกำหนดการบริการ",
+        "la": "ເງື່ອນໄຂການບໍລິການ",
+        "ms": "Service Terms"
+    },
+    "合作伙伴": {
+        "zh": "合作伙伴",
+        "en": "Partners",
+        "th": "พันธมิตร",
+        "la": "ຄູ່ຮ່ວມງານ",
+        "ms": "Partners"
+    },
+    "已完成": {
+        "zh": "已完成",
+        "en": "Completed",
+        "th": "เสร็จสิ้นแล้ว",
+        "la": "ສຳເລັດແລ້ວ",
+        "ms": "Completed"
+    },
+    "认购金额": {
+        "zh": "认购金额",
+        "en": "Subscription Amount",
+        "th": "จำนวนเงินสมัครสมาชิก",
+        "la": "ຈຳນວນເງິນສະມັກສະມາຊິກ",
+        "ms": "Subscription Amount"
+    },
+    "请输入认购金额": {
+        "zh": "请输入认购金额",
+        "en": "Please enter subscription amount",
+        "th": "กรุณาใส่จำนวนเงินสมัครสมาชิก",
+        "la": "ກະລຸນາໃສ່ຈຳນວນເງິນສະມັກສະມາຊິກ",
+        "ms": "Please enter subscription amount"
+    },
+    "当前可用余额": {
+        "zh": "当前可用余额",
+        "en": "Current Available Balance",
+        "th": "ยอดเงินคงเหลือที่ใช้ได้ปัจจุบัน",
+        "la": "ຍອດເງິນຄ້າງເຫຼືອທີ່ໃຊ້ໄດ້ປັດຈຸບັນ",
+        "ms": "Current Available Balance"
+    },
+    "提示": {
+        "zh": "提示",
+        "en": "Tip",
+        "th": "คำแนะนำ",
+        "la": "ຄຳແນະນຳ",
+        "ms": "Tip"
+    },
+    "当产品认购完成后，奖励将在T+1日发放到您的账户中，可在资金明细中查看。": {
+        "zh": "当产品认购完成后，奖励将在T+1日发放到您的账户中，可在资金明细中查看。",
+        "en": "After product subscription is completed, rewards will be distributed to your account on T+1 day, which can be viewed in fund details.",
+        "th": "หลังจากสมัครสมาชิกผลิตภัณฑ์เสร็จสิ้น รางวัลจะถูกแจกจ่ายไปยังบัญชีของคุณในวัน T+1 ซึ่งสามารถดูได้ในรายละเอียดเงินทุน",
+        "la": "ຫຼັງຈາກການສະມັກສະມາຊິກຜະລິດຕະພັນສຳເລັດ ລາງວັນຈະຖືກແຈກຢາຍໄປຍັງບັນຊີຂອງທ່ານໃນວັນ T+1 ທີ່ສາມາດເບິ່ງໄດ້ໃນລາຍລະອຽດເງິນທຶນ",
+        "ms": "After product subscription is completed, rewards will be distributed to your account on T+1 day, which can be viewed in fund details."
+    },
+    "视频播放出错": {
+        "zh": "视频播放出错",
+        "en": "Video playback error",
+        "th": "ข้อผิดพลาดในการเล่นวิดีโอ",
+        "la": "ຂໍ້ຜິດພາດໃນການຫຼິ້ນວິດີໂອ",
+        "ms": "Video playback error"
+    },
+    "持有人": {
+        "zh": "持有人",
+        "en": "Holder",
+        "th": "ผู้ถือ",
+        "la": "ຜູ້ຖື",
+        "ms": "Holder"
+    },
+    "请输入持有人姓名": {
+        "zh": "请输入持有人姓名",
+        "en": "Please enter holder name",
+        "th": "กรุณาใส่ชื่อผู้ถือ",
+        "la": "ກະລຸນາໃສ່ຊື່ຜູ້ຖື",
+        "ms": "Please enter holder name"
+    },
+    "发卡银行": {
+        "zh": "发卡银行",
+        "en": "Issuing Bank",
+        "th": "ธนาคารผู้ออกบัตร",
+        "la": "ທະນາຄານຜູ້ອອກບັດ",
+        "ms": "Issuing Bank"
+    },
+    "请输入发卡银行": {
+        "zh": "请输入发卡银行",
+        "en": "Please enter issuing bank",
+        "th": "กรุณาใส่ธนาคารผู้ออกบัตร",
+        "la": "ກະລຸນາໃສ່ທະນາຄານຜູ້ອອກບັດ",
+        "ms": "Please enter issuing bank"
+    },
+    "银行卡号": {
+        "zh": "银行卡号",
+        "en": "Bank Card Number",
+        "th": "หมายเลขบัตรธนาคาร",
+        "la": "ເບີບັດທະນາຄານ",
+        "ms": "Bank Card Number"
+    },
+    "请输入银行卡号": {
+        "zh": "请输入银行卡号",
+        "en": "Please enter bank card number",
+        "th": "กรุณาใส่หมายเลขบัตรธนาคาร",
+        "la": "ກະລຸນາໃສ່ເບີບັດທະນາຄານ",
+        "ms": "Please enter bank card number"
+    },
+    "虚拟币种": {
+        "zh": "虚拟币种",
+        "en": "Virtual Currency",
+        "th": "สกุลเงินเสมือน",
+        "la": "ສະກຸນເງິນສົມມຸດ",
+        "ms": "Virtual Currency"
+    },
+    "网络": {
+        "zh": "网络",
+        "en": "Network",
+        "th": "เครือข่าย",
+        "la": "ເຄືອຂ່າຍ",
+        "ms": "Network"
+    },
+    "请输入USDT地址": {
+        "zh": "请输入USDT地址",
+        "en": "Please enter USDT address",
+        "th": "กรุณาใส่ที่อยู่ USDT",
+        "la": "ກະລຸນາໃສ່ທີ່ຢູ່ USDT",
+        "ms": "Please enter USDT address"
+    },
+    "请输入持有人、发卡银行、银行卡号": {
+        "zh": "请输入持有人、发卡银行、银行卡号",
+        "en": "Please enter holder, issuing bank, and bank card number",
+        "th": "กรุณาใส่ผู้ถือ ธนาคารผู้ออกบัตร และหมายเลขบัตรธนาคาร",
+        "la": "ກະລຸນາໃສ່ຜູ້ຖື ທະນາຄານຜູ້ອອກບັດ ແລະເບີບັດທະນາຄານ",
+        "ms": "Please enter holder, issuing bank, and bank card number"
+    },
+    "请输入网络和地址": {
+        "zh": "请输入网络和地址",
+        "en": "Please enter network and address",
+        "th": "กรุณาใส่เครือข่ายและที่อยู่",
+        "la": "ກະລຸນາໃສ່ເຄືອຂ່າຍແລະທີ່ຢູ່",
+        "ms": "Please enter network and address"
+    },
+    "国家": {
+        "zh": "国家",
+        "en": "Country",
+        "th": "ประเทศ",
+        "la": "ປະເທດ",
+        "ms": "Country"
+    },
+    "证件类型": {
+        "zh": "证件类型",
+        "en": "ID Type",
+        "th": "ประเภทเอกสาร",
+        "la": "ປະເພດເອກະສານ",
+        "ms": "ID Type"
+    },
+    "真实姓名": {
+        "zh": "真实姓名",
+        "en": "Real Name",
+        "th": "ชื่อจริง",
+        "la": "ຊື່ຈິງ",
+        "ms": "Real Name"
+    },
+    "请输入真实姓名": {
+        "zh": "请输入真实姓名",
+        "en": "Please enter real name",
+        "th": "กรุณาใส่ชื่อจริง",
+        "la": "ກະລຸນາໃສ່ຊື່ຈິງ",
+        "ms": "Please enter real name"
+    },
+    "证件号码": {
+        "zh": "证件号码",
+        "en": "ID Number",
+        "th": "หมายเลขเอกสาร",
+        "la": "ເບີເອກະສານ",
+        "ms": "ID Number"
+    },
+    "请输入证件号码": {
+        "zh": "请输入证件号码",
+        "en": "Please enter ID number",
+        "th": "กรุณาใส่หมายเลขเอกสาร",
+        "la": "ກະລຸນາໃສ່ເບີເອກະສານ",
+        "ms": "Please enter ID number"
+    },
+    "手持证件照": {
+        "zh": "手持证件照",
+        "en": "ID Photo with Hand",
+        "th": "รูปถ่ายเอกสารพร้อมมือ",
+        "la": "ຮູບຖ່າຍເອກະສານພ້ອມມື",
+        "ms": "ID Photo with Hand"
+    },
+    "点击上传": {
+        "zh": "点击上传",
+        "en": "Click to Upload",
+        "th": "คลิกเพื่ออัปโหลด",
+        "la": "ກົດເພື່ອອັບໂຫຼດ",
+        "ms": "Click to Upload"
+    },
+    "证件正面": {
+        "zh": "证件正面",
+        "en": "ID Front",
+        "th": "ด้านหน้าของเอกสาร",
+        "la": "ດ້ານຫນ້າຂອງເອກະສານ",
+        "ms": "ID Front"
+    },
+    "证件反面": {
+        "zh": "证件反面",
+        "en": "ID Back",
+        "th": "ด้านหลังของเอกสาร",
+        "la": "ດ້ານຫຼັງຂອງເອກະສານ",
+        "ms": "ID Back"
+    },
+    "提交认证": {
+        "zh": "提交认证",
+        "en": "Submit Verification",
+        "th": "ส่งการยืนยันตัวตน",
+        "la": "ສົ່ງການຢືນຢັນຕົວຕົນ",
+        "ms": "Submit Verification"
+    },
+    "注：带有\"证件正面/反面\"为必填项": {
+        "zh": "注：带有\"证件正面/反面\"为必填项",
+        "en": "Note: \"ID Front/Back\" are required fields",
+        "th": "หมายเหตุ: \"ด้านหน้า/หลังของเอกสาร\" เป็นช่องที่จำเป็น",
+        "la": "ຫມາຍເຫດ: \"ດ້ານຫນ້າ/ຫຼັງຂອງເອກະສານ\" ແມ່ນຊ່ອງທີ່ຈຳເປັນ",
+        "ms": "Note: \"ID Front/Back\" are required fields"
+    },
+    "中国 (zh)": {
+        "zh": "中国 (zh)",
+        "en": "China (zh)",
+        "th": "จีน (zh)",
+        "la": "ຈີນ (zh)",
+        "ms": "China (zh)"
+    },
+    "美国 (usa)": {
+        "zh": "美国 (usa)",
+        "en": "USA (usa)",
+        "th": "อเมริกา (usa)",
+        "la": "ອາເມລິກາ (usa)",
+        "ms": "USA (usa)"
+    },
+    "老挝 (la)": {
+        "zh": "老挝 (la)",
+        "en": "Laos (la)",
+        "th": "ลาว (la)",
+        "la": "ລາວ (la)",
+        "ms": "Laos (la)"
+    },
+    "泰国 (th)": {
+        "zh": "泰国 (th)",
+        "en": "Thailand (th)",
+        "th": "ไทย (th)",
+        "la": "ໄທ (th)",
+        "ms": "Thailand (th)"
+    },
+    "身份证": {
+        "zh": "身份证",
+        "en": "ID Card",
+        "th": "บัตรประชาชน",
+        "la": "ບັດປະຈຳຕົວ",
+        "ms": "ID Card"
+    },
+    "驾照": {
+        "zh": "驾照",
+        "en": "Driver's License",
+        "th": "ใบขับขี่",
+        "la": "ໃບຂັບຂີ່",
+        "ms": "Driver's License"
+    },
+    "护照": {
+        "zh": "护照",
+        "en": "Passport",
+        "th": "หนังสือเดินทาง",
+        "la": "ໜັງສືທ່ອງທ່ຽວ",
+        "ms": "Passport"
+    },
+    "请选择国家": {
+        "zh": "请选择国家",
+        "en": "Please select country",
+        "th": "กรุณาเลือกประเทศ",
+        "la": "ກະລຸນາເລືອກປະເທດ",
+        "ms": "Please select country"
+    },
+    "请选择证件类型": {
+        "zh": "请选择证件类型",
+        "en": "Please select ID type",
+        "th": "กรุณาเลือกประเภทเอกสาร",
+        "la": "ກະລຸນາເລືອກປະເພດເອກະສານ",
+        "ms": "Please select ID type"
+    },
+    "请上传证件正面": {
+        "zh": "请上传证件正面",
+        "en": "Please upload ID front",
+        "th": "กรุณาอัปโหลดด้านหน้าของเอกสาร",
+        "la": "ກະລຸນາອັບໂຫຼດດ້ານຫນ້າຂອງເອກະສານ",
+        "ms": "Please upload ID front"
+    },
+    "请上传证件反面": {
+        "zh": "请上传证件反面",
+        "en": "Please upload ID back",
+        "th": "กรุณาอัปโหลดด้านหลังของเอกสาร",
+        "la": "ກະລຸນາອັບໂຫຼດດ້ານຫຼັງຂອງເອກະສານ",
+        "ms": "Please upload ID back"
+    },
+    "提交成功，请等待审核": {
+        "zh": "提交成功，请等待审核",
+        "en": "Submitted successfully, please wait for review",
+        "th": "ส่งสำเร็จ กรุณารอการตรวจสอบ",
+        "la": "ສົ່ງສຳເລັດ ກະລຸນາລໍຖ້າການກວດສອບ",
+        "ms": "Submitted successfully, please wait for review"
+    },
+    "用户头像": {
+        "zh": "用户头像",
+        "en": "User Avatar",
+        "th": "รูปโปรไฟล์ผู้ใช้",
+        "la": "ຮູບໂປຣໄຟລ໌ຜູ້ໃຊ້",
+        "ms": "User Avatar"
+    },
+    "KYC认证": {
+        "zh": "KYC认证",
+        "en": "KYC Verification",
+        "th": "การยืนยันตัวตน KYC",
+        "la": "ການຢືນຢັນຕົວຕົນ KYC",
+        "ms": "KYC Verification"
+    },
+    "已认证": {
+        "zh": "已认证",
+        "en": "Verified",
+        "th": "ยืนยันแล้ว",
+        "la": "ຢືນຢັນແລ້ວ",
+        "ms": "Verified"
+    },
+    "未认证": {
+        "zh": "未认证",
+        "en": "Not Verified",
+        "th": "ยังไม่ยืนยัน",
+        "la": "ຍັງບໍ່ໄດ້ຢືນຢັນ",
+        "ms": "Not Verified"
+    },
+    "已设置": {
+        "zh": "已设置",
+        "en": "Set",
+        "th": "ตั้งค่าแล้ว",
+        "la": "ຕັ້ງຄ່າແລ້ວ",
+        "ms": "Set"
+    },
+    "未设置": {
+        "zh": "未设置",
+        "en": "Not Set",
+        "th": "ยังไม่ได้ตั้งค่า",
+        "la": "ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ",
+        "ms": "Not Set"
+    },
+    "分享邀请链接发送给你的好友或群组，好友点击链接注册成功后，他将成为你的直属下级代理。": {
+        "zh": "分享邀请链接发送给你的好友或群组，好友点击链接注册成功后，他将成为你的直属下级代理。",
+        "en": "Share invitation link with your friends or groups. After friends click the link and register successfully, they will become your direct subordinate agents.",
+        "th": "แชร์ลิงก์เชิญเพื่อนหรือกลุ่มของคุณ เมื่อเพื่อนคลิกลิงก์และลงทะเบียนสำเร็จ พวกเขาจะกลายเป็นตัวแทนผู้ใต้บังคับบัญชาของคุณโดยตรง",
+        "la": "ແບ່ງປັນລິ້ງເຊີນກັບໝູ່ເພື່ອນຫຼືກຸ່ມຂອງທ່ານ ຫຼັງຈາກໝູ່ເພື່ອນກົດລິ້ງແລະລົງທະບຽນສຳເລັດ ພວກເຂົາຈະກາຍເປັນຕົວແທນຜູ້ລຸ່ມຂອງທ່ານໂດຍກົງ",
+        "ms": "Share invitation link with your friends or groups. After friends click the link and register successfully, they will become your direct subordinate agents."
+    },
+    "三级代理佣金的基本原理，简单理解就是有直接利益关系，利益关系限制三级以内，三级为一个佣金单位进行分佣提成，超过三级不构成直接关系，分销商的利益关系达到三级终止，三级作为一个佣金标准进行前两个级别的分佣提成，超过三级将不会产生利益链接。": {
+        "zh": "三级代理佣金的基本原理，简单理解就是有直接利益关系，利益关系限制三级以内，三级为一个佣金单位进行分佣提成，超过三级不构成直接关系，分销商的利益关系达到三级终止，三级作为一个佣金标准进行前两个级别的分佣提成，超过三级将不会产生利益链接。",
+        "en": "The basic principle of three-level agent commission is simply that there is a direct interest relationship. The interest relationship is limited to within three levels. Three levels are used as a commission unit for commission sharing. Beyond three levels, there is no direct relationship. The distributor's interest relationship terminates at three levels. Three levels are used as a commission standard for the first two levels of commission sharing. Beyond three levels, no interest links will be generated.",
+        "th": "หลักการพื้นฐานของค่าคอมมิชชั่นตัวแทนสามระดับ คือการมีความสัมพันธ์ผลประโยชน์โดยตรง ความสัมพันธ์ผลประโยชน์จำกัดอยู่ภายในสามระดับ สามระดับใช้เป็นหน่วยค่าคอมมิชชั่นสำหรับการแบ่งปันค่าคอมมิชชั่น เกินสามระดับไม่มีความสัมพันธ์โดยตรง ความสัมพันธ์ผลประโยชน์ของผู้จัดจำหน่ายสิ้นสุดที่สามระดับ สามระดับใช้เป็นมาตรฐานค่าคอมมิชชั่นสำหรับสองระดับแรกของการแบ่งปันค่าคอมมิชชั่น เกินสามระดับจะไม่เกิดลิงก์ผลประโยชน์",
+        "la": "ຫຼັກການພື້ນຖານຂອງຄ່າຄອມມິດຊັນຕົວແທນສາມລະດັບ ແມ່ນການມີຄວາມສຳພັນຜົນປະໂຫຍດໂດຍກົງ ຄວາມສຳພັນຜົນປະໂຫຍດຈຳກັດຢູ່ພາຍໃນສາມລະດັບ ສາມລະດັບໃຊ້ເປັນຫົວໜ່ວຍຄ່າຄອມມິດຊັນສຳລັບການແບ່ງປັນຄ່າຄອມມິດຊັນ ເກີນສາມລະດັບບໍ່ມີຄວາມສຳພັນໂດຍກົງ ຄວາມສຳພັນຜົນປະໂຫຍດຂອງຜູ້ຈັດຈຳໜ່າຍສິ້ນສຸດທີ່ສາມລະດັບ ສາມລະດັບໃຊ້ເປັນມາດຕະຖານຄ່າຄອມມິດຊັນສຳລັບສອງລະດັບທຳອິດຂອງການແບ່ງປັນຄ່າຄອມມິດຊັນ ເກີນສາມລະດັບຈະບໍ່ສ້າງລິ້ງຜົນປະໂຫຍດ",
+        "ms": "The basic principle of three-level agent commission is simply that there is a direct interest relationship. The interest relationship is limited to within three levels. Three levels are used as a commission unit for commission sharing. Beyond three levels, there is no direct relationship. The distributor's interest relationship terminates at three levels. Three levels are used as a commission standard for the first two levels of commission sharing. Beyond three levels, no interest links will be generated."
+    },
+    "按上下级关系返佣": {
+        "zh": "按上下级关系返佣",
+        "en": "Commission based on superior-subordinate relationship",
+        "th": "ค่าคอมมิชชั่นตามความสัมพันธ์ผู้บังคับบัญชา-ผู้ใต้บังคับบัญชา",
+        "la": "ຄ່າຄອມມິດຊັນຕາມຄວາມສຳພັນຜູ້ບັງຄັບບັນຊາ-ຜູ້ລຸ່ມ",
+        "ms": "Commission based on superior-subordinate relationship"
+    },
+    "上下级关系分配佣金，固定上下级关系，完成系统任务，系统给予第一次成为其上级的的用户分配佣金，例如：（A邀请B，B邀请C，C邀请D，）": {
+        "zh": "上下级关系分配佣金，固定上下级关系，完成系统任务，系统给予第一次成为其上级的的用户分配佣金，例如：（A邀请B，B邀请C，C邀请D，）",
+        "en": "Superior-subordinate relationship allocates commission, fixed superior-subordinate relationship, complete system tasks, system gives commission to users who first become their superiors, for example: (A invites B, B invites C, C invites D,)",
+        "th": "ความสัมพันธ์ผู้บังคับบัญชา-ผู้ใต้บังคับบัญชาแบ่งปันค่าคอมมิชชั่น ความสัมพันธ์ผู้บังคับบัญชา-ผู้ใต้บังคับบัญชาคงที่ ทำงานระบบให้เสร็จ ระบบให้ค่าคอมมิชชั่นแก่ผู้ใช้ที่กลายเป็นผู้บังคับบัญชาของพวกเขาเป็นครั้งแรก เช่น (A เชิญ B, B เชิญ C, C เชิญ D,)",
+        "la": "ຄວາມສຳພັນຜູ້ບັງຄັບບັນຊາ-ຜູ້ລຸ່ມແບ່ງປັນຄ່າຄອມມິດຊັນ ຄວາມສຳພັນຜູ້ບັງຄັບບັນຊາ-ຜູ້ລຸ່ມຄົງທີ່ ສຳເລັດວຽກລະບົບ ລະບົບໃຫ້ຄ່າຄອມມິດຊັນແກ່ຜູ້ໃຊ້ທີ່ກາຍເປັນຜູ້ບັງຄັບບັນຊາຂອງພວກເຂົາເປັນຄັ້ງທຳອິດ ຕົວຢ່າງ: (A ເຊີນ B, B ເຊີນ C, C ເຊີນ D,)",
+        "ms": "Superior-subordinate relationship allocates commission, fixed superior-subordinate relationship, complete system tasks, system gives commission to users who first become their superiors, for example: (A invites B, B invites C, C invites D,)"
+    },
+    "D是C的下级，C是B的下级，B是A的下级，D完成了系统任务，C/B/A都将获得部分佣金。": {
+        "zh": "D是C的下级，C是B的下级，B是A的下级，D完成了系统任务，C/B/A都将获得部分佣金。",
+        "en": "D is C's subordinate, C is B's subordinate, B is A's subordinate. When D completes system tasks, C/B/A will all receive partial commission.",
+        "th": "D เป็นผู้ใต้บังคับบัญชาของ C, C เป็นผู้ใต้บังคับบัญชาของ B, B เป็นผู้ใต้บังคับบัญชาของ A เมื่อ D ทำงานระบบเสร็จ C/B/A จะได้รับค่าคอมมิชชั่นบางส่วนทั้งหมด",
+        "la": "D ແມ່ນຜູ້ລຸ່ມຂອງ C, C ແມ່ນຜູ້ລຸ່ມຂອງ B, B ແມ່ນຜູ້ລຸ່ມຂອງ A ເມື່ອ D ສຳເລັດວຽກລະບົບ C/B/A ຈະໄດ້ຮັບຄ່າຄອມມິດຊັນບາງສ່ວນທັງໝົດ",
+        "ms": "D is C's subordinate, C is B's subordinate, B is A's subordinate. When D completes system tasks, C/B/A will all receive partial commission."
+    },
+    "English": {
+        "zh": "English",
+        "en": "English",
+        "th": "อังกฤษ",
+        "la": "ອັງກິດ",
+        "ms": "English"
+    },
+    "ไทย": {
+        "zh": "ไทย",
+        "en": "Thai",
+        "th": "ไทย",
+        "la": "ໄທ",
+        "ms": "Thai"
+    },
+    "ລາວ": {
+        "zh": "ລາວ",
+        "en": "Lao",
+        "th": "ลาว",
+        "la": "ລາວ",
+        "ms": "Lao"
+    },
+    "余额要求不符": {
+        "zh": "余额要求不符",
+        "en": "Balance Requirement Not Met",
+        "th": "ความต้องการจำนวนเงินไม่เหมาะสม",
+        "la": "ຄວາມຕ້ອງການຈຳນວນເງິນບໍ່ເຫມະສົມ",
+        "ms": "Balance Requirement Not Met"
+    },
+    "等级不足": {
+        "zh": "等级不足",
+        "en": "Level Not Met",
+        "th": "ความต้องการระดับไม่เหมาะสม",
+        "la": "ຄວາມຕ້ອງການລະດັບບໍ່ເຫມະສົມ",
+        "ms": "Level Not Met"
+    },
+    "进入": {
+        "zh": "进入",
+        "en": "Enter",
+        "th": "เข้า",
+        "la": "ເຂ້າ",
+        "ms": "Enter"
+    },
+    "余额不足，无法进入房间": {
+        "zh": "余额不足，无法进入房间",
+        "en": "Balance Not Enough, Cannot Enter Room",
+        "th": "จำนวนเงินไม่เพียงพอ, ไม่สามารເຂ້າห້ອງ",
+        "la": "ຈຳນວນເງິນບໍ່ເພີງພອ, ບໍ່ສາມາດເຂ້ເຫ້ອງ",
+        "ms": "Balance Not Enough, Cannot Enter Room"
+    },
+    "利息": {
+        "zh": "利息",
+        "en": "Wealth",
+        "th": "ความมั่งคั่ง",
+        "la": "ຄວາມມັ່ງຄັງ",
+        "ms": "Wealth"
+    },
+    "团队": {
+        "zh": "团队",
+        "en": "Team",
+        "th": "ทีม",
+        "la": "ທີມງານ",
+        "ms": "Team"
+    },
+    "规则": {
+        "zh": "规则",
+        "en": "Regulation",
+        "th": "กฎระเบียบ",
+        "la": "ກົດລະບຽບ",
+        "ms": "Regulation"
+    },
+    "分享": {
+        "zh": "分享",
+        "en": "Share",
+        "th": "แชร์",
+        "la": "ແບ່ງປັນ",
+        "ms": "Share"
+    },
+    "任务": {
+        "zh": "任务",
+        "en": "Task",
+        "th": "งาน",
+        "la": "ວຽກ",
+        "ms": "Task"
+    },
+    "历史": {
+        "zh": "历史",
+        "en": "History",
+        "th": "ประวัติ",
+        "la": "ປະຫວັດ",
+        "ms": "History"
+    },
+    "用户信息": {
+        "zh": "用户信息",
+        "en": "User Info",
+        "th": "ข้อมูลผู้ใช้",
+        "la": "ຂໍ້ມູນຜູ້ໃຊ້",
+        "ms": "User Info"
+    },
+    "认购": {
+        "zh": "认购",
+        "en": "Purchase",
+        "th": "ซื้อ",
+        "la": "ຊື້",
+        "ms": "Purchase"
+    },
+    "实名认证": {
+        "zh": "实名认证",
+        "en": "KYC Verification",
+        "th": "การยืนยันตัวตน KYC",
+        "la": "ການຢືນຢັນຕົວຕົນ KYC",
+        "ms": "KYC Verification"
+    },
+    "创建安全密码": {
+        "zh": "创建安全密码",
+        "en": "Security Password",
+        "th": "รหัสผ่านความปลอดภัย",
+        "la": "ລະຫັດຜ່ານຄວາມປອດໄພ",
+        "ms": "Security Password"
+    },
+    "视频播放": {
+        "zh": "视频播放",
+        "en": "Video Player",
+        "th": "เครื่องเล่นวิดีโอ",
+        "la": "ເຄື່ອງຫຼິ້ນວິດີໂອ",
+        "ms": "Video Player"
+    },
+    "创建订单": {
+        "zh": "创建订单",
+        "en": "Create Order",
+        "th": "สร้างคำสั่งซื้อ",
+        "la": "ສ້າງຄຳສັ່ງຊື້",
+        "ms": "Create Order"
+    },
+    "订单列表": {
+        "zh": "订单列表",
+        "en": "Order List",
+        "th": "รายการคำสั่งซื้อ",
+        "la": "ລາຍການຄຳສັ່ງຊື້",
+        "ms": "Order List"
+    },
+    "任务详情": {
+        "zh": "任务详情",
+        "en": "Task Detail",
+        "th": "รายละเอียดงาน",
+        "la": "ລາຍລະອຽດວຽກ",
+        "ms": "Task Detail"
+    },
+    "等级列表": {
+        "zh": "等级列表",
+        "en": "Level List",
+        "th": "รายการระดับ",
+        "la": "ລາຍການລະດັບ",
+        "ms": "Level List"
+    },
+    "我的证书": {
+        "zh": "我的证书",
+        "en": "Certificate",
+        "th": "ใบรับรอง",
+        "la": "ໃບຢັ້ງຢືນ",
+        "ms": "Certificate"
+    },
+    "云数之家": {
+        "zh": "云数之家",
+        "en": "Cloud Data Home",
+        "th": "บ้านข้อมูลคลาวด์",
+        "la": "ເຮືອນຂໍ້ມູນຄລາວດ໌",
+        "ms": "Cloud Data Home"
+    },
+    "日利率": {
+        "zh": "日利率",
+        "en": "Daily Rate",
+        "th": "อัตราดอกเบี้ยรายวัน",
+        "la": "อัตราดอกเบี้ยรายวัน",
+        "ms": "Daily Rate"
+    },
+    "投资周期": {
+        "zh": "投资周期",
+        "en": "Investment Period",
+        "th": "ระยะเวลาลงทุน",
+        "la": "ระยะเวลาลงทุน",
+        "ms": "Investment Period"
+    },
+    "待审核": {
+        "zh": "待审核",
+        "en": "Pending Review",
+        "th": "รอการตรวจสอบ",
+        "la": "รอการตรวจสอบ",
+        "ms": "Pending Review"
+    },
+    "通过": {
+        "zh": "通过",
+        "en": "Pass",
+        "th": "ผ่าน",
+        "la": "ผ่าน",
+        "ms": "Pass"
+    },
+    "拒绝": {
+        "zh": "拒绝",
+        "en": "Reject",
+        "th": "ปฏิเสธ",
+        "la": "ปฏิเสธ",
+        "ms": "Reject"
+    },
+    "利息详情": {
+        "zh": "利息详情",
+        "en": "Interest Detail",
+        "th": "รายละเอียดความมั่งคั่ง",
+        "la": "ລາຍລະອຽດຄວາມມັ່ງຄັ່ງ",
+        "ms": "Interest Detail"
+    },
+    "等级": {
+        "zh": "等级",
+        "en": "Level",
+        "th": "ชื่อระดับ",
+        "la": "ຊື่อຣະດັບ",
+        "ms": "Level"
+    },
+    "总资产": {
+        "zh": "总资产",
+        "en": "Total Assets",
+        "th": "สินทรัพย์รวม",
+        "la": "ສິນທຣັພຢ໌ຣວມ",
+        "ms": "Total Assets"
+    },
+    "可交易余额": {
+        "zh": "可交易余额",
+        "en": "Trading Balance",
+        "th": "ยอดเงินที่สามารถซื้อขายได้",
+        "la": "ຢອດເງິນທີ່ສາມາດ຋ື້ຂາຍໄດ້",
+        "ms": "Trading Balance"
+    },
+    "可提现余额": {
+        "zh": "可提现余额",
+        "en": "Withdrawable Balance",
+        "th": "ยอดเงินที่สามารถถอนได้",
+        "la": "ຢອດເງິນທີ່ສາມາດຖອນໄດ້",
+        "ms": "Withdrawable Balance"
+    },
+    "购买货币": {
+        "zh": "购买货币",
+        "en": "Buy Currency",
+        "th": "ซื้อเหรียญ",
+        "la": "ຊື້เหรีຍ",
+        "ms": "Buy Currency"
+    }
+}
