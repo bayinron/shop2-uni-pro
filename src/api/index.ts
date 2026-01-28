@@ -88,23 +88,7 @@ export function lerpGetShopGoodsList(params?: { page?: number; limit?: number })
     });
 }
 
-/**
- * =========================
- * 內容管理 API
- * 文档按原文定义（ShowDoc）
- * =========================
- *
- * 说明：
- * - 文档中的路径形如：GET /api/articles
- * - 本项目拦截器会自动在相对路径前拼接前缀：
- *   - dev:  /api/api/{url}
- *   - prod: /api/{url}
- * - 所以这里只写去掉 `/api/` 之后的相对路径，例如：
- *   - 文档：GET /api/articles    ->  代码：url: 'articles'
- *   - 文档：GET /api/content/ads ->  代码：url: 'content/ads'
- */
 
-// ===== 公開接口 =====
 
 // 1. 獲取廣告列表 (公開) - GET /api/content/ads
 export function getPublicAdList(params: { position: string; limit?: number }) {
@@ -344,5 +328,216 @@ export function getCategoryDetail(id: number) {
     return http<any>({
         method: 'GET',
         url: `mall/categories/${id}`
+    });
+}
+
+/**
+ * =========================
+ * 商城系統 API
+ * =========================
+ *
+ * 文档中的路径形如：GET /api/mall/shops
+ * 这里统一去掉 `/api/` 前缀，保持与拦截器拼接规则一致：
+ *  - dev:  /api/api/{url}
+ *  - prod: /api/{url}
+ */
+
+// ===== 公開接口（無需認證） =====
+
+// 1. 獲取店鋪列表 - GET /api/mall/shops
+export interface MallShopListParams {
+    page?: number; // 默認 1
+    limit?: number; // 默認 15
+    keyword?: string;
+}
+
+export function getMallShopList(params: MallShopListParams = {}) {
+    return http<any>({
+        method: 'GET',
+        url: 'mall/shops',
+        data: params
+    });
+}
+
+// 2. 獲取店鋪詳情 - GET /api/mall/shops/:id
+export function getMallShopDetail(id: number) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/shops/${id}`
+    });
+}
+
+// 3. 獲取店鋪商品列表 - GET /api/mall/shops/:id/products
+export interface MallShopProductsParams {
+    page?: number;
+    limit?: number;
+    category_id?: number;
+    keyword?: string;
+}
+
+export function getMallShopProducts(id: number, params: MallShopProductsParams = {}) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/shops/${id}/products`,
+        data: params
+    });
+}
+
+// 4. 獲取全局商品列表（所有店鋪）- GET /api/mall/products
+export interface MallProductListParams {
+    page?: number;
+    limit?: number;
+    category_id?: number;
+    shop_id?: number;
+    keyword?: string;
+    min_price?: number;
+    max_price?: number;
+    sort?: 'latest' | 'price_asc' | 'price_desc' | 'popular';
+}
+
+export function getMallProductList(params: MallProductListParams = {}) {
+    return http<any>({
+        method: 'GET',
+        url: 'mall/products',
+        data: params
+    });
+}
+
+// 5. 獲取商品詳情 - GET /api/mall/products/:id
+export function getMallProductDetail(id: number) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/products/${id}`
+    });
+}
+
+// ===== 購物車管理（需認證） =====
+
+// 1. 獲取購物車 - GET /api/mall/cart
+export function getMallCart() {
+    return http<any>({
+        method: 'GET',
+        url: 'mall/cart'
+    });
+}
+
+// 2. 添加商品到購物車 - POST /api/mall/cart
+export interface MallCartAddPayload {
+    product_id: number;
+    quantity: number;
+    selected_sku?: string; // 文档示例: "顏色:紅色,尺寸:L"
+}
+
+export function addMallCartItem(data: MallCartAddPayload) {
+    return http<any>({
+        method: 'POST',
+        url: 'mall/cart',
+        data
+    });
+}
+
+// 3. 更新購物車項目 - PUT /api/mall/cart/:id
+export interface MallCartUpdatePayload {
+    quantity: number;
+}
+
+export function updateMallCartItem(id: number, data: MallCartUpdatePayload) {
+    return http<any>({
+        method: 'PUT',
+        url: `mall/cart/${id}`,
+        data
+    });
+}
+
+// 4. 刪除購物車項目 - DELETE /api/mall/cart/:id
+export function deleteMallCartItem(id: number) {
+    return http<any>({
+        method: 'DELETE',
+        url: `mall/cart/${id}`
+    });
+}
+
+// ===== 訂單管理（需認證） =====
+
+// 1. 訂單預覽（試算）- POST /api/mall/orders/preview
+export interface MallOrderPreviewByCart {
+    cart_ids: number[];
+    shop_id: number;
+}
+
+export interface MallOrderPreviewItem {
+    product_id: number;
+    quantity: number;
+    sku?: string;
+}
+
+export interface MallOrderPreviewByItems {
+    items: MallOrderPreviewItem[];
+    shop_id: number;
+}
+
+export type MallOrderPreviewPayload = MallOrderPreviewByCart | MallOrderPreviewByItems;
+
+export function previewMallOrder(data: MallOrderPreviewPayload) {
+    return http<any>({
+        method: 'POST',
+        url: 'mall/orders/preview',
+        data
+    });
+}
+
+// 2. 創建訂單 - POST /api/mall/orders
+export interface MallOrderAddress {
+    receiver_name: string;
+    receiver_phone: string;
+    city: string;
+    district: string;
+    address: string;
+}
+
+export interface MallCreateOrderPayload {
+    cart_ids: number[];
+    shop_id: number;
+    address: MallOrderAddress;
+    remark?: string;
+}
+
+export function createMallOrder(data: MallCreateOrderPayload) {
+    return http<any>({
+        method: 'POST',
+        url: 'mall/orders',
+        data
+    });
+}
+
+// 3. 獲取我的訂單列表 - GET /api/mall/orders
+export type MallOrderStatus =
+    | 'pending'
+    | 'paid'
+    | 'shipped'
+    | 'completed'
+    | 'cancelled'
+    | 'processing'
+    | 'delivered';
+
+export interface MallOrderListParams {
+    status?: MallOrderStatus;
+    page?: number;
+    limit?: number;
+}
+
+export function getMallOrderList(params: MallOrderListParams = {}) {
+    return http<any>({
+        method: 'GET',
+        url: 'mall/orders',
+        data: params
+    });
+}
+
+// 4. 獲取訂單詳情 - GET /api/mall/orders/:id
+export function getMallOrderDetail(id: number) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/orders/${id}`
     });
 }

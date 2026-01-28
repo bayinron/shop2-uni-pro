@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { getPublicAdList, lerpGetNewsList, lerpGetShopGoodsList } from '@/api';
+import { getPublicAdList, getArticleList, getMallProductList } from '@/api';
 import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
 
 type QuickEntry = {
@@ -144,8 +144,8 @@ async function loadHomeFromApi() {
   try {
     const [bannerRes, newsRes, goodsRes] = await Promise.all([
     getPublicAdList({ position: 'home_carousel' }),
-      lerpGetNewsList(),
-      lerpGetShopGoodsList({ page: 1, limit: 20 }),
+      getArticleList(),
+      getMallProductList(),
     ]);
 
     // banners
