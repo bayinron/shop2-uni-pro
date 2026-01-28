@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { lerpGetBannerList, lerpGetNewsList, lerpGetShopGoodsList } from '@/api';
+import { getPublicAdList, lerpGetNewsList, lerpGetShopGoodsList } from '@/api';
 import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
 
 type QuickEntry = {
@@ -143,7 +143,7 @@ function goodsToCard(g: LerpGoodsItem): Product | null {
 async function loadHomeFromApi() {
   try {
     const [bannerRes, newsRes, goodsRes] = await Promise.all([
-      lerpGetBannerList(),
+    getPublicAdList({ position: 'home_carousel' }),
       lerpGetNewsList(),
       lerpGetShopGoodsList({ page: 1, limit: 20 }),
     ]);
