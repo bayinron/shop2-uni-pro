@@ -63,7 +63,7 @@
           <text class="card-title breakcss">{{ p.title }}</text>
           <view class="card-row">
             <text class="price">฿ {{ p.price }}</text>
-            <view class="buy-btn">ซื้อ</view>
+            <view class="buy-btn">购买</view>
           </view>
         </view>
       </view>
@@ -90,7 +90,7 @@ type Product = {
   img: string;
 };
 
-const placeholderText = 'กรุณากรอกชื่อผลิตภัณฑ์';
+const placeholderText = '请输入产品名称';
 
 // banner（接口拉取失败时用项目内资源兜底）
 const banners = ref<any>();
@@ -98,21 +98,20 @@ const banners = ref<any>();
 const badgeImg = '/static/img/money-bag.png';
 
 const quickEntries: QuickEntry[] = [
-  { key: 'shop', text: 'การจัดการร้านค้า', icon: 'icon-zijinmingxi', bgClass: 'bg-red' },
-  { key: 'cs', text: 'บริการลูกค้าออนไลน์', icon: 'icon-vzaixiankefu', bgClass: 'bg-pink' },
-  { key: 'help', text: 'ช่วย', icon: 'icon-xitongtongzhi', bgClass: 'bg-cream' },
-  { key: 'about', text: 'เกี่ยวกับเรา', icon: 'icon-guanyuwomen', bgClass: 'bg-orange' },
+  { key: 'shop', text: '管理店铺', icon: 'icon-zijinmingxi', bgClass: 'bg-red' },
+  { key: 'cs', text: '在线客服', icon: 'icon-vzaixiankefu', bgClass: 'bg-pink' },
+  { key: 'help', text: '帮助', icon: 'icon-xitongtongzhi', bgClass: 'bg-cream' },
+  { key: 'about', text: '关于我们', icon: 'icon-guanyuwomen', bgClass: 'bg-orange' },
 ];
 
-const fallbackNoticeText =
-  'ประกาศ: ยินดีต้อนรับ! โปรดตรวจสอบคำสั่งซื้อของคุณและติดต่อฝ่ายบริการลูกค้าเมื่อมีคำถาม';
+const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
 const noticeText = ref(fallbackNoticeText);
 
 const fallbackProducts: Product[] = [
-  { id: 'p1', title: 'สินค้าแนะนำ 1', price: '199', img: '/static/img/clock.png' },
-  { id: 'p2', title: 'สินค้าแนะนำ 2', price: '299', img: '/static/img/profit.png' },
-  { id: 'p3', title: 'สินค้าแนะนำ 3', price: '159', img: '/static/img/money-bag.png' },
-  { id: 'p4', title: 'สินค้าแนะนำ 4', price: '499', img: '/static/img/invitebg.png' },
+  { id: 'p1', title: '推荐商品 1', price: '199', img: '/static/img/clock.png' },
+  { id: 'p2', title: '推荐商品 2', price: '299', img: '/static/img/profit.png' },
+  { id: 'p3', title: '推荐商品 3', price: '159', img: '/static/img/money-bag.png' },
+  { id: 'p4', title: '推荐商品 4', price: '499', img: '/static/img/invitebg.png' },
 ];
 const products = ref<Product[]>([...fallbackProducts]);
 
@@ -134,7 +133,7 @@ function bannerToUrl(b: LerpBannerItem): string | undefined {
 function goodsToCard(g: LerpGoodsItem): Product | null {
   const id = String(g.id ?? '');
   if (!id) return null;
-  const title = String(g.title ?? g.name ?? '').trim() || 'สินค้า';
+  const title = String(g.title ?? g.name ?? '').trim() || '商品';
   const price = String(g.price ?? g.originalPrice ?? '').trim() || '--';
   const img = String(g.cover ?? g.img ?? (Array.isArray(g.images) ? g.images[0] : '') ?? '').trim();
   return { id, title, price, img: img || '/static/img/empty.svg' };
@@ -155,7 +154,7 @@ async function loadHomeFromApi() {
     // notice/news
     const newsList = asArray<LerpNewsItem>(pickData<any>(newsRes));
     const firstTitle = String(newsList?.[0]?.title ?? '').trim();
-    noticeText.value = firstTitle ? `ประกาศ: ${firstTitle}` : fallbackNoticeText;
+    noticeText.value = firstTitle ? `公告: ${firstTitle}` : fallbackNoticeText;
 
     // goods
     const goodsList = asArray<LerpGoodsItem>(pickData<any>(goodsRes));
@@ -191,7 +190,7 @@ function stopMarquee() {
 function onSearchConfirm(e: any) {
   const value = (e?.detail?.value ?? '').trim();
   if (!value) return;
-  uni.showToast({ title: `Search: ${value}`, icon: 'none' });
+  uni.showToast({ title: `搜索：${value}`, icon: 'none' });
 }
 
 function onQuickClick(item: QuickEntry) {

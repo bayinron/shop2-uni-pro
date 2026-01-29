@@ -12,6 +12,12 @@
             "style": {
                 "navigationBarTitleText": "Home"
             }
+        },
+        {
+            "path": "pages/sort/sort",
+            "style": {
+                "navigationBarTitleText": "类型"
+            }
         }
         
     ],
@@ -35,9 +41,15 @@
             {
                 "pagePath": "pages/home/index",
                 "text": "Home",
-                "iconPath": "static/tab/index.png",
-                "selectedIconPath": "static/tab/index_a.png"
-            } 
+                "iconPath": "static/tab/home.png",
+                "selectedIconPath": "static/tab/homeHL.png"
+            },
+            {
+                "pagePath": "pages/sort/sort",
+                "text": "Sort",
+                "iconPath": "static/tab/fl.png",
+                "selectedIconPath": "static/tab/fl_a.png"
+            }
         ]
     }
 }
