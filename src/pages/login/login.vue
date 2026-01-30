@@ -85,7 +85,9 @@ function toggleAgreement() {
 }
 
 function onRegister() {
-  uni.showToast({ title: '跳转到注册页面（测试功能）', icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/register/register'
+  });
 }
 
 function onLogin() {

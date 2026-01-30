@@ -161,7 +161,9 @@ const recommendProducts = ref<Product[]>([
 ]);
 
 function onRegisterAgent() {
-  uni.showToast({ title: '注册代理（测试功能）', icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/register/register'
+  });
 }
 
 function onLogin() {
@@ -171,7 +173,9 @@ function onLogin() {
 }
 
 function onViewAllOrders() {
-  uni.showToast({ title: '查看全部订单（测试功能）', icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/order/order'
+  });
 }
 
 function onOrderStatusClick(status: string) {
