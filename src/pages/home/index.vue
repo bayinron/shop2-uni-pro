@@ -198,7 +198,9 @@ function onQuickClick(item: QuickEntry) {
 }
 
 function onProductClick(p: Product) {
-  uni.showToast({ title: p.title, icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/goodsDetail/goodsDetail?id=' + p.id
+  });
 }
 
 onMounted(() => {

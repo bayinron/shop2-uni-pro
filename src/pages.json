@@ -55,6 +55,13 @@
                 "navigationBarTitleText": "订单",
                 "navigationStyle": "custom"
             }
+        },
+        {
+            "path": "pages/goodsDetail/goodsDetail",
+            "style": {
+                "navigationBarTitleText": "商品详情",
+                "navigationStyle": "custom"
+            }
         }
     ],
     "globalStyle": {
