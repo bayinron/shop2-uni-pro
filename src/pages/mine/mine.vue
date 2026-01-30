@@ -49,7 +49,7 @@
           <view class="order-icon-wrap">
             <text class="icon iconfont icon-tuikuan"></text>
           </view>
-          <text class="order-icon-text">退款/售后</text>
+          <text class="order-icon-text">已完成</text>
           <text class="order-badge" v-if="orderCounts.refund > 0">{{ orderCounts.refund }}</text>
         </view>
       </view>
@@ -69,12 +69,11 @@
         </view>
         <text class="service-text">地址</text>
       </view>
-      <view class="service-btn" @click="onServiceClick('cart')">
+      <view class="service-btn" @click="onServiceClick('becomeMerchant')">
         <view class="service-icon-wrap">
-          <text class="icon iconfont icon-gouwuche"></text>
-          <text class="service-badge" v-if="cartCount > 0">{{ cartCount }}</text>
+          <text class="icon iconfont icon-shangjia"></text>
         </view>
-        <text class="service-text">购物袋</text>
+        <text class="service-text">申请成为商家</text>
       </view>
     </view>
 
@@ -179,13 +178,24 @@ function onViewAllOrders() {
 }
 
 function onOrderStatusClick(status: string) {
-  const statusMap: Record<string, string> = {
-    pending: '待付款',
-    shipping: '待发货',
-    receiving: '待收货',
-    refund: '退款/售后',
-  };
-  uni.showToast({ title: `查看${statusMap[status]}订单（测试功能）`, icon: 'none' });
+  if (status === 'pending') {
+    uni.navigateTo({
+      url: '/pages/order/order?status=pending'
+    });
+  } else if (status === 'shipping') {
+    uni.navigateTo({
+      url: '/pages/order/order?status=shipping'
+    });
+  } else if (status === 'receiving') {
+    uni.navigateTo({
+      url: '/pages/order/order?status=receiving'
+    });
+  }
+  else if (status === 'completed') {
+    uni.navigateTo({
+      url: '/pages/order/order?status=completed'
+    });
+  }
 }
 
 function onServiceClick(type: string) {

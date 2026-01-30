@@ -250,6 +250,12 @@ function onActionClick(order: Order, action: OrderAction) {
   };
   uni.showToast({ title: `${actionMap[action.key]}（测试功能）`, icon: 'none' });
 }
+onLoad((options: any) => {
+  const status = options.status;
+  if (status) {
+    activeTab.value = status as OrderStatus;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
