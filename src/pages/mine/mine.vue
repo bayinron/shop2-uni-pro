@@ -165,7 +165,9 @@ function onRegisterAgent() {
 }
 
 function onLogin() {
-  uni.showToast({ title: '登录（测试功能）', icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/login/login'
+  });
 }
 
 function onViewAllOrders() {
