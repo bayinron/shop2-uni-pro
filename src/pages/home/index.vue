@@ -17,7 +17,7 @@
     <view class="banner-wrap">
       <swiper class="banner" :indicator-dots="true" :autoplay="true" :interval="3500" :duration="300">
         <swiper-item v-for="(b, idx) in banners" :key="idx">
-          <image class="banner-img" :src="b.img" mode="aspectFill" />
+          <image class="banner-img" :src="b.image_url" mode="aspectFill" />
         </swiper-item>
       </swiper>
     </view>
