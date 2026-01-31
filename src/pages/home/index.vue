@@ -4,12 +4,7 @@
     <view class="topbar">
       <view class="search">
         <uni-icons type="search" size="18" color="#c7c7c7" />
-        <input
-          class="search-input"
-          :placeholder="placeholderText"
-          confirm-type="search"
-          @confirm="onSearchConfirm"
-        />
+        <input class="search-input" :placeholder="placeholderText" confirm-type="search" @confirm="onSearchConfirm" />
       </view>
     </view>
 
@@ -25,12 +20,7 @@
     <!-- 宫格入口 -->
     <view class="quick-wrap">
       <view class="quick-grid">
-        <view
-          v-for="item in quickEntries"
-          :key="item.key"
-          class="quick-item"
-          @click="onQuickClick(item)"
-        >
+        <view v-for="item in quickEntries" :key="item.key" class="quick-item" @click="onQuickClick(item)">
           <view class="quick-icon" :class="item.bgClass">
             <text class="icon iconfont" :class="item.icon" />
           </view>
@@ -45,9 +35,9 @@
         <text class="icon iconfont icon-xitongtongzhi" />
       </view>
       <view class="notice-marquee">
-      <view class="notice-marquee-inner" :style="marqueeStyle">
-        <text class="notice-text">{{ noticeText }}</text>
-        <text class="notice-text notice-text--gap">{{ noticeText }}</text>
+        <view class="notice-marquee-inner" :style="marqueeStyle">
+          <rich-text class="notice-text" :nodes="noticeText"></rich-text>
+          <rich-text class="notice-text notice-text--gap" :nodes="noticeText"></rich-text>
         </view>
       </view>
       <view class="notice-right">
@@ -140,29 +130,16 @@ function goodsToCard(g: LerpGoodsItem): Product | null {
 }
 
 async function loadHomeFromApi() {
-  try {
-    const [bannerRes, newsRes, goodsRes] = await Promise.all([
-    getPublicAdList({ position: 'home_carousel' }),
-      getArticleList(),
-      getMallProductList(),
-    ]);
+  getPublicAdList({ position: 'home_carousel' }).then((res: any) => {
+    banners.value = res;
+  });
+  getArticleList().then((res: any) => {
+    noticeText.value = res.data[0].content;
+  });
+  getMallProductList().then((res: any) => {
+    products.value = res;
+  });
 
-    // banners
-
-    banners.value =  bannerRes;
-
-    // notice/news
-    const newsList = asArray<LerpNewsItem>(pickData<any>(newsRes));
-    const firstTitle = String(newsList?.[0]?.title ?? '').trim();
-    noticeText.value = firstTitle ? `公告: ${firstTitle}` : fallbackNoticeText;
-
-    // goods
-    const goodsList = asArray<LerpGoodsItem>(pickData<any>(goodsRes));
-    const mapped = goodsList.map(goodsToCard).filter(Boolean) as Product[];
-    products.value = mapped.length ? mapped : fallbackProducts;
-  } catch (e) {
-   
-  }
 }
 
 const marqueeX = ref(0);
@@ -213,7 +190,8 @@ onUnmounted(() => stopMarquee());
 <style lang="scss" scoped>
 .home {
   min-height: 100vh;
-  background: #d9dbff; /* 接近目标站点淡紫底 */
+  background: #d9dbff;
+  /* 接近目标站点淡紫底 */
 }
 
 .topbar {
@@ -229,10 +207,12 @@ onUnmounted(() => stopMarquee());
   align-items: center;
   padding: 0 22rpx;
 }
+
 .icon {
   font-size: 32rpx;
   color: #c7c7c7;
 }
+
 .search-input {
   margin-left: 14rpx;
   flex: 1;
@@ -244,12 +224,14 @@ onUnmounted(() => stopMarquee());
 .banner-wrap {
   padding: 18rpx 20rpx 0;
 }
+
 .banner {
   height: 320rpx;
   border-radius: 18rpx;
   overflow: hidden;
   background: #fff;
 }
+
 .banner-img {
   width: 100%;
   height: 100%;
@@ -261,16 +243,19 @@ onUnmounted(() => stopMarquee());
   border-radius: 18rpx;
   padding: 18rpx 12rpx;
 }
+
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10rpx;
 }
+
 .quick-item {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .quick-icon {
   width: 76rpx;
   height: 76rpx;
@@ -281,10 +266,12 @@ onUnmounted(() => stopMarquee());
   background: #fff;
   box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.06);
 }
+
 .quick-icon .icon {
   font-size: 40rpx;
   color: #ff3e6c;
 }
+
 .quick-text {
   margin-top: 10rpx;
   font-size: 22rpx;
@@ -295,12 +282,15 @@ onUnmounted(() => stopMarquee());
 .bg-red .icon {
   color: #ff5a5f;
 }
+
 .bg-pink .icon {
   color: #ff4aa3;
 }
+
 .bg-cream .icon {
   color: #ffb02e;
 }
+
 .bg-orange .icon {
   color: #ff7a2f;
 }
@@ -314,15 +304,18 @@ onUnmounted(() => stopMarquee());
   align-items: center;
   padding: 0 14rpx;
 }
+
 .notice-left {
   width: 56rpx;
   display: flex;
   justify-content: center;
 }
+
 .notice-left .icon {
   color: #2c7bff;
   font-size: 34rpx;
 }
+
 .notice-marquee {
   flex: 1;
   overflow: hidden;
@@ -330,26 +323,31 @@ onUnmounted(() => stopMarquee());
   display: flex;
   align-items: center;
 }
+
 .notice-marquee-inner {
   display: flex;
   flex-direction: row;
   align-items: center;
   will-change: transform;
 }
+
 .notice-text {
   font-size: 26rpx;
   color: #3a3a3a;
   white-space: nowrap;
 }
+
 .notice-text--gap {
   padding-left: 60rpx;
 }
+
 .notice-right {
   width: 64rpx;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .notice-badge {
   width: 46rpx;
   height: 46rpx;
@@ -361,34 +359,41 @@ onUnmounted(() => stopMarquee());
   grid-template-columns: repeat(2, 1fr);
   gap: 18rpx;
 }
+
 .card {
   background: #fff;
   border-radius: 18rpx;
   overflow: hidden;
 }
+
 .card-img {
   width: 100%;
   height: 340rpx;
   background: #f6f6f6;
 }
+
 .card-body {
   padding: 14rpx 14rpx 16rpx;
 }
+
 .card-title {
   font-size: 26rpx;
   color: #2c2c2c;
 }
+
 .card-row {
   margin-top: 10rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .price {
   font-size: 28rpx;
   font-weight: 700;
   color: #ff3e6c;
 }
+
 .buy-btn {
   background: #ff3e6c;
   color: #fff;
