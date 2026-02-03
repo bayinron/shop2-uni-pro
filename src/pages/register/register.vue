@@ -138,17 +138,19 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
+import { authRegister, authCheckUsername, authCheckEmail, getCaptcha } from '@/api';
+import globalTool from '@/utils/globalTool';
 
 const registerType = ref<'phone' | 'email'>('phone');
 
 const formData = ref({
-  phone: '',
+  phone: '13111111111',
   email: '',
   verifyCode: '',
-  password: '',
-  confirmPassword: '',
+  password: '111111',
+  confirmPassword: '111111',
 });
-
+const captcha_id = ref('');
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const agreed = ref(false);
@@ -223,16 +225,22 @@ function onRegister() {
       uni.showToast({ title: '请先阅读并同意协议', icon: 'none' });
       return;
     }
-    return;
   }
-
-  // 模拟注册成功
-  uni.showToast({ title: '注册成功（测试数据）', icon: 'success' });
-
-  // 模拟延迟后跳转到登录页
-  setTimeout(() => {
-    uni.navigateTo({ url: '/pages/login/login' });
-  }, 1500);
+  let params:any = {
+    password: formData.value.password,
+    captcha_id: captcha_id.value,
+    captcha_code: formData.value.verifyCode,
+  }
+  if (registerType.value === 'phone') {
+    params.phone = formData.value.phone;
+  } else {
+    params.email = formData.value.email;
+  }
+  authRegister(params).then((res:any) => {
+    globalTool.showModal(res.message, () => {
+      uni.navigateTo({ url: '/pages/login/login' });
+    });
+  })
 }
 
 function onGoToLogin() {
@@ -240,7 +248,12 @@ function onGoToLogin() {
 }
 
 onMounted(() => {
-  generateVerifyCode();
+  // generateVerifyCode();
+  getCaptcha().then((res:any) => {
+    console.log(res);
+    verifyCodeImg.value = res.image;
+    captcha_id.value = res.captcha_id;
+  });
 });
 </script>
 

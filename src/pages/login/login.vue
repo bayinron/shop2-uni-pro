@@ -17,8 +17,8 @@
           <input
             class="input-field"
             type="number"
-            v-model="formData.phone"
-            placeholder="请输入手机号码"
+            v-model="formData.login"
+            placeholder="请输入手机号码或邮箱"
             maxlength="11"
           />
         </view>
@@ -63,17 +63,20 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-
+import { authLogin } from '@/api';
+import globalTool from '@/utils/globalTool';
+import { useUserStore } from '@/stores/modules/userStore';
+const userStore = useUserStore();
 const formData = ref({
-  phone: '',
-  password: '',
+  login: '13111111111',
+  password: '111111',
 });
 
 const showPassword = ref(false);
 const agreed = ref(false);
 
 const canLogin = computed(() => {
-  return formData.value.phone.length >= 11 && formData.value.password.length >= 6 && agreed.value;
+  return formData.value.login.length >= 11 && formData.value.password.length >= 6 && agreed.value;
 });
 
 function togglePassword() {
@@ -96,18 +99,11 @@ function onLogin() {
     return;
   }
 
-  // 模拟登录成功
-  uni.showToast({ title: '登录成功（测试数据）', icon: 'success' });
-  
-  // 模拟延迟后返回上一页或跳转到首页
-  setTimeout(() => {
-    const pages = getCurrentPages();
-    if (pages.length > 1) {
-      uni.navigateBack();
-    } else {
+  authLogin(formData.value).then((res:any) => {
+      uni.setStorageSync('token', res.token);
+      userStore.setUserInfo(res.user);
       uni.switchTab({ url: '/pages/home/index' });
-    }
-  }, 1500);
+  });
 }
 
 function onForgotPassword() {

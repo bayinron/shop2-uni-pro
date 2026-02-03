@@ -8,38 +8,7 @@ import type {
 } from './types';
 
 export interface UserInfo {
-    reg_type: number; //账号类型：1手机注册，2用户名注册
-    username: string; //账号或手机号
-    area_code: string; //区号，reg_type=1时有值
-    phone: string; //手机号，reg_type=1时有值
-    lev: number; //等级
-    balance: string; //账户余额  可交易
-    balance_t: string; //提现余额 可提现
-    agent_id: number; //代理ID、
-    p1: number; //上1级ID
-    p2: number; //上2级iD
-    p3: number; //上3级ID
-    auth_status: number; //实名状态：0未提交 ，1待审核，2通过，3拒绝
-    invite_code_status: number; //邀请码状态
-    recharge_total: string; //累计充值金额
-    credit_num: number; //信用分
-    avatar: string; //头像
-    c_total: number; //可用抽奖次数
-    invite_code: string; //邀请码。在invite_code_status且累计充值>0时为真实邀请码
-    is_payassword: number; //是否已设置了提现密码。1已设置，0未设置
-    lev_info: {
-        //等级信息
-        id: number;
-        lev: number; //等级
-        name: string; //等级名称
-        icon: string; //图标
-        daily_job_num: number; //每日可刷单次数
-        limit_amount: string; //单次最小提现金额
-        min_withdrawal: string; //单次最小提现金额
-        max_withdrawal: string; //单次最大提现金额
-        commission_rate: string; //佣金比例。示例0.00115即0.115%
-        withdrawal_fee_rate: string; //提现手续费。示例0.03即3%
-    };
+    
 }
 
 //获取主页配置
@@ -299,13 +268,43 @@ export function adminGetAdPositions() {
     });
 }
 
-// ===== 分類管理 =====
+/**
+ * =========================
+ * 商城系統 API
+ * =========================
+ *
+ * 文档中的路径形如：GET /api/mall/shops
+ * 这里统一去掉 `/api/` 前缀，保持与拦截器拼接规则一致：
+ *  - dev:  /api/api/{url}
+ *  - prod: /api/{url}
+ *
+ * 注意：name 和 description 欄位會根據請求 Header X-Exchange-Locale 自動返回對應語言的內容。
+ */
 
-// 獲取分類樹 - GET /api/mall/categories/tree
+// ===== 公開接口（無需認證） =====
+
+// 0. 獲取分類樹 - GET /api/mall/categories/tree
+// 注意: name 欄位會根據 X-Exchange-Locale 自動翻譯。
 export function getCategoryTree() {
     return http<any>({
         method: 'GET',
         url: 'mall/categories/tree'
+    });
+}
+
+// 0.2 獲取分類下的商品列表 - GET /api/mall/categories/:id/products
+export function getCategoryProducts(id: number) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/categories/${id}/products`
+    });
+}
+
+// 0.1 獲取分類詳情 - GET /api/mall/categories/:id
+export function getCategoryDetail(id: number) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/categories/${id}`
     });
 }
 
@@ -323,28 +322,10 @@ export function getCategoryList(params: CategoryListParams = {}) {
     });
 }
 
-// 獲取分類詳情 - GET /api/mall/categories/:id
-export function getCategoryDetail(id: number) {
-    return http<any>({
-        method: 'GET',
-        url: `mall/categories/${id}`
-    });
-}
-
-/**
- * =========================
- * 商城系統 API
- * =========================
- *
- * 文档中的路径形如：GET /api/mall/shops
- * 这里统一去掉 `/api/` 前缀，保持与拦截器拼接规则一致：
- *  - dev:  /api/api/{url}
- *  - prod: /api/{url}
- */
-
 // ===== 公開接口（無需認證） =====
 
 // 1. 獲取店鋪列表 - GET /api/mall/shops
+// 注意 (多語系): name 和 description 欄位會根據請求 Header X-Exchange-Locale 自動返回對應語言的內容。
 export interface MallShopListParams {
     page?: number; // 默認 1
     limit?: number; // 默認 15
@@ -384,15 +365,16 @@ export function getMallShopProducts(id: number, params: MallShopProductsParams =
 }
 
 // 4. 獲取全局商品列表（所有店鋪）- GET /api/mall/products
+// 使用場景：首頁商品展示、商品搜索、分類瀏覽、價格篩選
 export interface MallProductListParams {
-    page?: number;
-    limit?: number;
-    category_id?: number;
-    shop_id?: number;
-    keyword?: string;
-    min_price?: number;
-    max_price?: number;
-    sort?: 'latest' | 'price_asc' | 'price_desc' | 'popular';
+    page?: number;        // 頁碼，默認 1
+    limit?: number;       // 每頁數量，默認 20
+    category_id?: number; // 分類 ID 篩選
+    shop_id?: number;     // 店鋪 ID 篩選
+    keyword?: string;     // 搜索關鍵詞
+    min_price?: number;   // 最低價格
+    max_price?: number;   // 最高價格
+    sort?: 'latest' | 'price_asc' | 'price_desc' | 'popular'; // 排序方式：latest(最新上架，默認)、price_asc(價格由低到高)、price_desc(價格由高到低)、popular(熱門商品，按銷量)
 }
 
 export function getMallProductList(params: MallProductListParams = {}) {
@@ -511,14 +493,27 @@ export function createMallOrder(data: MallCreateOrderPayload) {
 }
 
 // 3. 獲取我的訂單列表 - GET /api/mall/orders
+/**
+ * 訂單狀態流程：
+ * pending (待付款) 
+ *   → paid (已付款) 
+ *   → processing (處理中) 
+ *   → shipped (已發貨) 
+ *   → delivered (已送達) 
+ *   → completed (已完成)
+ * 
+ * 或
+ * 
+ * pending → cancelled (已取消)
+ */
 export type MallOrderStatus =
-    | 'pending'
-    | 'paid'
-    | 'shipped'
-    | 'completed'
-    | 'cancelled'
-    | 'processing'
-    | 'delivered';
+    | 'pending'      // 待付款
+    | 'paid'         // 已付款
+    | 'processing'   // 處理中
+    | 'shipped'      // 已發貨
+    | 'delivered'    // 已送達
+    | 'completed'    // 已完成
+    | 'cancelled';   // 已取消
 
 export interface MallOrderListParams {
     status?: MallOrderStatus;
@@ -539,5 +534,244 @@ export function getMallOrderDetail(id: number) {
     return http<any>({
         method: 'GET',
         url: `mall/orders/${id}`
+    });
+}
+
+/**
+ * =========================
+ * 身份驗證 API
+ * =========================
+ *
+ * 文档中的路径形如：POST /api/auth/login
+ * 这里统一去掉 `/api/` 前缀，保持与拦截器拼接规则一致：
+ *  - dev:  /api/api/{url}
+ *  - prod: /api/{url}
+ */
+
+// ===== 註冊 =====
+
+export interface AuthRegisterPayload {
+    // username: string;
+    email: string;
+    phone: string;
+    password: string;
+    captcha_id: string;
+    captcha_code: string;
+}
+
+export interface AuthRegisterResponse {
+    user: {
+        id: number;
+        username: string;
+        email: string;
+    };
+    token: string;
+}
+//获取验证码
+export function getCaptcha() {
+    return http<any>({
+        method: 'POST',
+        url: 'captcha/create'
+    });
+}
+// 1. 用戶註冊 - POST /api/register
+export function authRegister(data: AuthRegisterPayload) {
+    return http<AuthRegisterResponse>({
+        method: 'POST',
+        url: 'register',
+        data
+    });
+}
+
+// 2. 檢查用戶名是否可用 - POST /api/register/check-username
+export function authCheckUsername(data: { username: string }) {
+    return http<{ available: boolean }>({
+        method: 'POST',
+        url: 'register/check-username',
+        data
+    });
+}
+
+// 3. 檢查郵箱是否可用 - POST /api/register/check-email
+export function authCheckEmail(data: { email: string }) {
+    return http<{ available: boolean }>({
+        method: 'POST',
+        url: 'register/check-email',
+        data
+    });
+}
+
+// ===== 登入 / 登出 / 刷新 =====
+
+export interface AuthLoginPayload {
+    login: string;
+    password: string;
+}
+
+export interface AuthLoginUser {
+    id: number;
+    username: string;
+    nickname?: string;
+    email?: string;
+    avatar?: string | null;
+}
+
+export interface AuthLoginResponse {
+    token: string;
+    user: AuthLoginUser;
+    user_type: string;
+    expires_in: number;
+    totp_required?: boolean;
+    user_id?: number;
+}
+
+// 1. 用戶登入 - POST /api/auth/login
+export function authLogin(data: AuthLoginPayload) {
+    return http<AuthLoginResponse>({
+        method: 'POST',
+        url: 'auth/login',
+        data
+    });
+}
+
+// 1. 用戶登入（备用）- POST /api/auth/user-login
+export function authUserLogin(data: AuthLoginPayload) {
+    return http<AuthLoginResponse>({
+        method: 'POST',
+        url: 'auth/user-login',
+        data
+    });
+}
+
+// 2. 登出 - POST /api/auth/logout
+export function authLogout() {
+    return http<{ code: number; message: string }>({
+        method: 'POST',
+        url: 'auth/logout'
+    });
+}
+
+// 3. 刷新 Token - POST /api/auth/refresh
+export function authRefreshToken() {
+    return http<any>({
+        method: 'POST',
+        url: 'auth/refresh'
+    });
+}
+
+// ===== 用戶資料管理 =====
+
+export interface AuthMeResponse {
+    id: number;
+    username: string;
+    nickname?: string;
+    email?: string;
+    phone?: string;
+    avatar?: string | null;
+    gender?: 0 | 1 | 2;
+    status?: 0 | 1;
+    created_at?: string;
+    roles?: any[];
+    role_names?: string[];
+}
+
+// 1. 獲取當前用戶信息 - GET /api/auth/me
+export function authGetMe() {
+    return http<AuthMeResponse>({
+        method: 'GET',
+        url: 'auth/me'
+    });
+}
+
+export interface AuthUpdateMePayload {
+    real_name?: string;
+    phone?: string;
+    avatar?: string;
+}
+
+// 2. 更新個人資料 - PUT /api/auth/me
+export function authUpdateMe(data: AuthUpdateMePayload) {
+    return http<AuthMeResponse>({
+        method: 'PUT',
+        url: 'auth/me',
+        data
+    });
+}
+
+export interface AuthChangePasswordPayload {
+    old_password: string;
+    new_password: string;
+    confirm_password: string;
+}
+
+// 3. 修改密碼 - PUT /api/auth/me/password
+export function authChangePassword(data: AuthChangePasswordPayload) {
+    return http<{ code: number; message: string }>({
+        method: 'PUT',
+        url: 'auth/me/password',
+        data
+    });
+}
+
+// ===== TOTP 雙因素認證 =====
+
+export interface TotpInitResponse {
+    secret: string;
+    qr_code: string;
+    manual_entry: string;
+}
+
+// 1. 初始化 TOTP（首次設置）- GET /api/totp/init?user_id=1
+export function totpInit(params: { user_id: number }) {
+    return http<TotpInitResponse>({
+        method: 'GET',
+        url: 'totp/init',
+        data: params
+    });
+}
+
+// 2. 驗證並啟用 TOTP - POST /api/totp/verify-and-enable
+export function totpVerifyAndEnable(data: { user_id: number; secret: string; code: string }) {
+    return http<{ code: number; message: string }>({
+        method: 'POST',
+        url: 'totp/verify-and-enable',
+        data
+    });
+}
+
+// 3. TOTP 登入驗證 - POST /api/totp/verify-login
+export function totpVerifyLogin(data: { user_id: number; code: string }) {
+    return http<{ token: string } & Record<string, any>>({
+        method: 'POST',
+        url: 'totp/verify-login',
+        data
+    });
+}
+
+// ===== 用戶自行設置 TOTP（需認證） =====
+
+// 1. 開始設置 - POST /api/totp/user/setup-init
+export function totpUserSetupInit() {
+    return http<TotpInitResponse>({
+        method: 'POST',
+        url: 'totp/user/setup-init'
+    });
+}
+
+// 2. 驗證並完成設置 - POST /api/totp/user/setup-verify
+export function totpUserSetupVerify(data: { code: string }) {
+    return http<{ code: number; message: string }>({
+        method: 'POST',
+        url: 'totp/user/setup-verify',
+        data
+    });
+}
+
+// 3. 解綁 TOTP - DELETE /api/totp/user/unbind
+export function totpUserUnbind(data: { password: string; code: string }) {
+    return http<{ code: number; message: string }>({
+        method: 'DELETE',
+        url: 'totp/user/unbind',
+        data
     });
 }

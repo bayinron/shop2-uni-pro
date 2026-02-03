@@ -102,9 +102,17 @@ export const useUserStore = defineStore('user', () => {
             homeConfig.value = res;
         });
     }
-    
+
+    function setUserInfo(user: UserInfo) {
+        userInfo.value = user;
+    }
+    function getUserInfo() {
+        return userInfo.value;
+    }
     return {
-        
+        url,
+        setUserInfo,
+        getUserInfo
         
     };
 });

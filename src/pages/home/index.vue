@@ -48,11 +48,11 @@
     <!-- 商品列表 -->
     <view class="list-wrap">
       <view class="card" v-for="p in products" :key="p.id" @click="onProductClick(p)">
-        <image class="card-img" :src="p.img" mode="aspectFill" />
+        <image class="card-img" :src="p.product.cover_image" mode="aspectFill" />
         <view class="card-body">
-          <text class="card-title breakcss">{{ p.title }}</text>
+          <text class="card-title breakcss">{{ p.product.name }}</text>
           <view class="card-row">
-            <text class="price">฿ {{ p.price }}</text>
+            <text class="price">฿ {{ p.product.sale_price }}</text>
             <view class="buy-btn">购买</view>
           </view>
         </view>
@@ -103,7 +103,7 @@ const fallbackProducts: Product[] = [
   { id: 'p3', title: '推荐商品 3', price: '159', img: '/static/img/money-bag.png' },
   { id: 'p4', title: '推荐商品 4', price: '499', img: '/static/img/invitebg.png' },
 ];
-const products = ref<Product[]>([...fallbackProducts]);
+const products = ref<any[]>([]);
 
 function pickData<T>(res: any): T | undefined {
   return (res?.data ?? res?.result ?? res?.rows) as T | undefined;
@@ -137,7 +137,7 @@ async function loadHomeFromApi() {
     noticeText.value = res.data[0].content;
   });
   getMallProductList().then((res: any) => {
-    products.value = res;
+    products.value = res.data;
   });
 
 }

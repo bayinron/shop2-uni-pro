@@ -40,12 +40,12 @@
             :key="p.id"
             @click="onProductClick(p)"
           >
-            <image class="product-img" :src="p.img" mode="aspectFill" />
+            <image class="product-img" :src="url + p.product.cover_image" mode="aspectFill" />
             <view class="product-body">
-              <text class="product-title breakcss">{{ p.title }}</text>
+              <text class="product-title breakcss">{{ p.product.name }}</text>
               <view class="product-row">
-                <text class="product-price">￥{{ p.price }}</text>
-                <text class="product-sales">已售 {{ p.sold }} 件</text>
+                <text class="product-price">￥{{ p.product.sale_price }}</text>
+                <text class="product-sales">已售 {{ p.sold_count }} 件</text>
               </view>
             </view>
           </view>
@@ -62,6 +62,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { getCategoryTree, getCategoryProducts } from '@/api';
+import { useUserStore } from '@/stores/modules/userStore';
+
+const userStore = useUserStore();
+const url = computed(() => userStore.url);
+console.log(url);
+onLoad(() => {
+  getCategoryTree().then((res: any) => {
+    categories.value = res;
+  });
+});
 
 const placeholderText = '请输入产品名称';
 
@@ -181,12 +192,13 @@ const activeCateName = computed(() => {
   return categories.value.find((c) => c.id === activeCateId.value)?.name || '';
 });
 
-const currentProducts = computed(() =>
-  allProducts.value.filter((p) => p.cateId === activeCateId.value),
-);
+const currentProducts = ref<any[]>([]);
 
 function onCateClick(c: Category) {
   activeCateId.value = c.id;
+  getCategoryProducts(c.id).then((res: any) => {
+    currentProducts.value = res.data;
+  });
 }
 
 function onSearchConfirm(e: any) {
