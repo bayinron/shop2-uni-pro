@@ -9,8 +9,13 @@
         <text class="brand-text">商城</text>
       </view>
       <view class="header-right">
-        <text class="header-btn" @click="onRegisterAgent">注册代理</text>
-        <text class="header-btn" @click="onLogin">登录</text>
+        <template v-if="!isLoggedIn">
+          <text class="header-btn" @click="onRegisterAgent">注册代理</text>
+          <text class="header-btn" @click="onLogin">登录</text>
+        </template>
+        <template v-else>
+          <text class="header-btn" @click="onRecharge">充值</text>
+        </template>
       </view>
     </view>
 
@@ -108,6 +113,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 
 type Product = {
   id: string;
@@ -116,6 +122,8 @@ type Product = {
   originalPrice?: string;
   img: string;
 };
+
+const isLoggedIn = ref(false);
 
 // 订单数量统计（测试数据）
 const orderCounts = ref({
@@ -170,6 +178,16 @@ function onLogin() {
     url: '/pages/login/login'
   });
 }
+
+function onRecharge() {
+  uni.navigateTo({
+    url: '/pages/wallet/recharge'
+  });
+}
+
+onShow(() => {
+  isLoggedIn.value = !!uni.getStorageSync('token');
+});
 
 function onViewAllOrders() {
   uni.navigateTo({

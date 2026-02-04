@@ -408,6 +408,7 @@ export interface MallCartAddPayload {
     product_id: number;
     quantity: number;
     selected_sku?: string; // 文档示例: "顏色:紅色,尺寸:L"
+    shop_id: number;
 }
 
 export function addMallCartItem(data: MallCartAddPayload) {

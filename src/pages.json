@@ -61,6 +61,12 @@
             "style": {
                 "navigationBarTitleText": "商品详情"
             }
+        },
+        {
+            "path": "pages/wallet/recharge",
+            "style": {
+                "navigationBarTitleText": "充值"
+                        }
         }
     ],
     "globalStyle": {

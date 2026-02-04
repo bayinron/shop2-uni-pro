@@ -35,9 +35,10 @@
       <!-- 上传支付凭证（示意） -->
       <view class="section upload-section">
         <view class="upload-card" @click="onUploadClick">
-          <view class="upload-icon-wrap">
+          <!-- <view class="upload-icon-wrap">
             <text class="icon iconfont icon-camera" />
-          </view>
+          </view> -->
+          <image class="upload-icon" src="/static/img/upload.png" mode="aspectFill" />
           <view class="upload-text-wrap">
             <text class="upload-title">点击上传付款凭证</text>
             <text class="upload-sub">请上传转账截图，方便客服为您核对到账</text>
@@ -215,6 +216,10 @@ function onSubmit() {
   display: flex;
   align-items: center;
   gap: 20rpx;
+  .upload-icon {
+    width: 96rpx;
+    height: 96rpx;
+  }
 }
 
 .upload-icon-wrap {
