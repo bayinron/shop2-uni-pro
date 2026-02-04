@@ -30,30 +30,28 @@
       </view>
       <view class="order-icons">
         <view class="order-icon-item" @click="onOrderStatusClick('pending')">
-          <view class="order-icon-wrap">
+          <!-- <view class="order-icon-wrap">
             <text class="icon iconfont icon-qianbao"></text>
-          </view>
+          </view> -->
+          <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
           <text class="order-icon-text">待付款</text>
           <text class="order-badge" v-if="orderCounts.pending > 0">{{ orderCounts.pending }}</text>
         </view>
         <view class="order-icon-item" @click="onOrderStatusClick('shipping')">
-          <view class="order-icon-wrap">
-            <text class="icon iconfont icon-wuliu"></text>
-          </view>
+          <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
+
           <text class="order-icon-text">待发货</text>
           <text class="order-badge" v-if="orderCounts.shipping > 0">{{ orderCounts.shipping }}</text>
         </view>
         <view class="order-icon-item" @click="onOrderStatusClick('receiving')">
-          <view class="order-icon-wrap">
-            <text class="icon iconfont icon-daishouhuo"></text>
-          </view>
+          <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
+
           <text class="order-icon-text">待收货</text>
           <text class="order-badge" v-if="orderCounts.receiving > 0">{{ orderCounts.receiving }}</text>
         </view>
         <view class="order-icon-item" @click="onOrderStatusClick('refund')">
-          <view class="order-icon-wrap">
-            <text class="icon iconfont icon-tuikuan"></text>
-          </view>
+          <image class="order-icon-img" src="/static/img/my_8.png" mode="aspectFill" />
+
           <text class="order-icon-text">已完成</text>
           <text class="order-badge" v-if="orderCounts.refund > 0">{{ orderCounts.refund }}</text>
         </view>
@@ -332,6 +330,10 @@ function onProductClick(p: Product) {
   flex-direction: column;
   align-items: center;
   position: relative;
+  .order-icon-img {
+    width: 78rpx;
+    height: 78rpx;
+  }
 }
 
 .order-icon-wrap {
