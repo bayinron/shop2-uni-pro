@@ -98,15 +98,14 @@ export const http = <T>(options: UniApp.RequestOptions) => {
                     if (res.data.code == 401) {
                         uni.clearStorage();
                         uni.redirectTo({
-                            url: '/pages/login'
+                            url: '/pages/login/login'
                         });
 
-                        if (res.data.msg) {
-                            uni.showToast({
-                                icon: 'none',
-                                title: res.data.msg || t('请求错误')
-                            });
-                        }
+                        uni.showToast({
+                            icon: 'none',
+                            title: res.data.message || t('请求错误')
+                        });
+
                         reject(res);
                     } else if (res.data.code == 400) {
                         if (res.data.msg == '请先完成实名认证') {

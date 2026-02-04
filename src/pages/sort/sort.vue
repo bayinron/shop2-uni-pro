@@ -40,7 +40,7 @@
             :key="p.id"
             @click="onProductClick(p)"
           >
-            <image class="product-img" :src="url + p.product.cover_image" mode="aspectFill" />
+            <image class="product-img" :src="p.product.cover_image" mode="aspectFill" />
             <view class="product-body">
               <text class="product-title breakcss">{{ p.product.name }}</text>
               <view class="product-row">
@@ -71,6 +71,12 @@ console.log(url);
 onLoad(() => {
   getCategoryTree().then((res: any) => {
     categories.value = res;
+    if(res.length > 0){
+      activeCateId.value = res[0].id;
+      getCategoryProducts(res[0].id).then((res: any) => {
+        currentProducts.value = res.data;
+      });
+    }
   });
 });
 

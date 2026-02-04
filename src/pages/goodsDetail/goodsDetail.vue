@@ -67,13 +67,7 @@
     <view class="detail-section">
       <text class="detail-title">商品详情</text>
       <view class="detail-content">
-        <image
-          v-for="(img, idx) in goodsData.images"
-          :key="idx"
-          class="detail-img"
-          :src="img.url"
-          mode="widthFix"
-        />
+        <image v-for="(img, idx) in goodsData.images" :key="idx" class="detail-img" :src="img.url" mode="widthFix" />
         <text class="detail-text">{{ goodsData.description }}</text>
       </view>
     </view>
@@ -102,7 +96,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { getMallProductDetail } from '@/api/index';
+import { addMallCartItem, getMallCart, getMallProductDetail } from '@/api/index';
 type GoodsData = {
   id: string;
   shop_id: string;
@@ -195,7 +189,7 @@ const goodsData = ref<GoodsData>({
 });
 
 const isFavorite = ref(false);
-const cartCount = ref(3);
+const cartCount = ref(0);
 const selectedPurchaseType = ref('普通购买');
 
 onLoad((options: any) => {
@@ -207,6 +201,7 @@ onLoad((options: any) => {
       console.log(res);
       goodsData.value = res;
     });
+    requestCartCount();
   }
 });
 
@@ -245,12 +240,25 @@ function onCustomerService() {
 }
 
 function onAddToCart() {
-  cartCount.value++;
-  uni.showToast({ title: '已加入购物车', icon: 'success' });
+  addMallCartItem({
+    product_id: parseInt(goodsData.value.id),
+    quantity: 1,
+    selected_sku: goodsData.value.sku || '1',
+    shop_id: parseInt(goodsData.value.shop_id),
+  }).then((res: any) => {
+    uni.showToast({ title: '已加入购物车', icon: 'success' });
+    requestCartCount();
+  });
+}
+
+const requestCartCount = () => {
+  getMallCart().then((res: any) => {
+    cartCount.value = res.length;
+  });
 }
 
 function onBuyNow() {
-  uni.showToast({ title: '跳转到立即购买（测试功能）', icon: 'none' });
+
 }
 </script>
 
