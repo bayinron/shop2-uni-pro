@@ -208,7 +208,9 @@ function onSearchConfirm(e: any) {
 }
 
 function onProductClick(p: Product) {
-  uni.showToast({ title: String(p.title), icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/goodsDetail/goodsDetail?id=' + p.id
+  });
 }
 </script>
 

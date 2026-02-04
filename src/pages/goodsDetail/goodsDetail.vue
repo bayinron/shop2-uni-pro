@@ -4,7 +4,7 @@
     <view class="goods-images">
       <swiper class="swiper" :indicator-dots="true" :autoplay="false" :interval="3000" :duration="500">
         <swiper-item v-for="(img, idx) in goodsData.images" :key="idx">
-          <image class="swiper-img" :src="img" mode="aspectFill" />
+          <image class="swiper-img" :src="img.url" mode="aspectFill" />
         </swiper-item>
       </swiper>
     </view>
@@ -13,12 +13,12 @@
     <view class="price-bar">
       <view class="price-left">
         <text class="price-symbol">￥</text>
-        <text class="price-value">{{ goodsData.price }}</text>
-        <text class="price-original" v-if="goodsData.originalPrice">￥{{ goodsData.originalPrice }}</text>
+        <text class="price-value">{{ goodsData.sale_price }}</text>
+        <text class="price-original" v-if="goodsData.original_price">￥{{ goodsData.original_price }}</text>
       </view>
       <view class="price-center">
         <view class="points-btn" @click="onPointsClick">
-          <text class="points-text">赠送 {{ goodsData.points || 0 }} 积分</text>
+          <text class="points-text">赠送 {{ goodsData.coupon_applicable || 0 }} 积分</text>
         </view>
       </view>
       <view class="price-right">
@@ -30,18 +30,18 @@
 
     <!-- 商品标题 -->
     <view class="goods-title-section">
-      <text class="goods-title">{{ goodsData.title }}</text>
+      <text class="goods-title">{{ goodsData.name }}</text>
     </view>
 
     <!-- 销售和浏览统计 -->
     <view class="stats-section">
       <view class="stat-item">
         <text class="stat-label">销量：</text>
-        <text class="stat-value">{{ goodsData.sales }}</text>
+        <text class="stat-value">{{ goodsData.sold_count }}</text>
       </view>
       <view class="stat-item">
         <text class="stat-label">浏览量：</text>
-        <text class="stat-value">{{ goodsData.views }}</text>
+        <text class="stat-value">{{ goodsData.view_count }}</text>
       </view>
     </view>
 
@@ -68,13 +68,13 @@
       <text class="detail-title">商品详情</text>
       <view class="detail-content">
         <image
-          v-for="(img, idx) in goodsData.detailImages"
+          v-for="(img, idx) in goodsData.images"
           :key="idx"
           class="detail-img"
-          :src="img"
+          :src="img.url"
           mode="widthFix"
         />
-        <text class="detail-text">{{ goodsData.detailText }}</text>
+        <text class="detail-text">{{ goodsData.description }}</text>
       </view>
     </view>
 
@@ -102,38 +102,96 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-
+import { getMallProductDetail } from '@/api/index';
 type GoodsData = {
   id: string;
-  title: string;
-  price: string;
-  originalPrice?: string;
-  points?: number;
-  sales: number;
-  views: number;
-  images: string[];
-  detailImages: string[];
-  detailText: string;
+  shop_id: string;
+  category_id: string;
+  sku: string | null;
+  name: string;
+  description: string;
+  cover_image: string;
+  stock: number;
+  reserved_stock: number;
+  original_price: string;
+  sale_price: string;
+  discount_type: string;
+  discount_value: string;
+  storage_type: string;
+  weight: string;
+  shipping_fee: string;
+  free_shipping_quantity: number | null;
+  free_shipping_amount: number | null;
+  fees: any | null;
+  sold_count: number;
+  view_count: number;
+  display_sold_type: string;
+  display_sold_modifier: string;
+  status: string;
+  is_featured: number;
+  logistics_provider_id: number | null;
+  payment_methods: any | null;
+  coupon_applicable: number;
+  min_purchase_discount: number | null;
+  group_buy_config: any | null;
+  flash_sale_config: any | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  is_unlimited_stock: number;
+  images: Array<{
+    id: string;
+    product_id: string;
+    path: string;
+    storage_driver: string;
+    sort_order: number;
+    is_cover: number;
+    created_at: string;
+    url: string;
+  }>;
+  display_sold_count: number;
 };
 
 const goodsData = ref<GoodsData>({
-  id: '395',
-  title: 'BONOTIE 女士流线型短裤配袜子 2双装 2合1 女士跑步短裤 女士跑步短裤 网球短裤，白色，小号',
-  price: '2066.55',
-  originalPrice: '2999.00',
-  points: 0,
-  sales: 0,
-  views: 1709,
-  images: [
-    '/static/img/clock.png',
-    '/static/img/profit.png',
-    '/static/img/money-bag.png',
-  ],
-  detailImages: [
-    '/static/img/invitebg.png',
-    '/static/img/clock.png',
-  ],
-  detailText: '商品详情：\n这是一款专为女性设计的运动短裤，采用高品质面料制作，舒适透气。包含2双配套袜子，适合跑步、网球等运动。\n\n特点：\n- 流线型设计，贴合身形\n- 透气快干面料\n- 配套袜子，方便搭配\n- 多色可选',
+  id: '',
+  shop_id: '',
+  category_id: '',
+  sku: null,
+  name: '',
+  description: '',
+  cover_image: '',
+  stock: 0,
+  reserved_stock: 0,
+  original_price: '',
+  sale_price: '',
+  discount_type: '',
+  discount_value: '',
+  storage_type: '',
+  weight: '',
+  shipping_fee: '',
+  free_shipping_quantity: null,
+  free_shipping_amount: null,
+  fees: undefined,
+  sold_count: 0,
+  view_count: 0,
+  display_sold_type: '',
+  display_sold_modifier: '',
+  status: '',
+  is_featured: 0,
+  logistics_provider_id: null,
+  payment_methods: undefined,
+  coupon_applicable: 0,
+  min_purchase_discount: null,
+  group_buy_config: undefined,
+  flash_sale_config: undefined,
+  version: 0,
+  created_at: '',
+  updated_at: '',
+  deleted_at: null,
+  is_unlimited_stock: 0,
+  images: [],
+  display_sold_count: 0
 });
 
 const isFavorite = ref(false);
@@ -145,6 +203,10 @@ onLoad((options: any) => {
   if (options.id) {
     // 这里可以根据ID加载商品数据（测试数据）
     console.log('商品ID:', options.id);
+    getMallProductDetail(options.id).then((res: any) => {
+      console.log(res);
+      goodsData.value = res;
+    });
   }
 });
 
