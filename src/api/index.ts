@@ -8,7 +8,31 @@ import type {
 } from './types';
 
 export interface UserInfo {
-    
+    id: number;
+    phone: string;
+    email: string | null;
+    username: string;
+    nickname: string;
+    avatar: string | null;
+    gender: number | null;
+    birthday: string | null;
+    withdraw_status: boolean;
+    status: number;
+    invite_code_status: boolean;
+    level: number;
+    credit_score: number;
+    invite_code: string | null;
+    invited_by_code: string | null;
+    balance: string;
+    last_login_ip: string;
+    last_login_at: string | null;
+    email_verified_at: string | null;
+    phone_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    roles: any[];
+    role_names: string[];
 }
 
 //获取主页配置

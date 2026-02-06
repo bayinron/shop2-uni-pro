@@ -34,6 +34,7 @@ export function createApp() {
     // 初始化用户相关配置
     const userStore = useUserStoreHook();
     // userStore.reqConfig();
+    userStore.reqUserInfo();
     
     return {
         app

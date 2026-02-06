@@ -1,7 +1,8 @@
 <template>
   <view class="mine">
     <!-- 顶部橙色头部 -->
-    <view class="header">
+    <!-- 未登录样式 -->
+    <view v-if="!isLoggedIn" class="header">
       <view class="header-left">
         <view class="logo-box">
           <text class="logo-text">S</text>
@@ -9,13 +10,27 @@
         <text class="brand-text">商城</text>
       </view>
       <view class="header-right">
-        <template v-if="!isLoggedIn">
-          <text class="header-btn" @click="onRegisterAgent">注册代理</text>
-          <text class="header-btn" @click="onLogin">登录</text>
-        </template>
-        <template v-else>
-          <text class="header-btn" @click="onRecharge">充值</text>
-        </template>
+        <text class="header-btn" @click="onRegisterAgent">注册代理</text>
+        <text class="header-btn" @click="onLogin">登录</text>
+      </view>
+    </view>
+
+    <!-- 已登录样式 -->
+    <view v-else class="header header--logged">
+      <view class="header-logged-left">
+        <view class="logo-box">
+          <text class="logo-text">S</text>
+        </view>
+        <view class="header-user-info">
+          <view class="header-user-row">
+            <text class="header-user-account">{{ displayAccount }}</text>
+            <uni-icons type="compose" size="18" color="#000" />
+          </view>
+          <text class="header-user-balance">余额：{{ userBalance }}</text>
+        </view>
+      </view>
+      <view class="header-logged-right">
+        <button class="header-recharge-btn" @click="onRecharge">充值</button>
       </view>
     </view>
 
@@ -71,8 +86,7 @@
       </view>
       <view class="service-btn" @click="onServiceClick('becomeMerchant')">
         <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
-        <text v-if="1==2" class="service-text">申请成为商家</text>
-        <text v-else class="service-text">我的店铺</text>
+        <text class="service-text">我的店铺</text>
       </view>
     </view>
 
@@ -87,12 +101,7 @@
         <view class="recommend-divider"></view>
       </view>
       <view class="recommend-products">
-        <view
-          class="product-item"
-          v-for="p in recommendProducts"
-          :key="p.id"
-          @click="onProductClick(p)"
-        >
+        <view class="product-item" v-for="p in recommendProducts" :key="p.id" @click="onProductClick(p)">
           <image class="product-img" :src="p.img" mode="aspectFill" />
           <text class="product-title">{{ p.title }}</text>
           <view class="product-price-wrap">
@@ -106,8 +115,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import { useUserStoreHook } from '@/stores/modules/userStore';
+import { type UserInfo } from '@/api/index';
 
 type Product = {
   id: string;
@@ -118,6 +129,10 @@ type Product = {
 };
 
 const isLoggedIn = ref(false);
+const userStore = useUserStoreHook();
+const userInfo = computed(() => userStore.getUserInfo() as any);
+const displayAccount = computed(() => userInfo.value.phone || userInfo.value.username || '未登录');
+const userBalance = computed(() => userInfo.value.balance ?? '0');
 
 // 订单数量统计（测试数据）
 const orderCounts = ref({
@@ -190,10 +205,10 @@ function onViewAllOrders() {
 }
 
 function onOrderStatusClick(status: string) {
-    uni.navigateTo({
-      url: '/pages/order/order?status='+status
-    });
-  
+  uni.navigateTo({
+    url: '/pages/order/order?status=' + status
+  });
+
 }
 
 function onServiceClick(type: string) {
@@ -222,6 +237,10 @@ function onProductClick(p: Product) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.header--logged {
+  padding: 40rpx 30rpx 30rpx;
 }
 
 .header-left {
@@ -255,6 +274,50 @@ function onProductClick(p: Product) {
 .header-right {
   display: flex;
   gap: 24rpx;
+}
+
+.header-logged-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-user-info {
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.header-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.header-user-account {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.header-user-balance {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: #fff;
+}
+
+.header-logged-right {
+  display: flex;
+  align-items: center;
+}
+
+.header-recharge-btn {
+  padding: 18rpx 40rpx;
+  border-radius: 40rpx;
+  background: #ff3e6c;
+  color: #fff;
+  font-size: 28rpx;
+  border: none;
 }
 
 .header-btn {
@@ -312,6 +375,7 @@ function onProductClick(p: Product) {
   flex-direction: column;
   align-items: center;
   position: relative;
+
   .order-icon-img {
     width: 78rpx;
     height: 78rpx;
@@ -372,6 +436,7 @@ function onProductClick(p: Product) {
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 
 }
+
 .service-icon-img {
   width: 78rpx;
   height: 78rpx;
