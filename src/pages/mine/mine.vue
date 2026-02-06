@@ -61,22 +61,18 @@
     <!-- 服务按钮 -->
     <view class="service-buttons">
       <view class="service-btn" @click="onServiceClick('customer')">
-        <view class="service-icon-wrap">
-          <text class="icon iconfont icon-vzaixiankefu"></text>
-        </view>
+        <image class="service-icon-img" src="/static/img/kefu.png" mode="aspectFill" />
+
         <text class="service-text">客服</text>
       </view>
       <view class="service-btn" @click="onServiceClick('address')">
-        <view class="service-icon-wrap">
-          <text class="icon iconfont icon-dizhi"></text>
-        </view>
+        <image class="service-icon-img" src="/static/img/dizhi.png" mode="aspectFill" />
         <text class="service-text">地址</text>
       </view>
       <view class="service-btn" @click="onServiceClick('becomeMerchant')">
-        <view class="service-icon-wrap">
-          <text class="icon iconfont icon-shangjia"></text>
-        </view>
-        <text class="service-text">申请成为商家</text>
+        <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
+        <text v-if="1==2" class="service-text">申请成为商家</text>
+        <text v-else class="service-text">我的店铺</text>
       </view>
     </view>
 
@@ -388,6 +384,12 @@ function onProductClick(p: Product) {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+
+}
+.service-icon-img {
+  width: 78rpx;
+  height: 78rpx;
+  margin-bottom: 16rpx;
 }
 
 .service-icon-wrap {

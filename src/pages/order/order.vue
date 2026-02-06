@@ -98,8 +98,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { getMallOrderList, type MallOrderStatus } from '@/api';
 
-type OrderStatus = 'all' | 'pending' | 'paid' | 'shipping' | 'receiving' | 'completed';
+type OrderStatus = MallOrderStatus;
 
 type OrderItem = {
   name: string;
@@ -129,7 +130,7 @@ type Order = {
 const orderTabs = ref<Array<{ key: OrderStatus; text: string }>>([
   { key: 'pending', text: '待付款' },
   { key: 'paid', text: '待发货' },
-  { key: 'shipping', text: '待收货' },
+  { key: 'processing', text: '待收货' },
   { key: 'completed', text: '已完成' },
 ]);
 
@@ -186,8 +187,8 @@ const allOrders = ref<Order[]>([
   {
     id: 'o3',
     no: '202501300003',
-    status: 'shipping',
-    statusText: '待收货',
+    status: 'processing',
+    statusText: '待处理',
     time: '2025-01-28 09:15',
     total: '199.00',
     items: [
@@ -234,7 +235,16 @@ function onBack() {
 
 function onTabClick(key: OrderStatus) {
   activeTab.value = key;
+  let params :any ={
+    status:'pending'
+  };
+  params.status = key;
+  getMallOrderList(params).then((res:any) => {
+    console.log(res);
+    allOrders.value = res.data.data;
+  });
 }
+
 
 function onOrderClick(order: Order) {
   uni.showToast({ title: `查看订单：${order.no}`, icon: 'none' });
@@ -252,9 +262,16 @@ function onActionClick(order: Order, action: OrderAction) {
 }
 onLoad((options: any) => {
   const status = options.status;
+  let params :any ={
+    status:'pending'
+  };
   if (status) {
     activeTab.value = status as OrderStatus;
+    params.status = activeTab.value as MallOrderStatus;
   }
+  getMallOrderList(params).then((res) => {
+    console.log(res);
+  });
 });
 </script>
 
@@ -306,18 +323,23 @@ onLoad((options: any) => {
 .tabs-wrap {
   display: inline-flex;
   padding: 0 20rpx;
+  width: 100%;
 }
 
 .tab-item {
   padding: 24rpx 32rpx;
+  box-sizing: border-box;
+  width:25%;
   position: relative;
   display: inline-block;
+  text-align: center;
 }
 
 .tab-text {
   font-size: 28rpx;
   color: #666;
   transition: color 0.3s;
+  text-align: center;
 }
 
 .tab-item--active .tab-text {
