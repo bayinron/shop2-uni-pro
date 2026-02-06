@@ -98,9 +98,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getMallOrderList, type MallOrderStatus } from '@/api';
+import { onLoad, onReachBottom } from '@dcloudio/uni-app';
+import { getMallOrderList } from '@/api';
 
-type OrderStatus = MallOrderStatus;
+// 本页面使用的订单状态子集
+type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed';
 
 type OrderItem = {
   name: string;
@@ -130,103 +132,33 @@ type Order = {
 const orderTabs = ref<Array<{ key: OrderStatus; text: string }>>([
   { key: 'pending', text: '待付款' },
   { key: 'paid', text: '待发货' },
-  { key: 'processing', text: '待收货' },
+  { key: 'processing', text: '待收货' }, // 对接接口时，可根据实际状态文案调整
   { key: 'completed', text: '已完成' },
 ]);
 
 const activeTab = ref<OrderStatus>('pending');
 
-// 测试订单数据
-const allOrders = ref<Order[]>([
-  {
-    id: 'o1',
-    no: '202501300001',
-    status: 'pending',
-    statusText: '待付款',
-    time: '2025-01-30 10:20',
-    total: '299.00',
-    items: [
-      {
-        name: '时尚连帽卫衣',
-        img: '/static/img/clock.png',
-        price: '199.00',
-        quantity: 1,
-        spec: '颜色：黑色 / 尺码：L',
-      },
-      {
-        name: '休闲运动裤',
-        img: '/static/img/profit.png',
-        price: '100.00',
-        quantity: 1,
-        spec: '颜色：灰色 / 尺码：M',
-      },
-    ],
-    actions: [
-      { key: 'cancel', text: '取消订单', type: 'default' },
-      { key: 'pay', text: '立即付款', type: 'primary' },
-    ],
-  },
-  {
-    id: 'o2',
-    no: '202501300002',
-    status: 'paid',
-    statusText: '待发货',
-    time: '2025-01-29 15:30',
-    total: '459.00',
-    items: [
-      {
-        name: '运动鞋',
-        img: '/static/img/money-bag.png',
-        price: '459.00',
-        quantity: 1,
-        spec: '颜色：白色 / 尺码：42',
-      },
-    ],
-    actions: [{ key: 'contact', text: '联系客服', type: 'default' }],
-  },
-  {
-    id: 'o3',
-    no: '202501300003',
-    status: 'processing',
-    statusText: '待处理',
-    time: '2025-01-28 09:15',
-    total: '199.00',
-    items: [
-      {
-        name: '经典T恤',
-        img: '/static/img/invitebg.png',
-        price: '89.00',
-        quantity: 2,
-        spec: '颜色：白色 / 尺码：L',
-      },
-    ],
-    actions: [
-      { key: 'track', text: '查看物流', type: 'default' },
-      { key: 'confirm', text: '确认收货', type: 'primary' },
-    ],
-  },
-  {
-    id: 'o4',
-    no: '202501300004',
-    status: 'completed',
-    statusText: '已完成',
-    time: '2025-01-27 14:20',
-    total: '599.00',
-    items: [
-      {
-        name: '休闲夹克外套',
-        img: '/static/img/clock.png',
-        price: '599.00',
-        quantity: 1,
-        spec: '颜色：卡其色 / 尺码：XL',
-      },
-    ],
-    actions: [],
-  },
-]);
+const PAGE_SIZE = 10;
+
+type StatusState = {
+  list: Order[];
+  page: number;
+  hasMore: boolean;
+  loading: boolean;
+  loaded: boolean;
+};
+
+type StatusStateMap = Record<OrderStatus, StatusState>;
+
+const statusState = ref<StatusStateMap>({
+  pending: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+  paid: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+  processing: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+  completed: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+});
 
 const currentOrders = computed(() => {
-  return allOrders.value.filter((o) => o.status === activeTab.value);
+  return statusState.value[activeTab.value].list;
 });
 
 function onBack() {
@@ -235,15 +167,74 @@ function onBack() {
 
 function onTabClick(key: OrderStatus) {
   activeTab.value = key;
-  let params :any ={
-    status:'pending'
-  };
-  params.status = key;
-  getMallOrderList(params).then((res:any) => {
-    console.log(res);
-    allOrders.value = res.data.data;
-  });
+  const state = statusState.value[key];
+  // 如果该状态下已经有数据，则不重新请求
+  if (!state.loaded || state.list.length === 0) {
+    loadOrders(key, false);
+  }
 }
+
+function normalizeOrderList(res: any): Order[] {
+  const raw =
+    res?.data?.data ??
+    res?.data?.list ??
+    res?.data ??
+    res?.result ??
+    res?.rows ??
+    res ??
+    [];
+  if (Array.isArray(raw)) return raw as Order[];
+  return [];
+}
+
+function loadOrders(status: OrderStatus, loadMore: boolean) {
+  const state = statusState.value[status];
+  if (state.loading) return;
+  if (loadMore && !state.hasMore) return;
+
+  const nextPage = loadMore ? state.page + 1 : 1;
+
+  state.loading = true;
+  const params: any = {
+    status,
+    page: nextPage,
+    limit: PAGE_SIZE,
+  };
+
+  getMallOrderList(params)
+    .then((res: any) => {
+      const list = normalizeOrderList(res);
+      if (!loadMore) {
+        state.list = list;
+      } else {
+        state.list = state.list.concat(list);
+      }
+      state.page = nextPage;
+      // 如果本次返回数量小于页面大小，认为没有更多
+      state.hasMore = list.length >= PAGE_SIZE;
+      state.loaded = true;
+    })
+    .finally(() => {
+      state.loading = false;
+    });
+}
+
+onLoad((options: any) => {
+  const status = (options.status as OrderStatus) || 'pending';
+  if (orderTabs.value.some((t) => t.key === status)) {
+    activeTab.value = status;
+  } else {
+    activeTab.value = 'pending';
+  }
+  loadOrders(activeTab.value, false);
+});
+
+onReachBottom(() => {
+  const currentStatus = activeTab.value;
+  const state = statusState.value[currentStatus];
+  if (!state.hasMore || state.loading) return;
+  loadOrders(currentStatus, true);
+});
 
 
 function onOrderClick(order: Order) {
@@ -260,19 +251,6 @@ function onActionClick(order: Order, action: OrderAction) {
   };
   uni.showToast({ title: `${actionMap[action.key]}（测试功能）`, icon: 'none' });
 }
-onLoad((options: any) => {
-  const status = options.status;
-  let params :any ={
-    status:'pending'
-  };
-  if (status) {
-    activeTab.value = status as OrderStatus;
-    params.status = activeTab.value as MallOrderStatus;
-  }
-  getMallOrderList(params).then((res) => {
-    console.log(res);
-  });
-});
 </script>
 
 <style lang="scss" scoped>
