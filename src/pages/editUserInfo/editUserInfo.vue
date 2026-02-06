@@ -41,6 +41,13 @@
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
+import {authUpdateMe} from '@/api/index';
+import globalTool from '@/utils/globalTool';
+
+const formData = ref({
+  nickname: '',
+  avatar: '',
+});
 
 const userStore = useUserStoreHook();
 const userInfo = userStore.getUserInfo() as any;
@@ -59,17 +66,12 @@ function onChooseAvatar() {
 }
 
 function onConfirm() {
-  // 测试数据：仅本地更新，不调接口
-  const newInfo = {
-    ...userInfo,
-    nickname: nickname.value,
-    avatar: avatar.value,
-  };
-  userStore.setUserInfo(newInfo);
-  uni.showToast({ title: '保存成功（测试）', icon: 'success' });
-  setTimeout(() => {
-    uni.navigateBack();
-  }, 800);
+
+  authUpdateMe(formData.value).then((res:any) => {
+    globalTool.showToast('保存成功',true);
+    userStore.setUserInfo(res.data);
+    
+  });
 }
 </script>
 
