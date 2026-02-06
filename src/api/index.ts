@@ -800,3 +800,93 @@ export function totpUserUnbind(data: { password: string; code: string }) {
         data
     });
 }
+
+/**
+ * =========================
+ * 收貨地址管理 API
+ * =========================
+ *
+ * 文档中的路径形如：GET /api/user/addresses
+ * 这里统一去掉 `/api/` 前缀，保持与拦截器拼接规则一致：
+ *  - dev:  /api/api/{url}
+ *  - prod: /api/{url}
+ */
+
+export interface UserAddress {
+    id: number;
+    user_id: number;
+    receiver_name: string;
+    receiver_phone: string;
+    province: string;
+    city: string;
+    district: string;
+    address: string;
+    postal_code?: string | null;
+    is_default: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+// 1. 獲取地址列表 - GET /api/user/addresses
+export function getUserAddresses() {
+    return http<{ code: number; message: string; data: UserAddress[] }>({
+        method: 'GET',
+        url: 'user/addresses'
+    });
+}
+
+// 2. 新增地址 - POST /api/user/addresses
+export interface CreateUserAddressPayload {
+    receiver_name: string;
+    receiver_phone: string;
+    province: string;
+    city: string;
+    district: string;
+    address: string;
+    postal_code?: string;
+    is_default?: boolean;
+}
+
+export function createUserAddress(data: CreateUserAddressPayload) {
+    return http<{ code: number; message: string; data: UserAddress }>({
+        method: 'POST',
+        url: 'user/addresses',
+        data
+    });
+}
+
+// 3. 更新地址 - PUT /api/user/addresses/:id
+export interface UpdateUserAddressPayload {
+    receiver_name?: string;
+    receiver_phone?: string;
+    province?: string;
+    city?: string;
+    district?: string;
+    address?: string;
+    postal_code?: string;
+    is_default?: boolean;
+}
+
+export function updateUserAddress(id: number, data: UpdateUserAddressPayload) {
+    return http<{ code: number; message: string; data: null }>({
+        method: 'PUT',
+        url: `user/addresses/${id}`,
+        data
+    });
+}
+
+// 4. 刪除地址 - DELETE /api/user/addresses/:id
+export function deleteUserAddress(id: number) {
+    return http<{ code: number; message: string; data: null }>({
+        method: 'DELETE',
+        url: `user/addresses/${id}`
+    });
+}
+
+// 5. 設為預設地址 - PUT /api/user/addresses/:id/set-default
+export function setDefaultUserAddress(id: number) {
+    return http<{ code: number; message: string; data: null }>({
+        method: 'PUT',
+        url: `user/addresses/${id}/set-default`
+    });
+}

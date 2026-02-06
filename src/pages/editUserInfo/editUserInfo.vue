@@ -66,7 +66,8 @@ function onChooseAvatar() {
 }
 
 function onConfirm() {
-
+  formData.value.nickname = nickname.value;
+  formData.value.avatar = avatar.value;
   authUpdateMe(formData.value).then((res:any) => {
     globalTool.showToast('保存成功',true);
     userStore.setUserInfo(res.data);

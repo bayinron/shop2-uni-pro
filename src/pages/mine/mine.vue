@@ -80,7 +80,7 @@
 
         <text class="service-text">客服</text>
       </view>
-      <view class="service-btn" @click="onServiceClick('address')">
+      <view class="service-btn" @click="addressClick">
         <image class="service-icon-img" src="/static/img/dizhi.png" mode="aspectFill" />
         <text class="service-text">地址</text>
       </view>
@@ -216,7 +216,11 @@ function onOrderStatusClick(status: string) {
   });
 
 }
-
+function addressClick() {
+  uni.navigateTo({
+    url: '/pages/address/list'
+  });
+}
 function onServiceClick(type: string) {
   const typeMap: Record<string, string> = {
     customer: '客服',
@@ -225,6 +229,7 @@ function onServiceClick(type: string) {
   };
   uni.showToast({ title: `${typeMap[type]}（测试功能）`, icon: 'none' });
 }
+
 
 function onProductClick(p: Product) {
   uni.showToast({ title: `查看商品：${p.title}`, icon: 'none' });

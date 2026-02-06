@@ -73,6 +73,12 @@
             "style": {
                 "navigationBarTitleText": "编辑用户信息"
             }
+        },
+        {
+            "path": "pages/address/list",
+            "style": {
+                "navigationBarTitleText": "地址列表"
+            }
         }
     ],
     "globalStyle": {
