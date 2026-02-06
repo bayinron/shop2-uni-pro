@@ -24,7 +24,7 @@
         <view class="header-user-info">
           <view class="header-user-row">
             <text class="header-user-account">{{ displayAccount }}</text>
-            <uni-icons type="compose" size="18" color="#000" />
+            <uni-icons type="compose" size="18" color="#000" @click="onEditUserInfo"/>
           </view>
           <text class="header-user-balance">余额：{{ userBalance }}</text>
         </view>
@@ -191,6 +191,12 @@ function onLogin() {
 function onRecharge() {
   uni.navigateTo({
     url: '/pages/wallet/recharge'
+  });
+}
+
+function onEditUserInfo() {
+  uni.navigateTo({
+    url: '/pages/editUserInfo/editUserInfo'
   });
 }
 

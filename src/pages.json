@@ -67,6 +67,12 @@
             "style": {
                 "navigationBarTitleText": "充值"
                         }
+        },
+        {
+            "path": "pages/editUserInfo/editUserInfo",
+            "style": {
+                "navigationBarTitleText": "编辑用户信息"
+            }
         }
     ],
     "globalStyle": {
