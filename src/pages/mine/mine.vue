@@ -35,25 +35,25 @@
           </view> -->
           <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
           <text class="order-icon-text">待付款</text>
-          <text class="order-badge" v-if="orderCounts.pending > 0">{{ orderCounts.pending }}</text>
+          <!-- <text class="order-badge" v-if="orderCounts.pending > 0">{{ orderCounts.pending }}</text> -->
         </view>
-        <view class="order-icon-item" @click="onOrderStatusClick('shipping')">
+        <view class="order-icon-item" @click="onOrderStatusClick('processing')">
           <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
 
           <text class="order-icon-text">待发货</text>
-          <text class="order-badge" v-if="orderCounts.shipping > 0">{{ orderCounts.shipping }}</text>
+          <!-- <text class="order-badge" v-if="orderCounts.shipping > 0">{{ orderCounts.shipping }}</text> -->
         </view>
-        <view class="order-icon-item" @click="onOrderStatusClick('receiving')">
+        <view class="order-icon-item" @click="onOrderStatusClick('shipped')">
           <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
 
           <text class="order-icon-text">待收货</text>
-          <text class="order-badge" v-if="orderCounts.receiving > 0">{{ orderCounts.receiving }}</text>
+          <!-- <text class="order-badge" v-if="orderCounts.receiving > 0">{{ orderCounts.receiving }}</text> -->
         </view>
-        <view class="order-icon-item" @click="onOrderStatusClick('refund')">
+        <view class="order-icon-item" @click="onOrderStatusClick('completed')">
           <image class="order-icon-img" src="/static/img/my_8.png" mode="aspectFill" />
 
           <text class="order-icon-text">已完成</text>
-          <text class="order-badge" v-if="orderCounts.refund > 0">{{ orderCounts.refund }}</text>
+          <!-- <text class="order-badge" v-if="orderCounts.refund > 0">{{ orderCounts.refund }}</text> -->
         </view>
       </view>
     </view>
@@ -190,24 +190,10 @@ function onViewAllOrders() {
 }
 
 function onOrderStatusClick(status: string) {
-  if (status === 'pending') {
     uni.navigateTo({
-      url: '/pages/order/order?status=pending'
+      url: '/pages/order/order?status='+status
     });
-  } else if (status === 'shipping') {
-    uni.navigateTo({
-      url: '/pages/order/order?status=shipping'
-    });
-  } else if (status === 'receiving') {
-    uni.navigateTo({
-      url: '/pages/order/order?status=receiving'
-    });
-  }
-  else if (status === 'completed') {
-    uni.navigateTo({
-      url: '/pages/order/order?status=completed'
-    });
-  }
+  
 }
 
 function onServiceClick(type: string) {
