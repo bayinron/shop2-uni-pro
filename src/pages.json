@@ -79,6 +79,12 @@
             "style": {
                 "navigationBarTitleText": "地址列表"
             }
+        },
+        {
+            "path": "pages/address/add",
+            "style": {
+                "navigationBarTitleText": "添加地址"
+            }
         }
     ],
     "globalStyle": {

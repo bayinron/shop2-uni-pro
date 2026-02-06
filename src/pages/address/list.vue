@@ -65,7 +65,7 @@ function loadAddresses() {
 function onAddAddress() {
   // 这里先跳转到预留的编辑页面，后续可实现真正的新增/编辑逻辑
   uni.navigateTo({
-    url: '/pages/address/edit',
+    url: '/pages/address/add',
   });
 }
 
