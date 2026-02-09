@@ -61,16 +61,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getMallCart } from '@/api';
-
-const cart = ref<any[]>([]);
-
-onShow(() => {
-  getMallCart().then((res: any) => {
-    cart.value = res.data;
-  });
-});
+import { onShow } from '@dcloudio/uni-app';
+import { getMallCart, updateMallCartItem } from '@/api';
 type CartItem = {
+  /** 购物车项 ID，用于更新数量 */
   id: number;
   title: string;
   price: number;
@@ -86,6 +80,7 @@ type CartShop = {
   items: CartItem[];
 };
 
+// 默认测试数据（接口失败时仍然可以展示）
 const shops = ref<CartShop[]>([
   {
     id: 1,
@@ -94,7 +89,7 @@ const shops = ref<CartShop[]>([
     items: [
       {
         id: 101,
-        title: 'Harley–Davidson Military – Men\'s Graphic Short Sleeve Crew T–Shirt – Overseas To...',
+        title: 'Harley–Davidson Military  ',
         price: 2070,
         qty: 1,
         img: '/static/img/invitebg.png',
@@ -109,7 +104,7 @@ const shops = ref<CartShop[]>([
     items: [
       {
         id: 201,
-        title: 'Anne Klein Women\'s Bracelet Watch and Bracelet Set AK/1470',
+        title: 'Anne Klein Women ',
         price: 2790,
         qty: 1,
         img: '/static/img/clock.png',
@@ -124,7 +119,7 @@ const shops = ref<CartShop[]>([
     items: [
       {
         id: 301,
-        title: 'GUERLAIN Abeille Royale Eye Repair Serum, 0.6 fl oz, 20ml',
+        title: 'GUERLAIN Abeille  ',
         price: 3595,
         qty: 1,
         img: '/static/img/profit.png',
@@ -133,6 +128,47 @@ const shops = ref<CartShop[]>([
     ],
   },
 ]);
+
+// 从接口加载购物车数据并按店铺分组
+onShow(async () => {
+  try {
+    const res: any = await getMallCart();
+    const list: any[] = res?.data || [];
+    if (!Array.isArray(list) || !list.length) return;
+
+    const shopMap: Record<number, CartShop> = {};
+
+    list.forEach((row: any) => {
+      const shopId: number = row.shop_id ?? row.shop?.id ?? 0;
+      const shopName: string = row.shop?.name ?? row.shop_name ?? '店铺';
+
+      if (!shopMap[shopId]) {
+        shopMap[shopId] = {
+          id: shopId,
+          name: shopName,
+          checked: false,
+          items: [],
+        };
+      }
+
+      shopMap[shopId].items.push({
+        id: row.id, // 购物车项 ID
+        title: row.product?.name ?? row.name ?? '商品',
+        price: Number(row.product?.sale_price ?? row.price ?? 0),
+        qty: Number(row.quantity ?? row.qty ?? 1),
+        img: row.product?.images?.[0]?.url ?? '/static/img/empty.svg',
+        checked: false,
+      });
+    });
+
+    const result = Object.values(shopMap);
+    if (result.length) {
+      shops.value = result;
+    }
+  } catch (e) {
+    console.warn('加载购物车失败，使用本地测试数据', e);
+  }
+});
 
 const totalPrice = computed(() => {
   let sum = 0;
@@ -162,11 +198,25 @@ function toggleItem(shop: CartShop, item: CartItem) {
 
 function decreaseQty(shop: CartShop, item: CartItem) {
   if (item.qty <= 1) return;
-  item.qty -= 1;
+  const next = item.qty - 1;
+  updateMallCartItem(item.id, { quantity: next })
+    .then(() => {
+      item.qty = next;
+    })
+    .catch(() => {
+      uni.showToast({ title: '更新数量失败', icon: 'none' });
+    });
 }
 
 function increaseQty(shop: CartShop, item: CartItem) {
-  item.qty += 1;
+  const next = item.qty + 1;
+  updateMallCartItem(item.id, { quantity: next })
+    .then(() => {
+      item.qty = next;
+    })
+    .catch(() => {
+      uni.showToast({ title: '更新数量失败', icon: 'none' });
+    });
 }
 
 function onCheckout() {
