@@ -159,7 +159,7 @@ function onSearchClick() {
 }
 
 function onShopClick(s: ShopItem) {
-  uni.showToast({ title: `进入店铺：${s.name}（测试数据）`, icon: 'none' });
+  uni.navigateTo({ url: `/pages/shop/home?id=${s.id}` });
 }
 
 onLoad(() => {

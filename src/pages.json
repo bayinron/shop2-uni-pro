@@ -85,6 +85,12 @@
             "style": {
                 "navigationBarTitleText": "添加地址"
             }
+        },
+        {
+            "path": "pages/shop/home",
+            "style": {
+                "navigationBarTitleText": "店铺首页"
+            }
         }
     ],
     "globalStyle": {

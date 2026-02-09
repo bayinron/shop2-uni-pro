@@ -42,20 +42,15 @@ import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getUserAddresses, type UserAddress } from '@/api';
 
-const addresses = ref<UserAddress[]>([]);
+const addresses = ref<any[]>([]);
 const loading = ref(false);
 
 function loadAddresses() {
   loading.value = true;
   getUserAddresses()
     .then((res: any) => {
-      const list =
-        res?.data?.data ??
-        res?.data ??
-        res?.result ??
-        res?.rows ??
-        [];
-      addresses.value = Array.isArray(list) ? (list as UserAddress[]) : [];
+      
+      addresses.value = res;
     })
     .finally(() => {
       loading.value = false;
