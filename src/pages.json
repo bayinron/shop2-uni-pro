@@ -87,6 +87,13 @@
             }
         },
         {
+            "path": "pages/cart/cart",
+            "style": {
+                "navigationBarTitleText": "购物车",
+                "navigationStyle": "custom"
+            }
+        },
+        {
             "path": "pages/shop/myShop",
             "style": {
                 "navigationBarTitleText": "我的店铺"
@@ -127,6 +134,12 @@
                 "text": "Sort",
                 "iconPath": "static/tab/fl.png",
                 "selectedIconPath": "static/tab/fl_a.png"
+            },
+            {
+                "pagePath": "pages/cart/cart",
+                "text": "购物车",
+                "iconPath": "static/tab/gwc.png",
+                "selectedIconPath": "static/tab/gwc_a.png"
             },
             {
                 "pagePath": "pages/shop/shop",
