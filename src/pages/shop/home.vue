@@ -120,9 +120,9 @@ onLoad((options: any) => {
   getMallShopDetail(options.id).then((res: any) => {
     shopInfo.value = res.data;
   });
-  getMallShopProducts(options.id, { page: 1, limit: 10 }).then((res: any) => {
-    goodsList.value = res.data;
-  });
+//   getMallShopProducts(options.id, { page: 1, limit: 10 }).then((res: any) => {
+//     goodsList.value = res.data;
+//   });
 });
 </script>
 

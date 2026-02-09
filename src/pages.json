@@ -87,6 +87,12 @@
             }
         },
         {
+            "path": "pages/shop/myShop",
+            "style": {
+                "navigationBarTitleText": "我的店铺"
+            }
+        },
+        {
             "path": "pages/shop/home",
             "style": {
                 "navigationBarTitleText": "店铺首页"

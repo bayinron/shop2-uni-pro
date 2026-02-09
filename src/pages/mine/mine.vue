@@ -84,7 +84,7 @@
         <image class="service-icon-img" src="/static/img/dizhi.png" mode="aspectFill" />
         <text class="service-text">地址</text>
       </view>
-      <view class="service-btn" @click="onServiceClick('becomeMerchant')">
+      <view class="service-btn" @click="goMyShop">
         <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
         <text class="service-text">我的店铺</text>
       </view>
@@ -233,6 +233,12 @@ function onServiceClick(type: string) {
 
 function onProductClick(p: Product) {
   uni.showToast({ title: `查看商品：${p.title}`, icon: 'none' });
+}
+
+function goMyShop() {
+  uni.navigateTo({
+    url: '/pages/shop/myShop',
+  });
 }
 </script>
 
