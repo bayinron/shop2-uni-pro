@@ -890,3 +890,21 @@ export function setDefaultUserAddress(id: number) {
         url: `user/addresses/${id}/set-default`
     });
 }
+
+
+// 0.3 獲取商鋪分類列表
+export function getShopCategories() {
+    return http<any>({
+        method: 'GET',
+        url: 'mall/shop-categories'
+    });
+}
+
+// 0.4 獲取指定分類下的商鋪列表
+export function getShopCategoryShops(params: { page?: number; limit?: number; keyword?: string; category_id?: number }) {
+    return http<any>({
+        method: 'GET',
+        url: `mall/shop-categories/${params.category_id}/shops`,
+        data: params
+    });
+}

@@ -9,7 +9,7 @@
           :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
           @click="onCateClick(c)"
         >
-          <text class="nav-text">{{ c.name }}</text>
+          <text class="nav-text">{{ c.slug }}</text>
         </view>
       </view>
     </scroll-view>
@@ -38,7 +38,7 @@
         @click="onShopClick(s)"
       >
         <view class="shop-card-inner">
-          <image class="shop-logo" :src="s.logo" mode="aspectFill" />
+          <image class="shop-logo" :src="s.logo || '/static/img/empty.svg'" mode="aspectFill" />
           <view class="shop-main">
             <text class="shop-name">{{ s.name }}</text>
             <text class="shop-sub">{{ s.tagline }}</text>
@@ -60,6 +60,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { getShopCategories, getShopCategoryShops } from '@/api';
+
 
 type Category = {
   id: number;
@@ -76,14 +78,7 @@ type ShopItem = {
 
 const placeholderText = '请输入店铺名称';
 
-const categories = ref<Category[]>([
-  { id: 1, name: '推荐' },
-  { id: 2, name: '服饰鞋包' },
-  { id: 3, name: '家居日用' },
-  { id: 4, name: '美妆个护' },
-  { id: 5, name: '数码电器' },
-  { id: 6, name: '母婴玩具' },
-  { id: 7, name: '食品饮料' },
+const categories = ref<any[]>([
 ]);
 
 const shops = ref<ShopItem[]>([
@@ -145,6 +140,9 @@ const filteredShops = computed(() => {
 
 function onCateClick(c: Category) {
   activeCateId.value = c.id;
+  getShopCategoryShops({ category_id: activeCateId.value }).then((res: any) => {
+    shops.value = res.data;
+  });
 }
 
 function onSearchConfirm(e: any) {
@@ -163,6 +161,18 @@ function onSearchClick() {
 function onShopClick(s: ShopItem) {
   uni.showToast({ title: `进入店铺：${s.name}（测试数据）`, icon: 'none' });
 }
+
+onLoad(() => {
+  getShopCategories().then((res: any) => {
+    categories.value = res;
+    if(categories.value.length > 0){
+      activeCateId.value = categories.value[0].id;
+    }
+    getShopCategoryShops({ category_id: activeCateId.value }).then((res: any) => {
+      shops.value = res.data;
+    });
+  });
+}); 
 </script>
 
 <style scoped lang="scss">

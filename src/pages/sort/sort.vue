@@ -40,7 +40,7 @@
             :key="p.id"
             @click="onProductClick(p)"
           >
-            <image class="product-img" :src="p.product.cover_image" mode="aspectFill" />
+            <image class="product-img" :src="p.product.images?.[0]?.url || '/static/img/empty.svg'" mode="aspectFill" />
             <view class="product-body">
               <text class="product-title breakcss">{{ p.product.name }}</text>
               <view class="product-row">
@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getCategoryTree, getCategoryProducts } from '@/api';
+import { getCategoryTree, getShopCategoryShops } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 
 const userStore = useUserStore();
@@ -73,7 +73,7 @@ onLoad(() => {
     categories.value = res;
     if(res.length > 0){
       activeCateId.value = res[0].id;
-      getCategoryProducts(res[0].id).then((res: any) => {
+      getShopCategoryShops(res[0].id).then((res: any) => {
         currentProducts.value = res.data;
       });
     }
