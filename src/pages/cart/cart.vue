@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
-import { getMallCart, updateMallCartItem } from '@/api';
+import { getMallCart, getUserAddresses, updateMallCartItem } from '@/api';
 type CartItem = {
   /** 购物车项 ID，用于更新数量 */
   id: number;
@@ -209,13 +209,62 @@ function increaseQty(shop: CartShop, item: CartItem) {
     });
 }
 
-function onCheckout() {
+async function onCheckout() {
   if (!totalPrice.value) {
     uni.showToast({ title: '请先选择要结算的商品', icon: 'none' });
     return;
   }
-  // TODO: 跳转到结算页面
-  uni.showToast({ title: `总金额 ฿${totalPrice.value}`, icon: 'none' });
+
+  // 收集选中的商品数据
+  const selectedItems: CartItem[] = [];
+  const cartIds: number[] = [];
+  let currentShopId: number | null = null;
+
+  for (const shop of shops.value) {
+    for (const item of shop.items) {
+      if (item.checked) {
+        if (currentShopId === null) {
+          currentShopId = shop.id;
+        }
+        // 如果跨店铺，提示只能选择同一店铺的商品
+        if (currentShopId !== shop.id) {
+          uni.showToast({ title: '请选择同一店铺的商品', icon: 'none' });
+          return;
+        }
+        selectedItems.push(item);
+        cartIds.push(item.id);
+      }
+    }
+  }
+
+  if (!selectedItems.length || !currentShopId) {
+    uni.showToast({ title: '请先选择要结算的商品', icon: 'none' });
+    return;
+  }
+
+  // 检查地址
+  try {
+    const res: any = await getUserAddresses();
+    const addresses: any[] = res?.data || res || [];
+    if (!addresses.length) {
+      uni.showToast({ title: '请先添加收货地址', icon: 'none' });
+      setTimeout(() => {
+        uni.navigateTo({
+          url: '/pages/address/add',
+        });
+      }, 1500);
+      return;
+    }
+  } catch (e) {
+    console.error('获取地址失败', e);
+  }
+
+  // 跳转到订单创建页面
+  const itemsStr = encodeURIComponent(JSON.stringify(selectedItems));
+  const cartIdsStr = encodeURIComponent(JSON.stringify(cartIds));
+  uni.navigateTo({
+    url: `/pages/order/create?items=${itemsStr}&shopId=${currentShopId}&cartIds=${cartIdsStr}`,
+  });
 }
 </script>
 

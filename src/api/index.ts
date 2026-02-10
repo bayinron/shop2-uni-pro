@@ -829,7 +829,7 @@ export interface UserAddress {
 
 // 1. 獲取地址列表 - GET /api/user/addresses
 export function getUserAddresses() {
-    return http<{ code: number; message: string; data: UserAddress[] }>({
+    return http<any[]>({
         method: 'GET',
         url: 'user/addresses'
     });
