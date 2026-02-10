@@ -81,50 +81,7 @@ const placeholderText = '请输入店铺名称';
 const categories = ref<any[]>([
 ]);
 
-const shops = ref<ShopItem[]>([
-  {
-    id: 1,
-    name: '小幸旗舰店',
-    logo: '/static/img/invitebg.png',
-    tagline: '主营：服饰 / 鞋靴 / 箱包配件',
-    categoryId: 2,
-  },
-  {
-    id: 2,
-    name: '暖心生活馆',
-    logo: '/static/img/clock.png',
-    tagline: '主营：家居日用 / 清洁收纳',
-    categoryId: 3,
-  },
-  {
-    id: 3,
-    name: '美丽研究所',
-    logo: '/static/img/profit.png',
-    tagline: '主营：美妆护肤 / 个护清洁',
-    categoryId: 4,
-  },
-  {
-    id: 4,
-    name: '数码优选店',
-    logo: '/static/img/money-bag.png',
-    tagline: '主营：手机配件 / 智能设备',
-    categoryId: 5,
-  },
-  {
-    id: 5,
-    name: '萌宝母婴馆',
-    logo: '/static/img/clock.png',
-    tagline: '主营：母婴用品 / 玩具图书',
-    categoryId: 6,
-  },
-  {
-    id: 6,
-    name: '零食派对屋',
-    logo: '/static/img/profit.png',
-    tagline: '主营：休闲零食 / 饮料冲调',
-    categoryId: 7,
-  },
-]);
+const shops = ref<ShopItem[]>([]);
 
 const activeCateId = ref<number>(1);
 const keyword = ref<string>('');

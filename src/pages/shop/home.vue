@@ -6,13 +6,13 @@
       <view class="shop-header-main">
         <image
           class="shop-avatar"
-          src="/static/img/invitebg.png"
+          :src="shopInfo.logo || '/static/img/invitebg.png'"
           mode="aspectFill"
         />
         <view class="shop-header-info">
-          <text class="shop-title">แม่ค้ามือใหม่</text>
-          <view class="shop-tag-wrap">
-            <text class="shop-tag">好店推荐</text>
+          <text class="shop-title">{{ shopInfo.name || '店铺名称' }}</text>
+          <view class="shop-tag-wrap" v-if="shopInfo.rating">
+            <text class="shop-tag">评分 {{ shopInfo.rating }}</text>
           </view>
         </view>
       </view>
@@ -20,7 +20,14 @@
 
     <!-- 商品瀑布流（两列） -->
     <scroll-view scroll-y class="goods-scroll">
-      <view class="goods-grid">
+      <!-- 空状态 -->
+      <view v-if="!goodsList.length" class="empty-goods">
+        <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
+        <text class="empty-text">暂无商品</text>
+      </view>
+
+      <!-- 商品列表 -->
+      <view v-else class="goods-grid">
         <view
           v-for="item in goodsList"
           :key="item.id"
@@ -43,9 +50,6 @@
           </view>
         </view>
       </view>
-      <view class="goods-footer">
-        <text class="goods-footer-text">以上为测试数据展示</text>
-      </view>
     </scroll-view>
   </view>
 </template>
@@ -55,74 +59,55 @@ import { getMallShopDetail, getMallShopProducts } from '@/api';
 import { ref } from 'vue';
 
 type Goods = {
-  id: number;
+  id: number | string;
   title: string;
-  price: string;
+  price: string | number;
   sold: number;
   img: string;
 };
 
-const goodsList = ref<Goods[]>([
-  {
-    id: 1,
-    title: "REORIA Women's Sexy Sleeveless Racer Back...",
-    price: '686.23',
-    sold: 0,
-    img: '/static/img/invitebg.png',
-  },
-  {
-    id: 2,
-    title: 'Women',
-    price: '943.76',
-    sold: 6,
-    img: '/static/img/clock.png',
-  },
-  {
-    id: 3,
-    title: 'Vetinee Women’s Oversized Button Up...',
-    price: '1297.81',
-    sold: 0,
-    img: '/static/img/profit.png',
-  },
-  {
-    id: 4,
-    title: 'Summer Casual Denim Shirt',
-    price: '799.00',
-    sold: 3,
-    img: '/static/img/money-bag.png',
-  },
-  {
-    id: 5,
-    title: 'Basic Cotton Tank Top',
-    price: '299.99',
-    sold: 12,
-    img: '/static/img/invitebg.png',
-  },
-  {
-    id: 6,
-    title: 'Daily Wear Fashion Jacket',
-    price: '1120.50',
-    sold: 5,
-    img: '/static/img/clock.png',
-  },
-]);
+// 商品列表（从服务器加载）
+const goodsList = ref<Goods[]>([]);
 
 function onGoodsClick(item: Goods) {
-  uni.showToast({
-    title: `查看：${item.title}（测试）`,
-    icon: 'none',
+  uni.navigateTo({
+    url: `/pages/goodsDetail/goodsDetail?id=${item.id}`,
   });
 }
 
 const shopInfo = ref<any>({});
-onLoad((options: any) => {
+onLoad(async (options: any) => {
   console.log(options);
-  getMallShopDetail(options.id).then((res: any) => {
-    shopInfo.value = res.data;
-  });
-//   getMallShopProducts(options.id, { page: 1, limit: 10 }).then((res: any) => {
-//     goodsList.value = res.data;
-//   });
+  try {
+    // 加载店铺详情
+    const shopRes: any = await getMallShopDetail(options.id);
+    shopInfo.value = shopRes?.data || shopRes || {};
+    
+    // 更新店铺头部信息
+    if (shopInfo.value.name) {
+      // 可以在这里更新店铺名称等
+    }
+    if (shopInfo.value.logo) {
+      // 可以在这里更新店铺logo
+    }
+
+    // 加载商品列表
+    const productsRes: any = await getMallShopProducts(options.id, { page: 1, limit: 20 });
+    const products: any[] = productsRes?.data || productsRes || [];
+    
+    // 映射服务器返回的数据到前端需要的格式
+    goodsList.value = products.map((item: any) => ({
+      id: item.id || item.product_id || 0,
+      title: item.name || item.title || item.product?.name || '商品',
+      price: item.sale_price || item.price || item.product?.sale_price || 0,
+      sold: item.sold_count || item.sold || item.product?.sold_count || 0,
+      img: item.images?.[0]?.url || item.image_url || item.product?.images?.[0]?.url || '/static/img/empty.svg',
+    }));
+  } catch (e) {
+    console.error('加载店铺数据失败', e);
+    uni.showToast({ title: '加载失败', icon: 'none' });
+    goodsList.value = [];
+  }
 });
 </script>
 
@@ -238,15 +223,22 @@ onLoad((options: any) => {
   color: #999999;
 }
 
-.goods-footer {
-  margin-top: 20rpx;
+.empty-goods {
+  padding: 120rpx 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  display: flex;
 }
 
-.goods-footer-text {
-  font-size: 22rpx;
+.empty-img {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
   color: #999;
 }
 </style>
