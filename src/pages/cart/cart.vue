@@ -1,6 +1,13 @@
 <template>
   <view class="cart-page">
     <scroll-view class="cart-scroll" scroll-y>
+      <!-- 空状态 -->
+      <view v-if="!shops.length" class="empty-cart">
+        <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
+        <text class="empty-text">购物车是空的</text>
+      </view>
+
+      <!-- 购物车列表 -->
       <view
         v-for="shop in shops"
         :key="shop.id"
@@ -80,93 +87,76 @@ type CartShop = {
   items: CartItem[];
 };
 
-// 默认测试数据（接口失败时仍然可以展示）
-const shops = ref<CartShop[]>([
-  {
-    id: 1,
-    name: 'BALE',
-    checked: true,
-    items: [
-      {
-        id: 101,
-        title: 'Harley–Davidson Military  ',
-        price: 2070,
-        qty: 1,
-        img: '/static/img/invitebg.png',
-        checked: true,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'BANK',
-    checked: false,
-    items: [
-      {
-        id: 201,
-        title: 'Anne Klein Women ',
-        price: 2790,
-        qty: 1,
-        img: '/static/img/clock.png',
-        checked: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'first',
-    checked: false,
-    items: [
-      {
-        id: 301,
-        title: 'GUERLAIN Abeille  ',
-        price: 3595,
-        qty: 1,
-        img: '/static/img/profit.png',
-        checked: false,
-      },
-    ],
-  },
-]);
+// 购物车数据（从服务器加载）
+const shops = ref<CartShop[]>([]);
 
 // 从接口加载购物车数据并按店铺分组
 onShow(async () => {
   try {
     const res: any = await getMallCart();
-    const list: any[] = res?.data || [];
-    if (!Array.isArray(list) || !list.length) return;
+    const data = res || {};
+    
+    // 数据结构：{ items: [], shops: [], group_by_shop: {} }
+    const items: any[] = data.items || [];
+    const shopsList: any[] = data.shops || [];
+    const groupByShop: Record<string, number[]> = data.group_by_shop || {};
 
+    if (!items.length || !shopsList.length) return;
+
+    // 创建商品映射表（cart_item_id => item）
+    const itemMap: Record<number, any> = {};
+    items.forEach((item: any) => {
+      itemMap[item.id] = item;
+    });
+
+    // 创建店铺映射表（shop_id => shop）
+    const shopInfoMap: Record<number, any> = {};
+    shopsList.forEach((shop: any) => {
+      shopInfoMap[shop.id] = shop;
+    });
+
+    // 根据 group_by_shop 构建店铺购物车结构
     const shopMap: Record<number, CartShop> = {};
 
-    list.forEach((row: any) => {
-      const shopId: number = row.shop_id ?? row.shop?.id ?? 0;
-      const shopName: string = row.shop?.name ?? row.shop_name ?? '店铺';
+    Object.keys(groupByShop).forEach((shopIdStr: string) => {
+      const shopId = Number(shopIdStr);
+      const cartItemIds: number[] = groupByShop[shopIdStr] || [];
+      const shopInfo = shopInfoMap[shopId];
 
-      if (!shopMap[shopId]) {
+      if (!shopInfo) return;
+
+      const cartItems: CartItem[] = [];
+
+      cartItemIds.forEach((cartItemId: number) => {
+        const item = itemMap[cartItemId];
+        if (!item) return;
+
+        cartItems.push({
+          id: item.id, // 购物车项 ID
+          title: item.product?.name ?? '商品',
+          price: Number(item.product?.sale_price ?? 0),
+          qty: Number(item.quantity ?? 1),
+          img: item.product?.images?.[0]?.url ?? '/static/img/empty.svg',
+          checked: false,
+        });
+      });
+
+      if (cartItems.length > 0) {
         shopMap[shopId] = {
           id: shopId,
-          name: shopName,
+          name: shopInfo.name ?? '店铺',
           checked: false,
-          items: [],
+          items: cartItems,
         };
       }
-
-      shopMap[shopId].items.push({
-        id: row.id, // 购物车项 ID
-        title: row.product?.name ?? row.name ?? '商品',
-        price: Number(row.product?.sale_price ?? row.price ?? 0),
-        qty: Number(row.quantity ?? row.qty ?? 1),
-        img: row.product?.images?.[0]?.url ?? '/static/img/empty.svg',
-        checked: false,
-      });
     });
 
     const result = Object.values(shopMap);
-    if (result.length) {
-      shops.value = result;
-    }
+    shops.value = result;
   } catch (e) {
-    console.warn('加载购物车失败，使用本地测试数据', e);
+    console.error('加载购物车失败', e);
+    uni.showToast({ title: '加载购物车失败', icon: 'none' });
+    shops.value = [];
   }
 });
 
@@ -224,7 +214,8 @@ function onCheckout() {
     uni.showToast({ title: '请先选择要结算的商品', icon: 'none' });
     return;
   }
-  uni.showToast({ title: `测试结算，总金额 ฿${totalPrice.value}`, icon: 'none' });
+  // TODO: 跳转到结算页面
+  uni.showToast({ title: `总金额 ฿${totalPrice.value}`, icon: 'none' });
 }
 </script>
 
@@ -392,6 +383,25 @@ function onCheckout() {
   color: #ffffff;
   font-size: 30rpx;
   border: none;
+}
+
+.empty-cart {
+  padding: 120rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-img {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
 }
 </style>
 
