@@ -78,6 +78,61 @@
       <view class="banner-wrap">
         <image class="banner-img" src="/static/img/invitebg.png" mode="aspectFill" />
       </view>
+
+      <!-- 必备工具 -->
+      <view class="tools-card">
+        <text class="tools-title">必备工具</text>
+        <view class="tools-grid">
+          <view class="tool-item" @click="onToolClick('invite')">
+            <view class="tool-icon">
+              <uni-icons type="email" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">邀请好友</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('address')">
+            <view class="tool-icon">
+              <uni-icons type="location" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">收货地址</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('order')">
+            <view class="tool-icon">
+              <uni-icons type="list" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">订单管理</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('service')">
+            <view class="tool-icon">
+              <uni-icons type="chatbubble" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">联系客服</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('wholesale')">
+            <view class="tool-icon">
+              <uni-icons type="shop" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">批发中心</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('product')">
+            <view class="tool-icon">
+              <uni-icons type="bag" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">商品管理</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('password')">
+            <view class="tool-icon">
+              <uni-icons type="locked" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">修改支付密码</text>
+          </view>
+          <view class="tool-item" @click="onToolClick('logout')">
+            <view class="tool-icon">
+              <uni-icons type="loop" size="40" color="#ff6b9d" />
+            </view>
+            <text class="tool-text">退出登录</text>
+          </view>
+        </view>
+      </view>
     </scroll-view>
   </view>
 </template>
@@ -111,6 +166,22 @@ function goWallet() {
   uni.navigateTo({
     url: '/pages/wallet/recharge',
   });
+}
+
+function onToolClick(type: string) {
+  if (type === 'invite') {
+    uni.navigateTo({
+      url: '/pages/invite/invite',
+    });
+  } else if (type === 'address') {
+    uni.navigateTo({
+      url: '/pages/address/list',
+    });
+  }else if (type === 'product') {
+    uni.navigateTo({
+      url: '/pages/shop/productManage',
+    });
+  }
 }
 </script>
 
@@ -327,5 +398,47 @@ function goWallet() {
   width: 100%;
   height: 260rpx;
 }
-</style>
 
+.tools-card {
+  margin-top: 20rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.tools-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 24rpx;
+  display: block;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx 0;
+}
+
+.tool-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tool-icon {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.tool-text {
+  font-size: 24rpx;
+  color: #333333;
+  text-align: center;
+}
+</style>

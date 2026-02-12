@@ -30,12 +30,7 @@
     </view>
 
     <!-- 店铺列表 -->
-    <scroll-view 
-      class="list-scroll" 
-      scroll-y
-      @scrolltolower="onLoadMore"
-      :lower-threshold="100"
-    >
+    <view class="list-scroll">
       <view
         v-for="s in shops"
         :key="s.id"
@@ -70,12 +65,13 @@
         <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
         <text class="empty-text">暂无符合条件的店铺</text>
       </view>
-    </scroll-view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { onReachBottom } from '@dcloudio/uni-app';
 import { getShopCategories, getShopCategoryShops } from '@/api';
 
 
@@ -175,12 +171,12 @@ function onSearchClick() {
   loadShops(true);
 }
 
-// 上拉加载更多
-function onLoadMore() {
+// 上拉加载更多（使用页面生命周期 onReachBottom）
+onReachBottom(() => {
   if (!loading.value && hasMore.value) {
     loadShops(false);
   }
-}
+});
 
 function onShopClick(s: ShopItem) {
   uni.navigateTo({ url: `/pages/shop/home?id=${s.id}` });

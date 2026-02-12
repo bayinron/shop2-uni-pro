@@ -110,6 +110,13 @@
             "style": {
                 "navigationBarTitleText": "店铺首页"
             }
+        },
+        {
+            "path": "pages/shop/productManage",
+            "style": {
+                "navigationBarTitleText": "商品管理",
+                "navigationStyle": "custom"
+            }
         }
     ],
     "globalStyle": {

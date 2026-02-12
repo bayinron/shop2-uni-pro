@@ -81,10 +81,10 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
     // 1. 返回 Promise 对象
     return new Promise<Data<T>>((resolve, reject) => {
         if (!options.noLoading) {
-            uni.showLoading({
-                title: t('加载中'),
-                mask: true
-            });
+        uni.showLoading({
+            title: t('加载中'),
+            mask: true
+        });
         }
         uni.request({
             ...options,

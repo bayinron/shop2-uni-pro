@@ -19,15 +19,15 @@
     </view>
 
     <!-- 商品瀑布流（两列） -->
-    <scroll-view scroll-y class="goods-scroll">
+    <view class="goods-scroll">
       <!-- 空状态 -->
-      <view v-if="!goodsList.length" class="empty-goods">
+      <view v-if="!goodsList.length && !loading" class="empty-goods">
         <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
         <text class="empty-text">暂无商品</text>
       </view>
 
       <!-- 商品列表 -->
-      <view v-else class="goods-grid">
+      <view v-if="goodsList.length" class="goods-grid">
         <view
           v-for="item in goodsList"
           :key="item.id"
@@ -50,13 +50,24 @@
           </view>
         </view>
       </view>
-    </scroll-view>
+
+      <!-- 加载更多提示 -->
+      <view v-if="loading" class="loading-more">
+        <text class="loading-text">加载中...</text>
+      </view>
+
+      <!-- 没有更多数据提示 -->
+      <view v-if="!hasMore && goodsList.length > 0" class="no-more">
+        <text class="no-more-text">没有更多了</text>
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { getMallShopDetail, getMallShopProducts } from '@/api';
 import { ref } from 'vue';
+import { onReachBottom } from '@dcloudio/uni-app';
 
 type Goods = {
   id: number | string;
@@ -68,6 +79,14 @@ type Goods = {
 
 // 商品列表（从服务器加载）
 const goodsList = ref<Goods[]>([]);
+const shopInfo = ref<any>({});
+const shopId = ref<number>(0);
+
+// 分页相关
+const page = ref<number>(1);
+const limit = ref<number>(20);
+const hasMore = ref<boolean>(true);
+const loading = ref<boolean>(false);
 
 function onGoodsClick(item: Goods) {
   uni.navigateTo({
@@ -75,27 +94,73 @@ function onGoodsClick(item: Goods) {
   });
 }
 
-const shopInfo = ref<any>({});
-onLoad(async (options: any) => {
-  console.log(options);
-  try {
-    // 加载店铺详情
-    const shopRes: any = await getMallShopDetail(options.id);
-    shopInfo.value = shopRes;
-  
+// 加载商品列表
+async function loadProducts(reset: boolean = false) {
+  if (loading.value) return;
+  if (!hasMore.value && !reset) return;
+  if (!shopId.value) return;
 
-    // 加载商品列表
-    const productsRes: any = await getMallShopProducts(options.id, { page: 1, limit: 20 });
+  if (reset) {
+    page.value = 1;
+    hasMore.value = true;
+    goodsList.value = [];
+  }
+
+  loading.value = true;
+  try {
+    const productsRes: any = await getMallShopProducts(shopId.value, {
+      page: page.value,
+      limit: limit.value,
+    });
+
     const products: any[] = productsRes?.data || productsRes || [];
-    
+
     // 映射服务器返回的数据到前端需要的格式
-    goodsList.value = products.map((item: any) => ({
+    const newProducts = products.map((item: any) => ({
       id: item.id || item.product_id || 0,
       title: item.name || item.title || item.product?.name || '商品',
       price: item.sale_price || item.price || item.product?.sale_price || 0,
       sold: item.sold_count || item.sold || item.product?.sold_count || 0,
       img: item.images?.[0]?.url || item.image_url || item.product?.images?.[0]?.url || '/static/img/empty.svg',
     }));
+
+    if (reset) {
+      goodsList.value = newProducts;
+    } else {
+      goodsList.value = [...goodsList.value, ...newProducts];
+    }
+
+    // 判断是否还有更多数据
+    hasMore.value = newProducts.length >= limit.value;
+    if (hasMore.value) {
+      page.value += 1;
+    }
+  } catch (e) {
+    console.error('加载商品列表失败', e);
+    uni.showToast({ title: '加载失败', icon: 'none' });
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 上拉加载更多（使用页面生命周期 onReachBottom）
+onReachBottom(() => {
+  if (!loading.value && hasMore.value) {
+    loadProducts(false);
+  }
+});
+
+onLoad(async (options: any) => {
+  console.log(options);
+  shopId.value = Number(options.id) || 0;
+  
+  try {
+    // 加载店铺详情
+    const shopRes: any = await getMallShopDetail(options.id);
+    shopInfo.value = shopRes?.data || shopRes || {};
+
+    // 加载商品列表
+    loadProducts(true);
   } catch (e) {
     console.error('加载店铺数据失败', e);
     uni.showToast({ title: '加载失败', icon: 'none' });
@@ -233,6 +298,26 @@ onLoad(async (options: any) => {
 .empty-text {
   font-size: 28rpx;
   color: #999;
+}
+
+.loading-more {
+  padding: 30rpx 0;
+  text-align: center;
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.no-more {
+  padding: 30rpx 0;
+  text-align: center;
+}
+
+.no-more-text {
+  font-size: 24rpx;
+  color: #ccc;
 }
 </style>
 

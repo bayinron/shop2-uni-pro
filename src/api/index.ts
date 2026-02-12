@@ -919,3 +919,19 @@ export function getShopCategoryShops(params: { page?: number; limit?: number; ke
         data: params
     });
 }
+
+// 0.5 獲取我的商品列表 - GET /api/mall/my-shop/products
+export interface MyShopProductsParams {
+    page?: number;
+    limit?: number;
+    is_selling?: boolean;
+    keyword?: string;
+}
+
+export function getMyShopProducts(params: MyShopProductsParams = {}) {
+    return http<any>({
+        method: 'GET',
+        url: 'mall/my-shop/products',
+        data: params
+    });
+}
