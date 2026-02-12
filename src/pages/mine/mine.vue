@@ -84,9 +84,13 @@
         <image class="service-icon-img" src="/static/img/dizhi.png" mode="aspectFill" />
         <text class="service-text">地址</text>
       </view>
-      <view class="service-btn" @click="goMyShop">
+      <view v-if="1==2" class="service-btn" @click="goMyShop">
         <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
         <text class="service-text">我的店铺</text>
+      </view>
+      <view v-else class="service-btn" @click="goApply">
+        <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
+        <text class="service-text">申请成为商家</text>
       </view>
     </view>
 
@@ -238,6 +242,12 @@ function onProductClick(p: Product) {
 function goMyShop() {
   uni.navigateTo({
     url: '/pages/shop/myShop',
+  });
+}
+
+function goApply() {
+  uni.navigateTo({
+    url: '/pages/shop/apply',
   });
 }
 </script>

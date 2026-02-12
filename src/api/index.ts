@@ -935,3 +935,21 @@ export function getMyShopProducts(params: MyShopProductsParams = {}) {
         data: params
     });
 }
+
+// 0.6 申請成為商家 - POST /api/mall/shops/apply
+export interface ApplyShopPayload {
+    name: string;
+    category_id: number;
+    owner_name: string;
+    avatar: string;
+    id_photo_front: string;
+    id_photo_back: string;
+}
+
+export function applyShop(data: ApplyShopPayload) {
+    return http<any>({
+        method: 'POST',
+        url: 'mall/shops/apply',
+        data
+    });
+}
