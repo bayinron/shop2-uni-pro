@@ -81,15 +81,8 @@ onLoad(async (options: any) => {
   try {
     // 加载店铺详情
     const shopRes: any = await getMallShopDetail(options.id);
-    shopInfo.value = shopRes?.data || shopRes || {};
-    
-    // 更新店铺头部信息
-    if (shopInfo.value.name) {
-      // 可以在这里更新店铺名称等
-    }
-    if (shopInfo.value.logo) {
-      // 可以在这里更新店铺logo
-    }
+    shopInfo.value = shopRes;
+  
 
     // 加载商品列表
     const productsRes: any = await getMallShopProducts(options.id, { page: 1, limit: 20 });

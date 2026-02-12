@@ -77,19 +77,15 @@ type Data<T> = {
 };
 const notips = ['温馨提示，请先实名'];
 // 2.2 添加类型，支持泛型
-export const http = <T>(options: UniApp.RequestOptions) => {
-    if (options.data && typeof options.data === 'object' && (options.data as any).page == 1) {
-        uni.showLoading({
-            title: t('加载中'),
-            mask: true
-        });
-    }
+export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }) => {
     // 1. 返回 Promise 对象
     return new Promise<Data<T>>((resolve, reject) => {
-        uni.showLoading({
-            title: t('加载中'),
-            mask: true
-        });
+        if (!options.noLoading) {
+            uni.showLoading({
+                title: t('加载中'),
+                mask: true
+            });
+        }
         uni.request({
             ...options,
             // 响应成功

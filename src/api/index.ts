@@ -420,10 +420,12 @@ export function getMallProductDetail(id: number) {
 // ===== 購物車管理（需認證） =====
 
 // 1. 獲取購物車 - GET /api/mall/cart
-export function getMallCart() {
+// 可通過傳入 { noLoading: true } 關閉全局 loading（例如僅更新購物車角標時）
+export function getMallCart(options: { noLoading?: boolean } = {}) {
     return http<any>({
         method: 'GET',
-        url: 'mall/cart'
+        url: 'mall/cart',
+        ...options
     });
 }
 
@@ -461,6 +463,15 @@ export function deleteMallCartItem(id: number) {
     return http<any>({
         method: 'DELETE',
         url: `mall/cart/${id}`
+    });
+}
+
+// 5. 批量刪除購物車項目 - DELETE /api/mall/cart
+export function deleteMallCartItems(ids: number[]) {
+    return http<any>({
+        method: 'DELETE',
+        url: 'mall/cart',
+        data: { ids }
     });
 }
 

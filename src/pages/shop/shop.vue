@@ -30,9 +30,14 @@
     </view>
 
     <!-- 店铺列表 -->
-    <scroll-view class="list-scroll" scroll-y>
+    <scroll-view 
+      class="list-scroll" 
+      scroll-y
+      @scrolltolower="onLoadMore"
+      :lower-threshold="100"
+    >
       <view
-        v-for="s in filteredShops"
+        v-for="s in shops"
         :key="s.id"
         class="shop-card"
         @click="onShopClick(s)"
@@ -41,7 +46,7 @@
           <image class="shop-logo" :src="s.logo || '/static/img/empty.svg'" mode="aspectFill" />
           <view class="shop-main">
             <text class="shop-name">{{ s.name }}</text>
-            <text class="shop-sub">{{ s.tagline }}</text>
+            <text class="shop-sub">{{ s.description || s.tagline || '' }}</text>
           </view>
           <view class="shop-enter">
             <text class="enter-text">进入店铺</text>
@@ -50,7 +55,18 @@
         </view>
       </view>
 
-      <view v-if="!filteredShops.length" class="empty">
+      <!-- 加载更多提示 -->
+      <view v-if="loading" class="loading-more">
+        <text class="loading-text">加载中...</text>
+      </view>
+
+      <!-- 没有更多数据提示 -->
+      <view v-if="!hasMore && shops.length > 0" class="no-more">
+        <text class="no-more-text">没有更多了</text>
+      </view>
+
+      <!-- 空状态 -->
+      <view v-if="!shops.length && !loading" class="empty">
         <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
         <text class="empty-text">暂无符合条件的店铺</text>
       </view>
@@ -71,9 +87,10 @@ type Category = {
 type ShopItem = {
   id: number;
   name: string;
-  logo: string;
-  tagline: string;
-  categoryId: number;
+  logo?: string | null;
+  tagline?: string;
+  description?: string | null;
+  categoryId?: number;
 };
 
 const placeholderText = '请输入店铺名称';
@@ -86,49 +103,101 @@ const shops = ref<ShopItem[]>([]);
 const activeCateId = ref<number>(1);
 const keyword = ref<string>('');
 
-const filteredShops = computed(() => {
-  return shops.value.filter((s) => {
-    const matchCate = activeCateId.value === 1 || s.categoryId === activeCateId.value;
-    const kw = keyword.value.trim();
-    const matchKeyword = !kw || s.name.includes(kw) || s.tagline.includes(kw);
-    return matchCate && matchKeyword;
-  });
-});
+// 分页相关
+const page = ref<number>(1);
+const limit = ref<number>(15);
+const hasMore = ref<boolean>(true);
+const loading = ref<boolean>(false);
 
-function onCateClick(c: Category) {
-  activeCateId.value = c.id;
-  getShopCategoryShops({ category_id: activeCateId.value }).then((res: any) => {
-    shops.value = res.data;
-  });
+// 加载店铺列表
+async function loadShops(reset: boolean = false) {
+  if (loading.value) return;
+  if (!hasMore.value && !reset) return;
+
+  if (reset) {
+    page.value = 1;
+    hasMore.value = true;
+    shops.value = [];
+  }
+
+  loading.value = true;
+  try {
+    const res: any = await getShopCategoryShops({
+      category_id: activeCateId.value,
+      keyword: keyword.value.trim(),
+      page: page.value,
+      limit: limit.value,
+    });
+
+    const data = res?.data || res || [];
+    const newShops = Array.isArray(data) ? data : (data.list || data.items || []);
+
+    if (reset) {
+      shops.value = newShops;
+    } else {
+      shops.value = [...shops.value, ...newShops];
+    }
+
+    // 判断是否还有更多数据
+    hasMore.value = newShops.length >= limit.value;
+    if (hasMore.value) {
+      page.value += 1;
+    }
+  } catch (e) {
+    console.error('加载店铺列表失败', e);
+    uni.showToast({ title: '加载失败', icon: 'none' });
+  } finally {
+    loading.value = false;
+  }
 }
 
+// 分类切换
+function onCateClick(c: Category) {
+  activeCateId.value = c.id;
+  keyword.value = ''; // 切换分类时清空搜索关键词
+  loadShops(true);
+}
+
+// 搜索确认（回车）
 function onSearchConfirm(e: any) {
   const value = (e?.detail?.value ?? '').trim();
   keyword.value = value;
-  if (!value) return;
-  uni.showToast({ title: `搜索店铺：${value}`, icon: 'none' });
+  loadShops(true);
 }
 
+// 搜索按钮点击
 function onSearchClick() {
   const value = keyword.value.trim();
-  if (!value) return;
-  uni.showToast({ title: `搜索店铺：${value}`, icon: 'none' });
+  if (!value) {
+    uni.showToast({ title: '请输入搜索关键词', icon: 'none' });
+    return;
+  }
+  loadShops(true);
+}
+
+// 上拉加载更多
+function onLoadMore() {
+  if (!loading.value && hasMore.value) {
+    loadShops(false);
+  }
 }
 
 function onShopClick(s: ShopItem) {
   uni.navigateTo({ url: `/pages/shop/home?id=${s.id}` });
 }
 
-onLoad(() => {
-  getShopCategories().then((res: any) => {
-    categories.value = res;
-    if(categories.value.length > 0){
+onLoad(async () => {
+  try {
+    const res: any = await getShopCategories();
+    categories.value = res?.data || res || [];
+    if (categories.value.length > 0) {
       activeCateId.value = categories.value[0].id;
     }
-    getShopCategoryShops({ category_id: activeCateId.value }).then((res: any) => {
-      shops.value = res.data;
-    });
-  });
+    // 加载初始店铺列表
+    loadShops(true);
+  } catch (e) {
+    console.error('加载分类失败', e);
+  }
 }); 
 </script>
 
@@ -287,6 +356,26 @@ onLoad(() => {
 
 .empty-text {
   font-size: 26rpx;
+}
+
+.loading-more {
+  padding: 30rpx 0;
+  text-align: center;
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.no-more {
+  padding: 30rpx 0;
+  text-align: center;
+}
+
+.no-more-text {
+  font-size: 24rpx;
+  color: #ccc;
 }
 </style>
 

@@ -214,7 +214,9 @@ function toggleFavorite() {
 }
 
 function onCartClick() {
-  uni.showToast({ title: '跳转到购物车（测试功能）', icon: 'none' });
+  uni.switchTab({
+    url: '/pages/cart/cart',
+  });
 }
 
 function onPointsClick() {
@@ -252,8 +254,9 @@ function onAddToCart() {
 }
 
 const requestCartCount = () => {
-  getMallCart().then((res: any) => {
-    cartCount.value = res.length;
+  // 更新購物車角標時不需要全局 loading，避免覆蓋 Toast
+  getMallCart({ noLoading: true }).then((res: any) => {
+    cartCount.value = res.items.length;
   });
 }
 
