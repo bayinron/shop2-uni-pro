@@ -175,7 +175,7 @@ function onSearchClick() {
 onReachBottom(() => {
   if (!loading.value && hasMore.value) {
     loadShops(false);
-  }
+}
 });
 
 function onShopClick(s: ShopItem) {

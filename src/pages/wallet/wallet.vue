@@ -16,7 +16,7 @@
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
 
-      <view class="wallet-item" @click="todo('withdraw')">
+      <view class="wallet-item" @click="withdrawClick">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">⤓</text>
           <text class="wallet-text">提现</text>
@@ -81,19 +81,33 @@ function goRecharge() {
   });
 }
 
-function todo(type: string) {
-  const map: Record<string, string> = {
-    withdraw: '提现',
-    bank: '银行账户',
-    bill: '账单明细',
-    withdrawLog: '提现日志',
-    rechargeLog: '充值日志',
-    bindUsdt: '绑定USDT',
-  };
-  uni.showToast({
-    title: `${map[type]} 功能开发中`,
-    icon: 'none',
+function withdrawClick() {
+  uni.navigateTo({
+    url: '/pages/wallet/withdraw',
   });
+}
+
+function todo(type: string) {
+  let url = '';
+  switch(type) {
+    case 'bill':
+      url = '/pages/wallet/bill';
+      break;
+    case 'withdrawLog':
+      url = '/pages/wallet/withdraw-log';
+      break;
+    case 'rechargeLog':
+      url = '/pages/wallet/recharge-log';
+      break;
+    case 'bindUsdt':
+      url = '/pages/wallet/bind-usdt';
+      break;
+    default:
+      url = '';
+  }
+  if (url) {
+    uni.navigateTo({ url });
+  }
 }
 </script>
 

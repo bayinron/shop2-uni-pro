@@ -125,6 +125,12 @@
             }
         },
         {
+            "path": "pages/wallet/withdraw",
+            "style": {
+                "navigationBarTitleText": "提现"
+            }
+        },
+        {
             "path": "pages/wallet/wallet",
             "style": {
                 "navigationBarTitleText": "钱包"
