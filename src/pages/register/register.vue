@@ -140,7 +140,8 @@
 import { computed, ref, onMounted } from 'vue';
 import { authRegister, authCheckUsername, authCheckEmail, getCaptcha } from '@/api';
 import globalTool from '@/utils/globalTool';
-
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 const registerType = ref<'phone' | 'email'>('phone');
 
 const formData = ref({
@@ -237,7 +238,7 @@ function onRegister() {
     params.email = formData.value.email;
   }
   authRegister(params).then((res:any) => {
-    globalTool.showModal(res.message, () => {
+    globalTool.showModal(t('注册成功'), () => {
       uni.navigateTo({ url: '/pages/login/login' });
     });
   })

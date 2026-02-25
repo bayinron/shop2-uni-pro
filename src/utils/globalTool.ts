@@ -1,5 +1,8 @@
 import { http } from './request';
 
+// 兼容小程序端 wx 全局对象（用于文件系统等 API）
+declare const wx: any;
+
 export default {
     //针对姓名的隐私处理,如果姓名是3个字，隐藏中间一个字，如果2个字，隐藏最后一个字
     privacyName: (name: string) => {
@@ -278,8 +281,94 @@ export default {
                         }
                     });
                 },
-                fail: (err) => {
+                fail: (err: any) => {
                     reject(err);
+                }
+            });
+        });
+    },
+    // 上传头像（根据本地文件路径上传，返回图片 URL 或空字符串）
+    uploadAvatar: function (filePath: string): Promise<string> {
+        return new Promise((resolve) => {
+            const token = uni.getStorageSync('token');
+            uni.uploadFile({
+                url: '/auth/me/avatar?lang=zh',
+                filePath,
+                name: 'avatar',
+                header: {
+                    Authorization: 'Bearer ' + token
+                },
+                formData: {
+                    type: 'img',
+                    folder: 'shiming'
+                },
+                success: (res) => {
+                    try {
+                        let data: any = JSON.parse(res.data);
+                        if (data.code === 200) {
+                            // 兼容 data.data 可能是 JSON 字符串或已解码对象
+                            let inner = data.data;
+                            if (typeof inner === 'string') {
+                                try {
+                                    inner = JSON.parse(inner);
+                                } catch (e) {
+                                    // 可能是 Base64，再尝试解码
+                                    try {
+                                        const decoded = this.Base64.decode(inner);
+                                        inner = JSON.parse(decoded);
+                                    } catch (e2) {
+                                        inner = null;
+                                    }
+                                }
+                            }
+                            if (inner && inner.url) {
+                                resolve(inner.url);
+                                return;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('解析头像上传响应失败', e);
+                    }
+                    resolve('');
+                },
+                fail: (err: any) => {
+                    this.showToast(err && err.msg ? err.msg : '上传失败');
+                    console.log(err);
+                    resolve('');
+                }
+            });
+        });
+    },
+    /** 选择图片并限制大小，返回本地临时路径（失败或取消返回空字符串） */
+    chooseImageWithLimit: function (maxSizeMB: number = 3): Promise<string> {
+        const maxSize = maxSizeMB * 1024 * 1024;
+        return new Promise((resolve) => {
+            uni.chooseImage({
+                count: 1,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+                success: (res) => {
+                    const tempFilePath = res.tempFilePaths[0];
+                    uni.getFileInfo({
+                        filePath: tempFilePath,
+                        success: (fileInfo) => {
+                            if (fileInfo.size > maxSize) {
+                                uni.showToast({
+                                    title: `图片大小不能超过 ${maxSizeMB}MB`,
+                                    icon: 'none'
+                                });
+                                resolve('');
+                                return;
+                            }
+                            resolve(tempFilePath);
+                        },
+                        fail: () => {
+                            resolve('');
+                        }
+                    });
+                },
+                fail: () => {
+                    resolve('');
                 }
             });
         });

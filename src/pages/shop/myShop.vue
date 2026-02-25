@@ -164,7 +164,7 @@ function goOrderByStatus(status: string) {
 
 function goWallet() {
   uni.navigateTo({
-    url: '/pages/wallet/recharge',
+    url: '/pages/wallet/wallet',
   });
 }
 

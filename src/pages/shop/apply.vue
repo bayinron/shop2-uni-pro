@@ -106,6 +106,7 @@ import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { applyShop, getShopCategories } from '@/api';
 import type { ApplyShopPayload } from '@/api';
+import globalTool from '@/utils/globalTool';
 
 const form = ref({
   name: '',
@@ -129,25 +130,15 @@ function onBack() {
 
 // 上传店铺头像
 function onUploadAvatar() {
-  uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
-    success: (res) => {
-      const tempFilePath = res.tempFilePaths[0];
-      // 检查文件大小（3MB = 3 * 1024 * 1024 bytes）
-      uni.getFileInfo({
-        filePath: tempFilePath,
-        success: (fileInfo) => {
-          if (fileInfo.size > 3 * 1024 * 1024) {
-            uni.showToast({ title: '图片大小不能超过 3MB', icon: 'none' });
-            return;
-          }
-          // TODO: 上传到服务器，这里先用本地路径
-          form.value.avatar = tempFilePath;
-        },
-      });
-    },
+  globalTool.chooseImageWithLimit(3).then((tempFilePath: string) => {
+    if (!tempFilePath) return;
+    // 先展示本地预览，再上传到服务器获取 URL
+    form.value.avatar = tempFilePath;
+    globalTool.uploadAvatar(tempFilePath).then((url: string) => {
+      if (url) {
+        form.value.avatar = url;
+      }
+    });
   });
 }
 

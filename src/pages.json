@@ -123,6 +123,12 @@
             "style": {
                 "navigationBarTitleText": "申请成为商家"
             }
+        },
+        {
+            "path": "pages/wallet/wallet",
+            "style": {
+                "navigationBarTitleText": "钱包"
+            }
         }
     ],
     "globalStyle": {

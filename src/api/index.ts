@@ -953,3 +953,29 @@ export function applyShop(data: ApplyShopPayload) {
         data
     });
 }
+
+
+// 3. 上傳頭像 - POST /api/auth/me/avatar
+// 上傳當前用戶頭像，需要傳遞 multipart/form-data 格式（需認證）
+export interface UploadAvatarResponse {
+    url: string; // 上傳後頭像的完整 URL
+}
+
+/**
+ * 上傳頭像
+ * @param avatarFile 頭像圖片文件，支持 jpg、jpeg、png、gif、webp
+ * @returns {Promise<UploadAvatarResponse>}
+ */
+export function uploadAvatar(avatarFile: File) {
+    const formData = new FormData();
+    formData.append('avatar', avatarFile);
+    return http<UploadAvatarResponse>({
+        method: 'POST',
+        url: 'auth/me/avatar',
+        header: {
+            'Content-Type': 'multipart/form-data'
+            // Authorization 標頭由 http 請求全局處理或通過 token 注入
+        },
+        data: formData
+    });
+}
