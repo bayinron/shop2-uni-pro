@@ -936,23 +936,8 @@ export function getMyShopProducts(params: MyShopProductsParams = {}) {
     });
 }
 
-// 0.6 申請成為商家 - POST /api/mall/shops/apply
-export interface ApplyShopPayload {
-    name: string;
-    category_id: number;
-    owner_name: string;
-    avatar: string;
-    id_photo_front: string;
-    id_photo_back: string;
-}
 
-export function applyShop(data: ApplyShopPayload) {
-    return http<any>({
-        method: 'POST',
-        url: 'mall/shops/apply',
-        data
-    });
-}
+
 
 
 // 3. 上傳頭像 - POST /api/auth/me/avatar
@@ -1064,7 +1049,7 @@ export interface MerchantApplicationResponse {
 export function submitMerchantApplication(payload: MerchantApplicationPayload) {
     return http<any>({
         method: 'POST',
-        url: '/api/merchant-application',
+        url: '/merchant-application',
         header: {
             'Content-Type': 'application/json'
         },

@@ -60,7 +60,7 @@
         <view class="form-item">
           <text class="form-label">身份证照片</text>
           <view class="id-photos">
-            <view class="id-photo-item" @click="onUploadIdPhoto('front')">
+            <view class="id-photo-item" @click="onUploadIdPhotoFront">
               <image
                 v-if="form.id_photo_front"
                 class="id-photo-img"
@@ -74,7 +74,7 @@
                 <text class="id-photo-text">正面</text>
               </view>
             </view>
-            <view class="id-photo-item" @click="onUploadIdPhoto('back')">
+            <view class="id-photo-item" @click="onUploadIdPhotoBack">
               <image
                 v-if="form.id_photo_back"
                 class="id-photo-img"
@@ -104,17 +104,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { applyShop, getShopCategories } from '@/api';
-import type { ApplyShopPayload } from '@/api';
+import { submitMerchantApplication, getShopCategories } from '@/api';
+import type { MerchantApplicationPayload } from '@/api';
 import globalTool from '@/utils/globalTool';
 
 const form = ref({
   name: '',
   category_id: 0,
   owner_name: '',
-  avatar: '',
-  id_photo_front: '',
-  id_photo_back: '',
+  avatar: "http://101.55.21.117:18081/shop/uploads/user/img/2026/02/26/102/699fcc020489d.png",
+  id_photo_front: "http://101.55.21.117:18081/shop/uploads/user/img/2026/02/26/102/699fcc020489d.png",
+  id_photo_back: "http://101.55.21.117:18081/shop/uploads/user/img/2026/02/26/102/699fcc020489d.png",
 });
 
 const categories = ref<any[]>([]);
@@ -143,14 +143,33 @@ function onUploadAvatar() {
 }
 
 // 上传身份证照片
-function onUploadIdPhoto(type: 'front' | 'back') {
-  
+function onUploadIdPhotoFront() {
+  globalTool.chooseImageWithLimit(3).then((tempFilePath: string) => {
+    if (!tempFilePath) return;
+    form.value.id_photo_front = tempFilePath;
+    globalTool.uploadAvatar(tempFilePath).then((url: string) => {
+      if (url) {
+        form.value.id_photo_front = url;
+      }
+    });
+  });
+}
+function onUploadIdPhotoBack() {
+  globalTool.chooseImageWithLimit(3).then((tempFilePath: string) => {
+    if (!tempFilePath) return;
+    form.value.id_photo_back = tempFilePath;
+    globalTool.uploadAvatar(tempFilePath).then((url: string) => {
+      if (url) {
+        form.value.id_photo_back = url;
+      }
+    });
+  });
 }
 
 // 选择商品类型
 function onSelectCategory() {
   if (!categories.value.length) {
-    uni.showToast({ title: '加载分类中...', icon: 'none' });
+    globalTool.showToast('加载分类中...', false, 'none');
     return;
   }
 
@@ -169,27 +188,27 @@ function onSelectCategory() {
 // 表单验证
 function validate(): boolean {
   if (!form.value.name.trim()) {
-    uni.showToast({ title: '请输入店铺名称', icon: 'none' });
+    globalTool.showToast('请输入店铺名称', false, 'none');
     return false;
   }
   if (!form.value.category_id) {
-    uni.showToast({ title: '请选择商品类型', icon: 'none' });
+    globalTool.showToast('请选择商品类型', false, 'none');
     return false;
   }
   if (!form.value.owner_name.trim()) {
-    uni.showToast({ title: '请输入账户所有者姓名', icon: 'none' });
+    globalTool.showToast('请输入账户所有者姓名', false, 'none');
     return false;
   }
   if (!form.value.avatar) {
-    uni.showToast({ title: '请上传店铺头像', icon: 'none' });
+    globalTool.showToast('请上传店铺头像', false, 'none');
     return false;
   }
   if (!form.value.id_photo_front) {
-    uni.showToast({ title: '请上传身份证正面照片', icon: 'none' });
+    globalTool.showToast('请上传身份证正面照片', false, 'none');
     return false;
   }
   if (!form.value.id_photo_back) {
-    uni.showToast({ title: '请上传身份证背面照片', icon: 'none' });
+    globalTool.showToast('请上传身份证背面照片', false, 'none');
     return false;
   }
   return true;
@@ -204,29 +223,27 @@ async function onSubmit() {
     
     // TODO: 先上传图片到服务器获取URL，然后提交表单
     // 这里暂时使用本地路径，实际应该先上传图片
-    const payload: ApplyShopPayload = {
-      name: form.value.name,
-      category_id: form.value.category_id,
-      owner_name: form.value.owner_name,
-      avatar: form.value.avatar, // 应该是上传后的URL
-      id_photo_front: form.value.id_photo_front, // 应该是上传后的URL
-      id_photo_back: form.value.id_photo_back, // 应该是上传后的URL
+    const payload: MerchantApplicationPayload = {
+      applicant_name: form.value.name,
+      shop_name: form.value.name,
+      shop_description: '',
+      shop_category_id: form.value.category_id,
+      id_doc_front_url: form.value.id_photo_front,
+      id_doc_back_url: form.value.id_photo_back,
+      bank_passbook_url: form.value.id_photo_back,
+      shop_logo_url: form.value.avatar,
     };
-
-    await applyShop(payload);
+    const res: any = await submitMerchantApplication(payload);
     uni.hideLoading();
-    uni.showToast({ title: '申请提交成功', icon: 'success' });
-    
-    setTimeout(() => {
-      uni.navigateBack();
-    }, 1500);
+    if (res?.code === 0 || res?.id) {
+      globalTool.showToast('申请提交成功', true, 'success');
+    } else {
+      globalTool.showToast(res?.message || '申请提交失败', false, 'none');
+    }
   } catch (e: any) {
     uni.hideLoading();
     console.error('提交申请失败', e);
-    uni.showToast({
-      title: e?.message || '提交失败，请稍后重试',
-      icon: 'none',
-    });
+    globalTool.showToast(e?.message || '提交失败，请稍后重试', false, 'none');
   }
 }
 
