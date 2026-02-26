@@ -73,7 +73,7 @@ const formData = ref({
 });
 
 const showPassword = ref(false);
-const agreed = ref(false);
+const agreed = ref(true);
 
 const canLogin = computed(() => {
   return formData.value.login.length >= 11 && formData.value.password.length >= 6 && agreed.value;
@@ -101,7 +101,8 @@ function onLogin() {
 
   authLogin(formData.value).then((res:any) => {
       uni.setStorageSync('token', res.token);
-      userStore.setUserInfo(res.user);
+      // userStore.setUserInfo(res.user);
+      userStore.reqUserInfo();
       uni.switchTab({ url: '/pages/home/index' });
   });
 }

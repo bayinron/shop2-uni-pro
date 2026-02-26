@@ -84,7 +84,7 @@
         <image class="service-icon-img" src="/static/img/dizhi.png" mode="aspectFill" />
         <text class="service-text">地址</text>
       </view>
-      <view v-if="1==2" class="service-btn" @click="goMyShop">
+      <view v-if="userInfo.user_role == 'merchant'" class="service-btn" @click="goMyShop">
         <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
         <text class="service-text">我的店铺</text>
       </view>
@@ -92,6 +92,9 @@
         <image class="service-icon-img" src="/static/img/car.png" mode="aspectFill" />
         <text class="service-text">申请成为商家</text>
       </view>
+    </view>
+    <view class="exit-btn" @click="onExit">
+      <text class="exit-btn-text">退出登录</text>
     </view>
 
     <!-- 推荐商品 -->
@@ -134,7 +137,7 @@ type Product = {
 
 const isLoggedIn = ref(false);
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.getUserInfo() as any);
+const userInfo = computed(() => userStore.getUserInfo());
 const displayAccount = computed(() => userInfo.value.phone || userInfo.value.username || '未登录');
 const userBalance = computed(() => userInfo.value.balance ?? '0');
 
@@ -179,6 +182,14 @@ const recommendProducts = ref<Product[]>([
     img: '/static/img/invitebg.png',
   },
 ]);
+
+function onExit() {
+  uni.removeStorageSync('token');
+  uni.removeStorageSync('userInfo');
+  uni.redirectTo({
+    url: '/pages/login/login'
+  });
+}
 
 function onRegisterAgent() {
   uni.navigateTo({
@@ -451,7 +462,18 @@ function goApply() {
   margin: 20rpx;
   gap: 20rpx;
 }
-
+.exit-btn {
+  margin: 20rpx;
+  background: #b4b4b490;
+  border-radius: 16rpx;
+  padding: 20rpx 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  font-size: 28rpx;
+  color: #333;
+}
 .service-btn {
   flex: 1;
   background: #fff;

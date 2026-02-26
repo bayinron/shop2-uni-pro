@@ -33,6 +33,7 @@ export interface UserInfo {
     deleted_at: string | null;
     roles: any[];
     role_names: string[];
+    user_role: string;
 }
 
 //获取主页配置

@@ -28,21 +28,24 @@
           </view>
         </view>
         <view class="pay-desc">
-          <text class="pay-desc-text">{{ currentPayType.desc }}</text>
+          <text class="pay-desc-text">{{ currentPayType.instructions }}</text>
         </view>
       </view>
 
-      <!-- 上传支付凭证（示意） -->
+      <!-- 上传支付凭证 -->
       <view class="section upload-section">
-        <view class="upload-card" @click="onUploadClick">
-          <!-- <view class="upload-icon-wrap">
-            <text class="icon iconfont icon-camera" />
-          </view> -->
-          <image class="upload-icon" src="/static/img/upload.png" mode="aspectFill" />
-          <view class="upload-text-wrap">
-            <text class="upload-title">点击上传付款凭证</text>
-            <text class="upload-sub">请上传转账截图，方便客服为您核对到账</text>
-          </view>
+        <view class="upload-card" @click="onUploadProofImg">
+          <!-- 已选择图片时展示预览，否则展示占位内容 -->
+          <block v-if="form.proof_img">
+            <image class="upload-preview" :src="form.proof_img" mode="aspectFill" />
+          </block>
+          <block v-else>
+            <image class="upload-icon" src="/static/img/upload.png" mode="aspectFill" />
+            <view class="upload-text-wrap">
+              <text class="upload-title">点击上传付款凭证</text>
+              <text class="upload-sub">请上传转账截图，方便客服为您核对到账</text>
+            </view>
+          </block>
         </view>
       </view>
 
@@ -65,32 +68,46 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import  {submitWalletDeposit, type WalletDepositPayload,getPaymentChannels, type PaymentChannel} from '@/api/pay';
+import { useUserStoreHook } from '@/stores/modules/userStore';
+import globalTool from '@/utils/globalTool';
 
-type PayType = {
-  key: string;
-  name: string;
-  desc: string;
-};
+const userStore = useUserStoreHook();
+const userInfo = computed(() => userStore.getUserInfo());
+
 
 const form = ref({
   amount: '',
-  payType: 'usdt',
+  payType: 'USD',
+  proof_img: '',
 });
 
-const payTypes: PayType[] = [
+const payTypes = ref<PaymentChannel[]>([
   {
-    key: 'usdt',
-    name: 'USDT 充值',
-    desc: '使用 USDT 进行充值，请按照平台提示完成链上转账。',
-  },
-  {
-    key: 'unionpay',
-    name: '银联转账',
-    desc: '通过银联线下转账，请联系在线客服获取收款账户信息。',
-  },
-];
+  "id": 7,
+  "name": "USDT-TRC20",
+  "type": "crypto",
+  "provider": "manual",
+  "config": null,
+  "is_online": 0,
+  "currency": "USDT",
+  "account_name": "",
+  "account_detail": "T9yD14Nj9j7xAB4dbGeSv4h8cG799",
+  "bank_name": "",
+  "branch_name": "",
+  "min_amount": "10.00000000",
+  "max_amount": "100000.00000000",
+  "status": 1,
+  "instructions": "Please transfer only USDT-TRC20 to this address.",
+  "sort_order": 10,
+  "bank_info": null,
+  "created_at": "2026-02-26 16:23:26",
+  "updated_at": "2026-02-26 16:23:26",
+  "deleted_at": null
+}
+]);
 
-const currentPayType = ref<PayType>(payTypes[0]);
+const currentPayType = ref<PaymentChannel>(payTypes.value[0]);
 
 const tips = [
   '为确保充值及时到账，请严格按照充值金额进行支付。',
@@ -100,34 +117,49 @@ const tips = [
 ];
 
 function onPayTypeClick() {
-  const itemList = payTypes.map((p) => p.name);
+  const itemList = payTypes.value.map((p) => p.name);
   uni.showActionSheet({
     itemList,
     success: (res) => {
       const idx = res.tapIndex;
-      if (idx >= 0 && idx < payTypes.length) {
-        currentPayType.value = payTypes[idx];
-        form.value.payType = payTypes[idx].key;
+      if (idx >= 0 && idx < payTypes.value.length) {
+        currentPayType.value = payTypes.value[idx];
+        form.value.payType = payTypes.value[idx].currency;
       }
     },
   });
 }
 
-function onUploadClick() {
-  uni.showToast({ title: '选择或拍摄转账截图（测试功能）', icon: 'none' });
+function onUploadProofImg() {
+  globalTool.chooseImageWithLimit(3).then((filePath: string) => {
+    if (!filePath) return;
+    console.log(filePath);
+    form.value.proof_img = filePath;
+   
+  });
 }
-
-function onSubmit() {
+async function onSubmit() {
   const amountNum = Number(form.value.amount);
   if (!amountNum || amountNum <= 0) {
     uni.showToast({ title: '请输入正确的充值金额', icon: 'none' });
     return;
   }
-  uni.showToast({
-    title: `提交充值：￥${amountNum.toFixed(2)}（${currentPayType.value.name}）`,
-    icon: 'none',
+  const payload: WalletDepositPayload = {
+    amount: amountNum,
+    currency: currentPayType.value.currency,
+    channel_id: currentPayType.value.id,
+    proof_img: form.value.proof_img,
+  };
+   submitWalletDeposit(payload).then((res: any) => {
+      globalTool.showToast( '提交成功，请等待审核', true, 'success' );
+    
   });
 }
+onLoad(() => {
+  getPaymentChannels().then((res: any) => {
+    payTypes.value = res;
+  });
+});
 </script>
 
 <style scoped lang="scss">
@@ -220,6 +252,12 @@ function onSubmit() {
     width: 96rpx;
     height: 96rpx;
   }
+}
+
+.upload-preview {
+  width: 100%;
+  height: 260rpx;
+  border-radius: 12rpx;
 }
 
 .upload-icon-wrap {

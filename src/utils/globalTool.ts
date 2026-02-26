@@ -349,6 +349,13 @@ export default {
                                 return;
                             }
                             resolve(tempFilePath);
+                            this.uploadAvatar(tempFilePath).then((url: string) => {
+                                if (url) {
+                                  resolve(url);
+                                }else{
+                                  resolve('');
+                                }
+                              });
                         },
                         fail: () => {
                             resolve('');

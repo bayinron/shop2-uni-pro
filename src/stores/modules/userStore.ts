@@ -87,7 +87,8 @@ export const useUserStore = defineStore('user', () => {
         "updated_at": "2026-02-06 16:22:14",
         "deleted_at": null,
         "roles": [],
-        "role_names": []
+        "role_names": [],
+        user_role: 'user'
     });
     const homeConfig = ref<any>({});
     function reqHomeConfig() {

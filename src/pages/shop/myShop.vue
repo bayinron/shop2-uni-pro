@@ -69,7 +69,7 @@
           </view>
           <view class="wallet-amount">
             <text class="wallet-currency">฿</text>
-            <text class="wallet-value">{{ wallet.balance }}</text>
+            <text class="wallet-value">{{ userInfo.balance }}</text>
           </view>
         </view>
       </view>
@@ -139,15 +139,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useUserStoreHook } from '@/stores/modules/userStore';
 
+const userStore = useUserStoreHook();
+const userInfo = computed(() => userStore.getUserInfo());
 const shopUser = ref({
   id: '10905',
   name: 'AABBC',
   phone: '13100000001',
-});
-
-const wallet = ref({
-  balance: '0',
 });
 
 function goAllOrders() {
