@@ -979,3 +979,95 @@ export function uploadAvatar(avatarFile: File) {
         data: formData
     });
 }
+
+// 上傳單一檔案接口 - POST /api/upload
+
+export type UploadFileType =
+    | 'img'
+    | 'file'
+    | 'video'
+    | 'voice'
+    | 'pdf'
+    | 'excel'
+    | 'app';
+
+export interface UploadFilePayload {
+    file: File;
+    file_type: UploadFileType;
+    index?: number;
+}
+
+// 響應
+export interface UploadFileResponse {
+    id: number;
+    url: string;          // 檔案完整訪問 URL
+    file_type: UploadFileType;
+    size_kb: number;      // 檔案大小（KB）
+    original_name: string;// 原始檔名
+    index?: number;       // 序號（僅在傳入 index 時返回）
+}
+
+/**
+ * 上傳單一檔案
+ * @param payload - { file, file_type, index }
+ *   file: 要上傳的檔案 (File)
+ *   file_type: 業務類型（img, file, video, voice, pdf, excel, app）
+ *   index: 批次上傳時的序號（可選）
+ */
+export function uploadFile(payload: UploadFilePayload) {
+    const formData = new FormData();
+    formData.append('file', payload.file);
+    formData.append('file_type', payload.file_type);
+    if (payload.index !== undefined) {
+        formData.append('index', String(payload.index));
+    }
+    return http<any>({
+        method: 'POST',
+        url: 'upload',
+        header: {
+            'Content-Type': 'multipart/form-data'
+            // Authorization 標頭由 http 請求全局處理
+        },
+        data: formData
+    });
+}
+
+
+
+/**
+ * 商戶申請/重新提交商戶申請
+ * POST /api/merchant-application
+ * 注意：證件照片、銀行存摺及店鋪 LOGO 圖片須先通過 uploadFile 上傳取得 URL，再傳入此接口
+ */
+
+export interface MerchantApplicationPayload {
+    applicant_name: string;         // 申請人真實姓名（必填）
+    shop_name: string;              // 預期建立的商鋪名稱（必填）
+    shop_description?: string;      // 商鋪介紹（可選）
+    shop_category_id?: number;      // 店鋪類別 ID（可選，可通過 GET /api/mall/shop-categories 取得）
+    id_doc_front_url: string;       // 身份證正面照片 URL（必填）
+    id_doc_back_url: string;        // 身份證背面照片 URL（必填）
+    bank_passbook_url: string;      // 銀行存摺照片 URL（必填）
+    shop_logo_url?: string;         // 店鋪 Logo URL（可選）
+}
+
+export interface MerchantApplicationResponse {
+    id: number;
+    status: string;
+    // ...其它回應字段
+}
+
+/**
+ * 提交/重新提交商戶申請
+ * @param payload - 商戶申請資料
+ */
+export function submitMerchantApplication(payload: MerchantApplicationPayload) {
+    return http<any>({
+        method: 'POST',
+        url: '/api/merchant-application',
+        header: {
+            'Content-Type': 'application/json'
+        },
+        data: payload
+    });
+}

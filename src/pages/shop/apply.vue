@@ -144,29 +144,7 @@ function onUploadAvatar() {
 
 // 上传身份证照片
 function onUploadIdPhoto(type: 'front' | 'back') {
-  uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
-    success: (res) => {
-      const tempFilePath = res.tempFilePaths[0];
-      // 检查文件大小
-      uni.getFileInfo({
-        filePath: tempFilePath,
-        success: (fileInfo) => {
-          if (fileInfo.size > 3 * 1024 * 1024) {
-            uni.showToast({ title: '图片大小不能超过 3MB', icon: 'none' });
-            return;
-          }
-          if (type === 'front') {
-            form.value.id_photo_front = tempFilePath;
-          } else {
-            form.value.id_photo_back = tempFilePath;
-          }
-        },
-      });
-    },
-  });
+  
 }
 
 // 选择商品类型

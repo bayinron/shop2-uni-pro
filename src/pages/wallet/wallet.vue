@@ -24,7 +24,7 @@
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
 
-      <view class="wallet-item" @click="todo('bank')">
+      <view class="wallet-item" @click="bankClick">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">🏦</text>
           <text class="wallet-text">银行账户</text>
@@ -84,6 +84,12 @@ function goRecharge() {
 function withdrawClick() {
   uni.navigateTo({
     url: '/pages/wallet/withdraw',
+  });
+}
+
+function bankClick() {
+  uni.navigateTo({
+    url: '/pages/wallet/bank',
   });
 }
 

@@ -292,35 +292,23 @@ export default {
         return new Promise((resolve) => {
             const token = uni.getStorageSync('token');
             uni.uploadFile({
-                url: '/auth/me/avatar?lang=zh',
+                url: 'upload?lang=zh',
                 filePath,
-                name: 'avatar',
+                name: 'file',
                 header: {
                     Authorization: 'Bearer ' + token
                 },
                 formData: {
-                    type: 'img',
-                    folder: 'shiming'
+                    file_type: 'img',
+                    index: ''
                 },
                 success: (res) => {
                     try {
                         let data: any = JSON.parse(res.data);
-                        if (data.code === 200) {
+                        if (data.code === 0) {
                             // 兼容 data.data 可能是 JSON 字符串或已解码对象
                             let inner = data.data;
-                            if (typeof inner === 'string') {
-                                try {
-                                    inner = JSON.parse(inner);
-                                } catch (e) {
-                                    // 可能是 Base64，再尝试解码
-                                    try {
-                                        const decoded = this.Base64.decode(inner);
-                                        inner = JSON.parse(decoded);
-                                    } catch (e2) {
-                                        inner = null;
-                                    }
-                                }
-                            }
+                            
                             if (inner && inner.url) {
                                 resolve(inner.url);
                                 return;

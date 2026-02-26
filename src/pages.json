@@ -135,6 +135,12 @@
             "style": {
                 "navigationBarTitleText": "钱包"
             }
+        },
+        {
+            "path": "pages/wallet/bank",
+            "style": {
+                "navigationBarTitleText": "银行账户"
+            }
         }
     ],
     "globalStyle": {
