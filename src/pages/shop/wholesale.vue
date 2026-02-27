@@ -34,23 +34,37 @@
         </view>
       </view>
   
-      <!-- 商品列表 -->
+      <!-- 商品列表（两列卡片） -->
       <view class="product-list">
-        <view
-          v-for="product in products"
-          :key="product.id"
-          class="product-card"
-        >
-          <image class="product-img" :src="product.image" mode="aspectFill" />
-          <view class="product-info">
-            <text class="product-name breakcss">{{ product.name }}</text>
-            <text class="product-stock">库存: {{ product.stock }}</text>
-            <text class="product-price">批发价: ฿ {{ product.wholesale_price }}</text>
-            <view class="product-actions">
-              <button class="btn-listed" :class="{ 'btn-listed--active': product.is_selling }">
-                {{ product.is_selling ? '已上架' : '未上架' }}
-              </button>
-              <button class="btn-add" @click="onAddClick(product)">add</button>
+        <view class="grid">
+          <view
+            v-for="product in products"
+            :key="product.id"
+            class="grid-item"
+          >
+            <view class="card">
+              <image class="card-img" :src="product.image" mode="aspectFill" />
+              <view class="card-body">
+                <text class="card-title breakcss">{{ product.name }}</text>
+                <text class="card-stock">库存：{{ product.stock }}</text>
+                <view class="card-bottom">
+                  <text class="card-price">฿{{ formatPrice(product.displayPrice) }}</text>
+                  <button
+                    v-if="product.in_my_shop"
+                    class="card-btn card-btn--listed"
+                    disabled
+                  >
+                    已上架
+                  </button>
+                  <button
+                    v-else
+                    class="card-btn card-btn--ship"
+                    @click="openShipSheet(product)"
+                  >
+                    一键铺货
+                  </button>
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -71,23 +85,53 @@
           <text class="empty-text">暂无商品</text>
         </view>
       </view>
+
+      <!-- 底部弹窗：一键铺货 -->
+      <view v-if="shipSheetVisible" class="sheet-mask" @click="closeShipSheet" />
+      <view v-if="shipSheetVisible" class="sheet" @click.stop>
+        <view class="sheet-content">
+          <image class="sheet-img" :src="currentProduct?.image || ''" mode="aspectFill" />
+          <view class="sheet-info">
+            <text class="sheet-title breakcss">{{ currentProduct?.name || '' }}</text>
+            <text class="sheet-price">฿{{ formatPrice(currentProduct?.displayPrice) }}</text>
+          </view>
+          <view class="sheet-stock">
+            <text class="sheet-stock-text">库存：{{ currentProduct?.stock ?? 0 }}</text>
+          </view>
+        </view>
+
+        <view class="sheet-row">
+          <text class="sheet-row-label">数量</text>
+          <view class="qty">
+            <button class="qty-btn" @click="decQty" :disabled="shipQty <= 1">－</button>
+            <view class="qty-num">{{ shipQty }}</view>
+            <button class="qty-btn" @click="incQty">＋</button>
+          </view>
+        </view>
+
+        <view class="sheet-actions">
+          <button class="sheet-btn sheet-btn--close" @click="closeShipSheet">关闭</button>
+          <button class="sheet-btn sheet-btn--ok" @click="confirmShip">确认</button>
+        </view>
+      </view>
     </view>
   </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
   import { onReachBottom } from '@dcloudio/uni-app';
   import {  getShopCategories } from '@/api';
-  import { getMyShopProductPool } from '@/api/myshop';
+  import { addProductToMyShop, getMyShopProductPool } from '@/api/myshop';
   import type { MyShopProductsParams } from '@/api';
+  import globalTool from '@/utils/globalTool';
   
   type Product = {
     id: number | string;
     name: string;
     image: string;
     stock: number;
-    wholesale_price: number | string;
-    is_selling: boolean;
+    displayPrice: number | string;
+    in_my_shop: boolean;
   };
   
   const products = ref<Product[]>([]);
@@ -146,8 +190,10 @@
         name: item.name || item.title || '商品',
         image: item.images?.[0]?.url || item.image_url || item.image || '/static/img/empty.svg',
         stock: item.stock || item.stock_count || item.quantity || 0,
-        wholesale_price: item.wholesale_price || item.price || 0,
-        is_selling: item.is_selling !== undefined ? item.is_selling : item.status === 'selling',
+        // 优先展示平台售价/销售价，其次回退到批发价/price
+        displayPrice: item.sale_price ?? item.original_price ?? item.wholesale_price ?? item.price ?? 0,
+        // 兼容不同字段：in_my_shop / is_in_my_shop / shop_product_id / already_added
+        in_my_shop: Boolean(item.in_my_shop ?? item.is_in_my_shop ?? item.shop_product_id ?? item.already_added),
       }));
   
       if (reset) {
@@ -163,7 +209,7 @@
       }
     } catch (e) {
       console.error('加载商品列表失败', e);
-      uni.showToast({ title: '加载失败', icon: 'none' });
+      globalTool.showToast('加载失败', false, 'none');
     } finally {
       loading.value = false;
     }
@@ -186,13 +232,56 @@
     loadProducts(true);
   }
   
-  // 添加按钮点击
-  function onAddClick(product: Product) {
-    uni.showToast({
-      title: `操作商品：${product.name}`,
-      icon: 'none',
-    });
-    // TODO: 实现添加/编辑商品功能
+  // ====== 一键铺货：底部弹窗 ======
+  const shipSheetVisible = ref(false);
+  const currentProduct = ref<Product | null>(null);
+  const shipQty = ref(1);
+  const shipSubmitting = ref(false);
+
+  function openShipSheet(product: Product) {
+    currentProduct.value = product;
+    shipQty.value = 1;
+    shipSheetVisible.value = true;
+  }
+
+  function closeShipSheet() {
+    if (shipSubmitting.value) return;
+    shipSheetVisible.value = false;
+    currentProduct.value = null;
+  }
+
+  function decQty() {
+    shipQty.value = Math.max(1, shipQty.value - 1);
+  }
+  function incQty() {
+    const max = Number(currentProduct.value?.stock ?? 999999);
+    shipQty.value = Math.min(max || 999999, shipQty.value + 1);
+  }
+
+  async function confirmShip() {
+    if (!currentProduct.value) return;
+    if (shipSubmitting.value) return;
+    shipSubmitting.value = true;
+    try {
+      // 说明：文档当前只需要 product_id；数量先做 UI 预留，后端支持时再一并传
+      await addProductToMyShop({ product_id: Number(currentProduct.value.id) });
+      // 本地乐观更新
+      currentProduct.value.in_my_shop = true;
+      globalTool.showToast('铺货成功', false, 'success');
+      closeShipSheet();
+    } catch (e: any) {
+      console.error('铺货失败', e);
+      globalTool.showToast(e?.message || '铺货失败，请稍后重试', false, 'none');
+    } finally {
+      shipSubmitting.value = false;
+    }
+  }
+
+  function formatPrice(v: any) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return String(v ?? '0');
+    // 价格一般保留两位，小数为 0 时也显示两位，便于对齐
+    return n.toFixed(2);
   }
   
   // 上拉加载更多
@@ -224,7 +313,7 @@
   <style scoped lang="scss">
   .product-manage-page {
     min-height: 100vh;
-    background: #f5f5f5;
+    background: #d9dbff;
   }
 
   .top-bar {
@@ -317,81 +406,217 @@
     margin-top: calc(88rpx + var(--window-top));
     padding: 16rpx;
   }
-  
-  .product-card {
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14rpx;
+  }
+
+  .grid-item {
+    width: calc(50% - 7rpx);
+  }
+
+  .card {
     background: #ffffff;
-    border-radius: 16rpx;
-    padding: 20rpx;
-    margin-bottom: 16rpx;
+    border-radius: 18rpx;
+    overflow: hidden;
+    border: 2rpx solid rgba(78, 75, 255, 0.18);
+  }
+
+  .card-img {
+    width: 100%;
+    height: 240rpx;
+    background: #f5f5f5;
+  }
+
+  .card-body {
+    padding: 16rpx 16rpx 14rpx;
+  }
+
+  .card-title {
+    font-size: 28rpx;
+    color: #111;
+    line-height: 1.35;
+    min-height: 76rpx; // 约两行
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-stock {
+    margin-top: 10rpx;
+    font-size: 24rpx;
+    color: #8b8b8b;
+  }
+
+  .card-bottom {
+    margin-top: 14rpx;
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
-  
-  .product-img {
-    width: 160rpx;
-    height: 160rpx;
-    border-radius: 12rpx;
+
+  .card-price {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: #ff3e6c;
+  }
+
+  .card-btn {
+    height: 56rpx;
+    line-height: 56rpx;
+    padding: 0 24rpx;
+    border-radius: 28rpx;
+    font-size: 24rpx;
+    border: none;
+  }
+
+  .card-btn--listed {
+    background: #2ac77a;
+    color: #fff;
+    opacity: 1;
+  }
+
+  .card-btn--ship {
+    background: #ff3e6c;
+    color: #fff;
+  }
+
+  // ===== 底部弹窗（sheet）=====
+  .sheet-mask {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 998;
+  }
+
+  .sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    border-radius: 24rpx 24rpx 0 0;
+    padding: 22rpx 24rpx calc(22rpx + env(safe-area-inset-bottom));
+    z-index: 999;
+  }
+
+  .sheet-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 18rpx;
+  }
+
+  .sheet-img {
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 14rpx;
     background: #f5f5f5;
-    margin-right: 20rpx;
   }
-  
-  .product-info {
+
+  .sheet-info {
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 10rpx;
+    padding-top: 4rpx;
   }
-  
-  .product-name {
-    font-size: 28rpx;
-    color: #333;
-    margin-bottom: 12rpx;
-    line-height: 1.4;
+
+  .sheet-title {
+    font-size: 30rpx;
+    color: #111;
   }
-  
-  .product-stock {
-    font-size: 24rpx;
-    color: #666;
-    margin-bottom: 8rpx;
-  }
-  
-  .product-price {
-    font-size: 28rpx;
-    font-weight: 700;
+
+  .sheet-price {
+    font-size: 40rpx;
     color: #ff3e6c;
-    margin-bottom: 16rpx;
+    font-weight: 700;
   }
-  
-  .product-actions {
+
+  .sheet-stock {
+    padding-top: 12rpx;
+    white-space: nowrap;
+  }
+
+  .sheet-stock-text {
+    font-size: 26rpx;
+    color: #999;
+  }
+
+  .sheet-row {
+    margin-top: 26rpx;
     display: flex;
     align-items: center;
-    gap: 16rpx;
+    justify-content: space-between;
   }
-  
-  .btn-listed {
-    padding: 8rpx 24rpx;
-    height: 56rpx;
-    line-height: 40rpx;
-    border-radius: 28rpx;
-    background: #e0e0e0;
+
+  .sheet-row-label {
+    font-size: 30rpx;
     color: #666;
-    font-size: 24rpx;
+  }
+
+  .qty {
+    display: flex;
+    align-items: center;
+    border: 1rpx solid #eee;
+    border-radius: 10rpx;
+    overflow: hidden;
+    height: 64rpx;
+  }
+
+  .qty-btn {
+    width: 64rpx;
+    height: 64rpx;
+    line-height: 64rpx;
+    text-align: center;
+    background: #fff;
+    color: #666;
+    border: none;
+    border-right: 1rpx solid #eee;
+    border-radius: 0;
+  }
+
+  .qty-btn:last-child {
+    border-right: none;
+    border-left: 1rpx solid #eee;
+  }
+
+  .qty-num {
+    width: 80rpx;
+    text-align: center;
+    font-size: 28rpx;
+    color: #111;
+  }
+
+  .sheet-actions {
+    margin-top: 28rpx;
+    display: flex;
+    gap: 18rpx;
+  }
+
+  .sheet-btn {
+    flex: 1;
+    height: 84rpx;
+    line-height: 84rpx;
+    border-radius: 42rpx;
+    font-size: 30rpx;
     border: none;
   }
-  
-  .btn-listed--active {
-    background: #4caf50;
-    color: #ffffff;
+
+  .sheet-btn--close {
+    background: #f2f2f2;
+    color: #111;
   }
-  
-  .btn-add {
-    padding: 8rpx 32rpx;
-    height: 56rpx;
-    line-height: 40rpx;
-    border-radius: 28rpx;
-    background: #ff9800;
-    color: #ffffff;
-    font-size: 24rpx;
-    border: none;
+
+  .sheet-btn--ok {
+    background: #e53935;
+    color: #fff;
   }
   
   .loading-more {
