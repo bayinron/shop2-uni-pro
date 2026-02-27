@@ -24,16 +24,18 @@
         :key="product.id"
         class="product-card"
       >
-        <image class="product-img" :src="product.image" mode="aspectFill" />
+        <image class="product-img" :src="product.product.images?.[0]?.url" mode="aspectFill" />
         <view class="product-info">
-          <text class="product-name breakcss">{{ product.name }}</text>
-          <text class="product-stock">库存: {{ product.stock }}</text>
-          <text class="product-price">批发价: ฿ {{ product.wholesale_price }}</text>
-          <view class="product-actions">
-            <button class="btn-listed" :class="{ 'btn-listed--active': product.is_selling }">
-              {{ product.is_selling ? '已上架' : '未上架' }}
-            </button>
-            <button class="btn-add" @click="onAddClick(product)">add</button>
+          <text class="product-name breakcss">{{ product.product.name }}</text>
+          <text class="product-stock">库存: {{ product.product.stock }}</text>
+          <view class="product-bottom">
+            <text class="product-price">批发价: ฿ {{ product.product.original_price }}</text>
+            <view class="product-actions">
+              <button class="btn-listed" :class="{ 'btn-listed--active': product.product.status === 'published' }">
+                {{ product.product.status === 'published' ? '已上架' : '未上架' }}
+              </button>
+              <button class="btn-add" @click="onAddClick(product)">add</button>
+            </view>
           </view>
         </view>
       </view>
@@ -60,19 +62,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onReachBottom } from '@dcloudio/uni-app';
-import { getMyShopProducts } from '@/api';
-import type { MyShopProductsParams } from '@/api';
+import { getMyShopProducts, type MyShopProduct, type MyShopProductsParams } from '@/api/myshop';
 
-type Product = {
-  id: number | string;
-  name: string;
-  image: string;
-  stock: number;
-  wholesale_price: number | string;
-  is_selling: boolean;
-};
-
-const products = ref<Product[]>([]);
+const products = ref<MyShopProduct[]>([]);
 const keyword = ref<string>('');
 
 // 分页相关
@@ -94,7 +86,7 @@ async function loadProducts(reset: boolean = false) {
 
   loading.value = true;
   try {
-    const params: MyShopProductsParams = {
+    const params: { page?: number; limit?: number; category_id?: number; keyword?: string } = {
       page: page.value,
       limit: limit.value,
     };
@@ -104,31 +96,19 @@ async function loadProducts(reset: boolean = false) {
       params.keyword = keyword.value.trim();
     }
 
-    const res: any = await getMyShopProducts(params);
-    const data = res?.data || res || [];
-    const productList = Array.isArray(data) ? data : (data.list || data.items || []);
-
-    // 映射服务器返回的数据到前端需要的格式
-    const newProducts = productList.map((item: any) => ({
-      id: item.id || 0,
-      name: item.name || item.title || '商品',
-      image: item.images?.[0]?.url || item.image_url || item.image || '/static/img/empty.svg',
-      stock: item.stock || item.stock_count || item.quantity || 0,
-      wholesale_price: item.wholesale_price || item.price || 0,
-      is_selling: item.is_selling !== undefined ? item.is_selling : item.status === 'selling',
-    }));
-
-    if (reset) {
-      products.value = newProducts;
-    } else {
-      products.value = [...products.value, ...newProducts];
-    }
-
-    // 判断是否还有更多数据
-    hasMore.value = newProducts.length >= limit.value;
-    if (hasMore.value) {
-      page.value += 1;
-    }
+    getMyShopProducts(params as MyShopProductsParams).then((res: any) => {
+      const newProducts = res?.data || [];
+      if (reset) {
+        products.value = newProducts;
+      } else {
+        products.value = [...products.value, ...newProducts];
+      }
+      // 判断是否还有更多数据
+      hasMore.value = newProducts.length >= limit.value;
+      if (hasMore.value) {
+        page.value += 1;
+      }
+    });
   } catch (e) {
     console.error('加载商品列表失败', e);
     uni.showToast({ title: '加载失败', icon: 'none' });
@@ -148,9 +128,9 @@ function onSearch() {
 }
 
 // 添加按钮点击
-function onAddClick(product: Product) {
+function onAddClick(product: MyShopProduct) {
   uni.showToast({
-    title: `操作商品：${product.name}`,
+    title: `操作商品：${product.product.name}`,
     icon: 'none',
   });
   // TODO: 实现添加/编辑商品功能
@@ -267,11 +247,20 @@ onLoad(() => {
   margin-bottom: 8rpx;
 }
 
+.product-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
 .product-price {
   font-size: 28rpx;
   font-weight: 700;
   color: #ff3e6c;
-  margin-bottom: 16rpx;
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .product-actions {
