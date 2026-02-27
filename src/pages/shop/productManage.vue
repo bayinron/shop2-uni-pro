@@ -56,13 +56,52 @@
         <text class="empty-text">暂无商品</text>
       </view>
     </view>
+
+    <!-- 底部弹窗：展示配置（数量 +/-） -->
+    <view v-if="configSheetVisible" class="sheet-mask" @click="closeConfigSheet" />
+    <view v-if="configSheetVisible" class="sheet" @click.stop>
+      <view class="sheet-content">
+        <image
+          class="sheet-img"
+          :src="currentProduct?.product?.images?.[0]?.url || currentProduct?.product?.cover_image || '/static/img/empty.svg'"
+          mode="aspectFill"
+        />
+        <view class="sheet-info">
+          <text class="sheet-title breakcss">{{ currentProduct?.product?.name || '' }}</text>
+          <text class="sheet-price">฿{{ formatPrice(currentProduct?.product?.sale_price ?? currentProduct?.product?.original_price) }}</text>
+        </view>
+        <view class="sheet-stock">
+          <text class="sheet-stock-text">库存：{{ currentProduct?.product?.stock ?? 0 }}</text>
+        </view>
+      </view>
+
+      <view class="sheet-row">
+        <text class="sheet-row-label">数量</text>
+        <view class="qty">
+          <button class="qty-btn" @click="decQty" :disabled="configQty <= 1">－</button>
+          <view class="qty-num">{{ configQty }}</view>
+          <button class="qty-btn" @click="incQty" :disabled="configQty >= maxQty">＋</button>
+        </view>
+      </view>
+
+      <view class="sheet-actions">
+        <button class="sheet-btn sheet-btn--close" @click="closeConfigSheet" :disabled="submitting">关闭</button>
+        <button class="sheet-btn sheet-btn--ok" @click="confirmConfig" :disabled="submitting">确认</button>
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onReachBottom } from '@dcloudio/uni-app';
-import { getMyShopProducts, type MyShopProduct, type MyShopProductsParams } from '@/api/myshop';
+import {
+  getMyShopProducts,
+  updateMyShopProductDisplayConfig,
+  type MyShopProduct,
+  type MyShopProductsParams,
+} from '@/api/myshop';
+import globalTool from '@/utils/globalTool';
 
 const products = ref<MyShopProduct[]>([]);
 const keyword = ref<string>('');
@@ -129,11 +168,71 @@ function onSearch() {
 
 // 添加按钮点击
 function onAddClick(product: MyShopProduct) {
-  uni.showToast({
-    title: `操作商品：${product.product.name}`,
-    icon: 'none',
-  });
-  // TODO: 实现添加/编辑商品功能
+  openConfigSheet(product);
+}
+
+// ===== 底部弹窗：展示配置（数量）=====
+const configSheetVisible = ref(false);
+const currentProduct = ref<MyShopProduct | null>(null);
+const configQty = ref<number>(1);
+const submitting = ref(false);
+
+const maxQty = computed(() => {
+  const stock = Number(currentProduct.value?.product?.stock ?? 0);
+  return stock > 0 ? stock : 1;
+});
+
+function openConfigSheet(p: MyShopProduct) {
+  currentProduct.value = p;
+  const stock = Number(p?.product?.stock ?? 0);
+  configQty.value = stock > 0 ? stock : 1; // 按截图：默认给库存数量
+  configSheetVisible.value = true;
+}
+
+function closeConfigSheet() {
+  if (submitting.value) return;
+  configSheetVisible.value = false;
+  currentProduct.value = null;
+}
+
+function decQty() {
+  configQty.value = Math.max(1, configQty.value - 1);
+}
+
+function incQty() {
+  configQty.value = Math.min(maxQty.value, configQty.value + 1);
+}
+
+function formatPrice(v: any) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return String(v ?? '0');
+  return n.toFixed(2);
+}
+
+async function confirmConfig() {
+  if (!currentProduct.value) return;
+  if (submitting.value) return;
+  submitting.value = true;
+  try {
+    // 接口：PUT mall/my-shop/products/:id/config
+    // 这里按“数量”做 modifier（用于销量展示修饰），type 使用 add_value
+    await updateMyShopProductDisplayConfig(Number(currentProduct.value.product_id), {
+      display_sold_type: 'add_value',
+      display_sold_modifier: configQty.value,
+    });
+
+    // 本地回写，便于后续页面展示/调试
+    (currentProduct.value as any).display_sold_type = 'add_value';
+    (currentProduct.value as any).display_sold_modifier = String(configQty.value);
+
+    globalTool.showToast('已保存', false, 'success');
+    closeConfigSheet();
+  } catch (e: any) {
+    console.error('保存失败', e);
+    globalTool.showToast(e?.message || '保存失败，请稍后重试', false, 'none');
+  } finally {
+    submitting.value = false;
+  }
 }
 
 // 上拉加载更多
@@ -294,6 +393,140 @@ onLoad(() => {
   color: #ffffff;
   font-size: 24rpx;
   border: none;
+}
+
+// ===== 底部弹窗（sheet）=====
+.sheet-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 998;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 22rpx 24rpx calc(22rpx + env(safe-area-inset-bottom));
+  z-index: 999;
+}
+
+.sheet-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+}
+
+.sheet-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 14rpx;
+  background: #f5f5f5;
+}
+
+.sheet-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding-top: 4rpx;
+}
+
+.sheet-title {
+  font-size: 30rpx;
+  color: #111;
+}
+
+.sheet-price {
+  font-size: 40rpx;
+  color: #ff3e6c;
+  font-weight: 700;
+}
+
+.sheet-stock {
+  padding-top: 12rpx;
+  white-space: nowrap;
+}
+
+.sheet-stock-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.sheet-row {
+  margin-top: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet-row-label {
+  font-size: 30rpx;
+  color: #666;
+}
+
+.qty {
+  display: flex;
+  align-items: center;
+  border: 1rpx solid #eee;
+  border-radius: 10rpx;
+  overflow: hidden;
+  height: 64rpx;
+}
+
+.qty-btn {
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  background: #fff;
+  color: #666;
+  border: none;
+  border-right: 1rpx solid #eee;
+  border-radius: 0;
+}
+
+.qty-btn:last-child {
+  border-right: none;
+  border-left: 1rpx solid #eee;
+}
+
+.qty-num {
+  width: 80rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #111;
+}
+
+.sheet-actions {
+  margin-top: 28rpx;
+  display: flex;
+  gap: 18rpx;
+}
+
+.sheet-btn {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 42rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.sheet-btn--close {
+  background: #f2f2f2;
+  color: #111;
+}
+
+.sheet-btn--ok {
+  background: #e53935;
+  color: #fff;
 }
 
 .loading-more {
