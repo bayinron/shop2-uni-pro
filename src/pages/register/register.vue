@@ -129,7 +129,7 @@
         <!-- 已有账户登录 -->
         <view class="login-hint">
           <text class="hint-text">已有账户？</text>
-          <text class="login-link" @click="onGoToLogin">立即登录</text>
+          <text class="login-link" @click="onGoToLogin">{{ t('立即登录') }}</text>
         </view>
       </view>
     </view>
@@ -137,16 +137,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, reactive, onMounted } from 'vue';
 import { authRegister, authCheckUsername, authCheckEmail, getCaptcha } from '@/api';
 import globalTool from '@/utils/globalTool';
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
 const registerType = ref<'phone' | 'email'>('phone');
+import { useI18n, type SupportedLanguage } from '@/utils/i18n';
+const { currentLanguage, currentLanguageInfo, supportedLanguages, setLanguage, t } = useI18n();
 
-const formData = ref({
-  phone: '13111111111',
-  email: '',
+// 使用 reactive，模板和脚本里都直接用 formData.xxx，避免 ref / .value 不一致导致的报错
+const formData = reactive({
+  phone: '13111111113',
+  email: '13111111111@163.com',
   verifyCode: '',
   password: '111111',
   confirmPassword: '111111',
@@ -171,18 +172,18 @@ function refreshVerifyCode() {
 const canRegister = computed(() => {
   if (registerType.value === 'phone') {
     return (
-      formData.value.phone.length >= 11 &&
-      formData.value.verifyCode.length >= 4 &&
-      formData.value.password.length >= 6 &&
-      formData.value.password === formData.value.confirmPassword &&
+      formData.phone.length >= 11 &&
+      formData.verifyCode.length >= 4 &&
+      formData.password.length >= 6 &&
+      formData.password === formData.confirmPassword &&
       agreed.value
     );
   } else {
     return (
-      formData.value.email.includes('@') &&
-      formData.value.verifyCode.length >= 4 &&
-      formData.value.password.length >= 6 &&
-      formData.value.password === formData.value.confirmPassword &&
+      formData.email.includes('@') &&
+      formData.verifyCode.length >= 4 &&
+      formData.password.length >= 6 &&
+      formData.password === formData.confirmPassword &&
       agreed.value
     );
   }
@@ -202,23 +203,23 @@ function toggleAgreement() {
 
 function onRegister() {
   if (!canRegister.value) {
-    if (registerType.value === 'phone' && formData.value.phone.length < 11) {
+    if (registerType.value === 'phone' && formData.phone.length < 11) {
       uni.showToast({ title: '请输入正确的手机号码', icon: 'none' });
       return;
     }
-    if (registerType.value === 'email' && !formData.value.email.includes('@')) {
+    if (registerType.value === 'email' && !formData.email.includes('@')) {
       uni.showToast({ title: '请输入正确的邮箱地址', icon: 'none' });
       return;
     }
-    if (formData.value.verifyCode.length < 4) {
+    if (formData.verifyCode.length < 4) {
       uni.showToast({ title: '请输入验证码', icon: 'none' });
       return;
     }
-    if (formData.value.password.length < 6) {
+    if (formData.password.length < 6) {
       uni.showToast({ title: '密码至少6位', icon: 'none' });
       return;
     }
-    if (formData.value.password !== formData.value.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       uni.showToast({ title: '两次密码输入不一致', icon: 'none' });
       return;
     }
@@ -228,17 +229,18 @@ function onRegister() {
     }
   }
   let params:any = {
-    password: formData.value.password,
+    password: formData.password,
     captcha_id: captcha_id.value,
-    captcha_code: formData.value.verifyCode,
+    captcha_code: formData.verifyCode,
   }
   if (registerType.value === 'phone') {
-    params.phone = formData.value.phone;
+    params.phone = formData.phone;
   } else {
-    params.email = formData.value.email;
+    params.email = formData.email;
   }
   authRegister(params).then((res:any) => {
-    globalTool.showModal(t('注册成功'), () => {
+    // 这里直接使用中文文案，避免在未正确挂载 i18n 插件时导致 useI18n 报错
+    globalTool.showModal('注册成功', () => {
       uni.navigateTo({ url: '/pages/login/login' });
     });
   })

@@ -9,12 +9,7 @@
         <view class="form-item">
           <text class="form-label">店铺头像</text>
           <view class="avatar-upload" @click="onUploadAvatar">
-            <image
-              v-if="form.avatar"
-              class="avatar-img"
-              :src="form.avatar"
-              mode="aspectFill"
-            />
+            <image v-if="form.avatar" class="avatar-img" :src="form.avatar" mode="aspectFill" />
             <view v-else class="avatar-placeholder">
               <uni-icons type="camera" size="32" color="#ff6b9d" />
             </view>
@@ -24,13 +19,8 @@
         <!-- 店铺名称 -->
         <view class="form-item form-item-border">
           <text class="form-label">店铺名称</text>
-          <input
-            class="form-input"
-            type="text"
-            v-model="form.name"
-            placeholder="请输入店铺名称"
-            placeholder-class="input-placeholder"
-          />
+          <input class="form-input" type="text" v-model="form.name" placeholder="请输入店铺名称"
+            placeholder-class="input-placeholder" />
         </view>
 
         <!-- 商品类型 -->
@@ -47,13 +37,8 @@
         <!-- 账户所有者姓名 -->
         <view class="form-item form-item-border">
           <text class="form-label">账户所有者姓名</text>
-          <input
-            class="form-input"
-            type="text"
-            v-model="form.owner_name"
-            placeholder="请输入账户所有者姓名"
-            placeholder-class="input-placeholder"
-          />
+          <input class="form-input" type="text" v-model="form.owner_name" placeholder="请输入账户所有者姓名"
+            placeholder-class="input-placeholder" />
         </view>
 
         <!-- 身份证照片 -->
@@ -61,12 +46,7 @@
           <text class="form-label">身份证照片</text>
           <view class="id-photos">
             <view class="id-photo-item" @click="onUploadIdPhotoFront">
-              <image
-                v-if="form.id_photo_front"
-                class="id-photo-img"
-                :src="form.id_photo_front"
-                mode="aspectFill"
-              />
+              <image v-if="form.id_photo_front" class="id-photo-img" :src="form.id_photo_front" mode="aspectFill" />
               <view v-else class="id-photo-placeholder">
                 <view class="id-photo-icon">
                   <view class="icon-person"></view>
@@ -75,12 +55,7 @@
               </view>
             </view>
             <view class="id-photo-item" @click="onUploadIdPhotoBack">
-              <image
-                v-if="form.id_photo_back"
-                class="id-photo-img"
-                :src="form.id_photo_back"
-                mode="aspectFill"
-              />
+              <image v-if="form.id_photo_back" class="id-photo-img" :src="form.id_photo_back" mode="aspectFill" />
               <view v-else class="id-photo-placeholder">
                 <view class="id-photo-icon">
                   <view class="icon-doc"></view>
@@ -218,33 +193,25 @@ function validate(): boolean {
 async function onSubmit() {
   if (!validate()) return;
 
-  try {
-    uni.showLoading({ title: '提交中...' });
-    
-    // TODO: 先上传图片到服务器获取URL，然后提交表单
-    // 这里暂时使用本地路径，实际应该先上传图片
-    const payload: MerchantApplicationPayload = {
-      applicant_name: form.value.name,
-      shop_name: form.value.name,
-      shop_description: '',
-      shop_category_id: form.value.category_id,
-      id_doc_front_url: form.value.id_photo_front,
-      id_doc_back_url: form.value.id_photo_back,
-      bank_passbook_url: form.value.id_photo_back,
-      shop_logo_url: form.value.avatar,
-    };
-    const res: any = await submitMerchantApplication(payload);
-    uni.hideLoading();
-    if (res?.code === 0 || res?.id) {
-      globalTool.showToast('申请提交成功', true, 'success');
-    } else {
-      globalTool.showToast(res?.message || '申请提交失败', false, 'none');
-    }
-  } catch (e: any) {
-    uni.hideLoading();
-    console.error('提交申请失败', e);
-    globalTool.showToast(e?.message || '提交失败，请稍后重试', false, 'none');
-  }
+  uni.showLoading({ title: '提交中...' });
+
+  // TODO: 先上传图片到服务器获取URL，然后提交表单
+  // 这里暂时使用本地路径，实际应该先上传图片
+  const payload: MerchantApplicationPayload = {
+    applicant_name: form.value.name,
+    shop_name: form.value.name,
+    shop_description: '',
+    shop_category_id: form.value.category_id,
+    id_doc_front_url: form.value.id_photo_front,
+    id_doc_back_url: form.value.id_photo_back,
+    bank_passbook_url: form.value.id_photo_back,
+    shop_logo_url: form.value.avatar,
+  };
+  const res: any = await submitMerchantApplication(payload);
+  uni.hideLoading();
+  globalTool.showToast('申请提交成功', true, 'success');
+
+
 }
 
 // 加载商品分类
@@ -400,7 +367,7 @@ onLoad(async () => {
   border: 3rpx solid #4fc3f7;
   border-radius: 50%;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -421,7 +388,7 @@ onLoad(async () => {
   border: 3rpx solid #4fc3f7;
   border-radius: 4rpx;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -432,7 +399,7 @@ onLoad(async () => {
     background: #4fc3f7;
     border-radius: 2rpx;
   }
-  
+
   &::after {
     content: '';
     position: absolute;

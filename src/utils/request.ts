@@ -72,7 +72,7 @@ uni.addInterceptor('uploadFile', httpInterceptor);
  */
 type Data<T> = {
     code: string;
-    msg: string;
+    message: string;
     result: T;
 };
 const notips = ['温馨提示，请先实名'];
@@ -104,7 +104,7 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
 
                         reject(res);
                     } else if (res.data.code == 400) {
-                        if (res.data.msg == '请先完成实名认证') {
+                        if (res.data.message == '请先完成实名认证') {
                             globalTool.showModal(
                                 t('温馨提示，请先实名'),
                                 () => {
@@ -114,20 +114,20 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                                 },
                                 true
                             );
-                        } else if (res.data.msg == '请先设置安全密码') {
+                        } else if (res.data.message == '请先设置安全密码') {
                             uni.navigateTo({
                                 url: '/pages/changePassword'
                             });
                         } else
                             uni.showToast({
                                 icon: 'none',
-                                title: res.data.msg || t('请求错误')
+                                title: res.data.message || t('请求错误')
                             });
                         reject(res);
                     } else if (res.data.code == 409) {
                         uni.showToast({
                             icon: 'none',
-                            title: res.data.msg || t('用户在其他设备登录')
+                            title: res.data.message || t('用户在其他设备登录')
                         });
                         uni.clearStorage();
                         uni.redirectTo({
@@ -137,7 +137,7 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                     } else {
                         uni.showToast({
                             icon: 'none',
-                            title: res.data.msg || t('请求错误')
+                            title: res.data.message || t('请求错误')
                         });
                         reject(res);
                     }
