@@ -1,34 +1,37 @@
 <template>
     <view class="product-manage-page">
-      <!-- 顶部商品类型 Tab（参考 shop.vue，一模一样的交互） -->
-      <scroll-view class="nav-wrap" scroll-x>
-        <view class="nav-inner">
-          <view
-            v-for="c in categories"
-            :key="c.id"
-            :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
-            @click="onCateClick(c)"
-          >
-            <text class="nav-text">{{ c.slug || c.name }}</text>
+      <!-- 顶部固定区域：Tab + 搜索框放在一起，顶置在顶部 -->
+      <view class="top-bar">
+        <!-- 商品类型 Tab（参考 shop.vue，一模一样的交互） -->
+        <scroll-view class="nav-wrap" scroll-x>
+          <view class="nav-inner">
+            <view
+              v-for="c in categories"
+              :key="c.id"
+              :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
+              @click="onCateClick(c)"
+            >
+              <text class="nav-text">{{ c.slug || c.name }}</text>
+            </view>
           </view>
+        </scroll-view>
+
+        <!-- 搜索栏 -->
+        <view class="header">
+          <view class="header-back" @click="onBack">
+            <uni-icons type="left" size="20" color="#ffffff" />
+          </view>
+          <view class="header-search">
+            <uni-icons type="search" size="18" color="#c7c7c7" />
+            <input
+              class="search-input"
+              placeholder="请输入商品名"
+              v-model="keyword"
+              @confirm="onSearch"
+            />
+          </view>
+          <button class="header-search-btn" @click="onSearch">搜索</button>
         </view>
-      </scroll-view>
-  
-      <!-- 顶部红色头部 -->
-      <view class="header">
-        <view class="header-back" @click="onBack">
-          <uni-icons type="left" size="20" color="#ffffff" />
-        </view>
-        <view class="header-search">
-          <uni-icons type="search" size="18" color="#c7c7c7" />
-          <input
-            class="search-input"
-            placeholder="请输入商品名"
-            v-model="keyword"
-            @confirm="onSearch"
-          />
-        </view>
-        <button class="header-search-btn" @click="onSearch">搜索</button>
       </view>
   
       <!-- 商品列表 -->
@@ -223,16 +226,21 @@
     min-height: 100vh;
     background: #f5f5f5;
   }
-  
-  .nav-wrap {
+
+  .top-bar {
     position: fixed;
-    top: 100rpx;
+    // 避开 uniapp 默认导航栏（原生导航栏高度）
+    // H5 通常为 0；App/小程序端会是导航栏占用高度
+    top: var(--window-top);
     left: 0;
     right: 0;
+    z-index: 110;
+  }
+  
+  .nav-wrap {
     background: #ffffff;
     height: 80rpx;
     box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.04);
-    z-index: 110;
   }
   
   .nav-inner {
@@ -259,16 +267,11 @@
   }
   
   .header {
-    position: fixed;
-    top: 80rpx;
-    left: 0;
-    right: 0;
     height: 88rpx;
     background: #ff3e6c;
     display: flex;
     align-items: center;
     padding: 0 20rpx;
-    z-index: 100;
   }
   
   .header-back {
@@ -310,7 +313,8 @@
   }
   
   .product-list {
-    margin-top: 168rpx;
+    // 80rpx(tab) + 88rpx(搜索栏) + 导航栏占用高度
+    margin-top: calc(88rpx + var(--window-top));
     padding: 16rpx;
   }
   
