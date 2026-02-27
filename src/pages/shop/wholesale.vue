@@ -328,7 +328,7 @@
   
   .nav-wrap {
     background: #ffffff;
-    height: 80rpx;
+    height: 50rpx;
     box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.04);
   }
   
