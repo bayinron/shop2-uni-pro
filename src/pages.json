@@ -141,6 +141,12 @@
             "style": {
                 "navigationBarTitleText": "银行账户"
             }
+        },
+        {
+            "path": "pages/shop/wholesale",
+            "style": {
+                "navigationBarTitleText": "批发中心"
+            }
         }
     ],
     "globalStyle": {

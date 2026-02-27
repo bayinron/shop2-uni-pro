@@ -180,6 +180,19 @@ function onToolClick(type: string) {
     uni.navigateTo({
       url: '/pages/shop/productManage',
     });
+  }else if (type === 'wholesale') {
+    uni.navigateTo({
+      url: '/pages/shop/wholesale',
+    });
+  }
+  else if (type === 'password') {
+    uni.navigateTo({
+      url: '/pages/shop/password',
+    });
+  }else if (type === 'logout') {
+    uni.navigateTo({
+      url: '/pages/shop/logout',
+    });
   }
 }
 </script>
