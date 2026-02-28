@@ -3,37 +3,20 @@
     <!-- 顶部标题栏占位（导航由 pages.json 控制） -->
     <view class="header-placeholder" />
 
-    <!-- 表单区域 -->
-    <view class="form-card">
-      <view class="form-item">
-        <text class="form-label">开户人姓名</text>
+    <!-- 表单区域（根据后端返回的 fields_config 动态生成） -->
+    <view class="form-card" v-if="fieldConfigs.length">
+      <view
+        v-for="(field, index) in fieldConfigs"
+        :key="field.key"
+        class="form-item"
+        :class="{ 'no-border': index === fieldConfigs.length - 1 }"
+      >
+        <text class="form-label">{{ field.label }}</text>
         <input
           class="form-input"
-          type="text"
-          v-model="form.accountName"
-          placeholder="请输入开户人姓名"
-          placeholder-class="form-input-placeholder"
-        />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">开户行</text>
-        <input
-          class="form-input"
-          type="text"
-          v-model="form.bankName"
-          placeholder="请输入开户行"
-          placeholder-class="form-input-placeholder"
-        />
-      </view>
-
-      <view class="form-item no-border">
-        <text class="form-label">银行卡号</text>
-        <input
-          class="form-input"
-          type="number"
-          v-model="form.bankCard"
-          placeholder="请输入银行卡号"
+          :type="field.type === 'number' ? 'number' : 'text'"
+          v-model="form[field.key]"
+          :placeholder="field.placeholder || `请输入${field.label}`"
           placeholder-class="form-input-placeholder"
         />
       </view>
@@ -52,38 +35,54 @@ import {getBankTemplates,bindUserPaymentMethod} from '@/api/pay';
 import { onLoad } from '@dcloudio/uni-app';
 import globalTool from '@/utils/globalTool';
 const cny = ref<any>(null);
+const fieldConfigs = ref<any[]>([]);
 onLoad(() => {
   getBankTemplates({country_code: 'cny'}).then((res: any) => {
-    cny.value = res[0];
+    const tpl = res?.[0] || null;
+    cny.value = tpl;
+    // 兼容字段名为 fields_config 或 fields
+    const cfg = tpl?.fields_config || tpl?.fields || [];
+    fieldConfigs.value = Array.isArray(cfg) ? cfg : [];
+    // 初始化表单字段
+    fieldConfigs.value.forEach((f: any) => {
+      const key = f.key;
+      if (form.value[key] === undefined) {
+        form.value[key] = '';
+      }
+    });
   });
 });
 
-const form = ref({
-  accountName: '',
-  bankName: '',
-  bankCard: '',
-});
+const form = ref<Record<string, string>>({});
 
 function onSave() {
-  if (!form.value.accountName.trim()) {
-    uni.showToast({ title: '请输入开户人姓名', icon: 'none' });
+  // 按配置做必填校验
+  for (const field of fieldConfigs.value as any[]) {
+    if (!field.required) continue;
+    const rawVal = form.value[field.key] as unknown;
+    const val = typeof rawVal === 'string' ? rawVal.trim() : rawVal;
+    if (val === undefined || val === null || val === '') {
+      uni.showToast({
+        title: field.placeholder || `请输入${field.label}`,
+        icon: 'none',
+      });
+      return;
+    }
+  }
+
+  if (!cny.value?.id) {
+    uni.showToast({ title: '银行模板未加载完成', icon: 'none' });
     return;
   }
-  if (!form.value.bankName.trim()) {
-    uni.showToast({ title: '请输入开户行', icon: 'none' });
-    return;
-  }
-  if (!form.value.bankCard.trim()) {
-    uni.showToast({ title: '请输入银行卡号', icon: 'none' });
-    return;
-  }
+
+  const accountInfo: Record<string, any> = {};
+  fieldConfigs.value.forEach((field: any) => {
+    accountInfo[field.key] = form.value[field.key];
+  });
+
   bindUserPaymentMethod({
     bank_template_id: cny.value.id,
-    account_info: {
-      accountName: form.value.accountName,
-      bankName: form.value.bankName,
-      bankCard: form.value.bankCard,
-    },
+    account_info: accountInfo,
   }).then((res: any) => {
     console.log(res);
     globalTool.showToast('保存成功', true, 'success');
