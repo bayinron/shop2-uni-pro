@@ -48,6 +48,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import {getBankTemplates,bindUserPaymentMethod} from '@/api/pay';
+import { onLoad } from '@dcloudio/uni-app';
+import globalTool from '@/utils/globalTool';
+const cny = ref<any>(null);
+onLoad(() => {
+  getBankTemplates({country_code: 'cny'}).then((res: any) => {
+    cny.value = res[0];
+  });
+});
 
 const form = ref({
   accountName: '',
@@ -68,11 +77,16 @@ function onSave() {
     uni.showToast({ title: '请输入银行卡号', icon: 'none' });
     return;
   }
-
-  // TODO: 接入绑定/保存银行卡接口
-  uni.showToast({
-    title: '已保存银行卡信息（示例）',
-    icon: 'none',
+  bindUserPaymentMethod({
+    bank_template_id: cny.value.id,
+    account_info: {
+      accountName: form.value.accountName,
+      bankName: form.value.bankName,
+      bankCard: form.value.bankCard,
+    },
+  }).then((res: any) => {
+    console.log(res);
+    globalTool.showToast('保存成功', true, 'success');
   });
 }
 </script>

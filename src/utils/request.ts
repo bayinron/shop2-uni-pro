@@ -92,7 +92,7 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
             success(res: any) {
                 if (res.data.code != 0) {
                     if (res.data.code == 401) {
-                        uni.clearStorage();
+                        // uni.clearStorage();
                         uni.redirectTo({
                             url: '/pages/login/login'
                         });
