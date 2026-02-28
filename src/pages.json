@@ -165,6 +165,12 @@
             "style": {
                 "navigationBarTitleText": "充值日志"
             }
+        },
+        {
+            "path": "pages/wallet/withdrawLog",
+            "style": {
+                "navigationBarTitleText": "提现日志"
+            }
         }
     ],
     "globalStyle": {
