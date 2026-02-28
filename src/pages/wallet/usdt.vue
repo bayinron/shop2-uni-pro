@@ -3,25 +3,35 @@
     <!-- 顶部标题栏占位（导航由 pages.json 控制） -->
     <view class="header-placeholder" />
 
-    <!-- 表单区域 -->
-    <view class="form-card">
-      <!-- 主网选择 -->
-      <view class="form-item" @click="onNetworkClick">
-        <text class="form-label">请选择主网</text>
-        <view class="form-right">
-          <text class="form-value">{{ currentNetwork.name }}</text>
+    <!-- 表单区域（根据后端返回的 USDT fields_config 动态生成） -->
+    <view class="form-card" v-if="fieldConfigs.length">
+      <view
+        v-for="(field, index) in fieldConfigs"
+        :key="field.key"
+        class="form-item"
+        :class="{ 'no-border': index === fieldConfigs.length - 1 }"
+        @click="field.type === 'select' ? onSelectField(field) : undefined"
+      >
+        <text class="form-label">{{ field.label }}</text>
+
+        <!-- 下拉选择类型 -->
+        <view
+          v-if="field.type === 'select'"
+          class="form-right"
+        >
+          <text class="form-value">
+            {{ form[field.key] || '请选择' }}
+          </text>
           <uni-icons type="bottom" size="18" color="#c7c7c7" />
         </view>
-      </view>
 
-      <!-- USDT 地址 -->
-      <view class="form-item no-border">
-        <text class="form-label">USDT</text>
+        <!-- 普通输入类型 -->
         <input
+          v-else
           class="form-input"
-          type="text"
-          v-model="form.address"
-          placeholder="请输入USDT地址"
+          :type="field.type === 'number' ? 'number' : 'text'"
+          v-model="form[field.key]"
+          :placeholder="field.placeholder || `请输入${field.label}`"
           placeholder-class="form-input-placeholder"
         />
       </view>
@@ -36,52 +46,77 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
+import { getBankTemplates, bindUserPaymentMethod } from '@/api/pay';
+import globalTool from '@/utils/globalTool';
 
-type NetworkItem = {
-  key: string;
-  name: string;
-};
+const tpl = ref<any>(null);
+const fieldConfigs = ref<any[]>([]);
+const form = ref<Record<string, any>>({});
 
-const networks: NetworkItem[] = [
-  { key: 'TRC20', name: 'TRC20' },
-  // 以后如果有 ERC20、OMNI 等，在这里扩展
-];
+onLoad(() => {
+  // 与银行卡页类似，这里使用 country_code: 'usdt'
+  getBankTemplates({ country_code: 'usdt' }).then((res: any) => {
+    const t = res?.[0] || null;
+    tpl.value = t;
+    const cfg = t?.fields_config || t?.fields || [];
+    fieldConfigs.value = Array.isArray(cfg) ? cfg : [];
 
-const form = ref({
-  network: networks[0].key,
-  address: '',
+    // 初始化表单字段
+    fieldConfigs.value.forEach((f: any) => {
+      if (form.value[f.key] === undefined) {
+        form.value[f.key] = '';
+      }
+    });
+  });
 });
 
-const currentNetwork = ref<NetworkItem>(networks[0]);
-
-function onNetworkClick() {
-  const itemList = networks.map((n) => n.name);
+function onSelectField(field: any) {
+  const options: string[] = field.options || [];
+  if (!options.length) return;
   uni.showActionSheet({
-    itemList,
+    itemList: options,
     success: (res) => {
       const idx = res.tapIndex;
-      if (idx >= 0 && idx < networks.length) {
-        currentNetwork.value = networks[idx];
-        form.value.network = networks[idx].key;
+      if (idx >= 0 && idx < options.length) {
+        form.value[field.key] = options[idx];
       }
     },
   });
 }
 
 function onSave() {
-  if (!form.value.address.trim()) {
-    uni.showToast({ title: '请输入USDT地址', icon: 'none' });
+  // 必填校验
+  for (const field of fieldConfigs.value as any[]) {
+    if (!field.required) continue;
+    const rawVal = form.value[field.key] as unknown;
+    const val = typeof rawVal === 'string' ? rawVal.trim() : rawVal;
+    if (val === undefined || val === null || val === '') {
+      uni.showToast({
+        title: field.placeholder || `请输入${field.label}`,
+        icon: 'none',
+      });
+      return;
+    }
+  }
+
+  if (!tpl.value?.id) {
+    uni.showToast({ title: 'USDT模板未加载完成', icon: 'none' });
     return;
   }
 
-  // TODO: 接入绑定/保存 USDT 地址的真实接口
-  uni.showToast({
-    title: '已保存USDT地址（示例）',
-    icon: 'none',
+  const accountInfo: Record<string, any> = {};
+  fieldConfigs.value.forEach((field: any) => {
+    accountInfo[field.key] = form.value[field.key];
   });
-  setTimeout(() => {
-    uni.navigateBack();
-  }, 1500);
+
+  bindUserPaymentMethod({
+    bank_template_id: tpl.value.id,
+    account_info: accountInfo,
+  }).then((res: any) => {
+    console.log(res);
+    globalTool.showToast('保存成功', true, 'success');
+  });
 }
 </script>
 
