@@ -112,9 +112,9 @@ export interface MyShopProductsParams {
     keyword?: string;
 }
 export interface MyShopProduct {
-    id: number;
-    shop_id: number;
-    product_id: number;
+    id: number | string;
+    shop_id: number | string;
+    product_id: number | string;
     custom_name: string | null;
     custom_description: string | null;
     custom_stock: number;
@@ -129,9 +129,9 @@ export interface MyShopProduct {
     is_featured: number;
     featured_order: number;
     product: {
-        id: number;
-        shop_id: number;
-        category_id: number;
+        id: number | string;
+        shop_id: number | string;
+        category_id: number | string;
         sku: string | null;
         name: string;
         description: string;
@@ -140,16 +140,21 @@ export interface MyShopProduct {
         reserved_stock: number;
         original_price: string;
         sale_price: string;
+        discount_type: string;
+        discount_value: string;
+        storage_type: string;
+        weight: string;
+        shipping_fee: string;
         free_shipping_quantity: number | null;
         free_shipping_amount: number | null;
-        fees: number | null;
+        fees: number | string | null;
         sold_count: number;
         view_count: number;
         display_sold_type: string;
         display_sold_modifier: string;
         status: string;
         is_featured: number;
-        logistics_provider_id: number | null;
+        logistics_provider_id: number | string | null;
         payment_methods: any;
         coupon_applicable: number;
         min_purchase_discount: any;
@@ -162,7 +167,8 @@ export interface MyShopProduct {
         is_unlimited_stock: number;
         images: any[];
         display_sold_count: number;
-    }
+        display_stock: number;
+    };
 }
 
 export interface MyShopProductsResponse {
@@ -204,11 +210,33 @@ export function removeMyShopProduct(productId: number) {
   });
 }
 
-// 5. 更新商品展示配置
+/**
+ * 5. 更新商品的商家展示配置
+ * PUT /api/mall/my-shop/products/:product_id/config
+ *
+ * 覆寫商舖對該單品前端所看到的展示資訊。
+ */
 export type DisplaySoldType = 'exact' | 'add_value' | 'add_percent' | 'multiply';
 
 export interface UpdateProductDisplayConfigPayload {
+  /** 商家自定顯示名稱，覆寫商品名 name */
+  custom_name?: string;
+  /** 商家自定商品說明，覆寫 description */
+  custom_description?: string;
+  /**
+   * 商店欲呈現的面版庫存數字 (display_stock)
+   * 不影響實際庫存 stock
+   */
+  custom_stock?: number;
+  /**
+   * 假銷量修飾法：
+   * - exact: 真實銷量（預設）
+   * - add_value: 真實銷量 + modifier
+   * - add_percent: 真實銷量 × (1 + modifier/100)
+   * - multiply: 真實銷量 × modifier
+   */
   display_sold_type?: DisplaySoldType;
+  /** 與 display_sold_type 搭配使用的修飾基準值 */
   display_sold_modifier?: number;
 }
 

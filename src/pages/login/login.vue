@@ -68,8 +68,8 @@ import globalTool from '@/utils/globalTool';
 import { useUserStore } from '@/stores/modules/userStore';
 const userStore = useUserStore();
 const formData = ref({
-  login: '13111111111',
-  password: '111111',
+  login: '',
+  password: '',
 });
 
 const showPassword = ref(false);
@@ -92,7 +92,12 @@ function onRegister() {
     url: '/pages/register/register'
   });
 }
-
+onLoad(() => {
+  const loginInfo = uni.getStorageSync('loginInfo');
+  if (loginInfo) {
+    formData.value = loginInfo;
+  }
+});
 function onLogin() {
   if (!canLogin.value) {
     uni.showToast({ title: '请完善登录信息', icon: 'none' });
@@ -102,6 +107,8 @@ function onLogin() {
   authLogin(formData.value).then((res:any) => {
       uni.setStorageSync('token', res.token);
       // userStore.setUserInfo(res.user);
+      //保留登录信息
+      uni.setStorageSync('loginInfo', formData.value);
       userStore.reqUserInfo();
       uni.switchTab({ url: '/pages/home/index' });
   });

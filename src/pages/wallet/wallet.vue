@@ -100,13 +100,13 @@ function todo(type: string) {
       url = '/pages/wallet/bill';
       break;
     case 'withdrawLog':
-      url = '/pages/wallet/withdraw-log';
+      url = '/pages/wallet/withdrawLog';
       break;
     case 'rechargeLog':
-      url = '/pages/wallet/recharge-log';
+      url = '/pages/wallet/rechargeLog';
       break;
     case 'bindUsdt':
-      url = '/pages/wallet/bind-usdt';
+      url = '/pages/wallet/usdt';
       break;
     default:
       url = '';

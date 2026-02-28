@@ -187,7 +187,7 @@ function onToolClick(type: string) {
   }
   else if (type === 'password') {
     uni.navigateTo({
-      url: '/pages/shop/password',
+        url: '/pages/wallet/editPayPwd',
     });
   }else if (type === 'logout') {
     uni.navigateTo({

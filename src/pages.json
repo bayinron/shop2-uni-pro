@@ -147,6 +147,24 @@
             "style": {
                 "navigationBarTitleText": "批发中心"
             }
+        },
+        {
+            "path": "pages/wallet/editPayPwd",
+            "style": {
+                "navigationBarTitleText": "修改支付密码"
+            }
+        },
+        {
+            "path": "pages/wallet/usdt",
+            "style": {
+                "navigationBarTitleText": "绑定USDT"
+            }
+        },
+        {
+            "path": "pages/wallet/rechargeLog",
+            "style": {
+                "navigationBarTitleText": "充值日志"
+            }
         }
     ],
     "globalStyle": {

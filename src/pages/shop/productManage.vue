@@ -27,7 +27,7 @@
         <image class="product-img" :src="product.product.images?.[0]?.url" mode="aspectFill" />
         <view class="product-info">
           <text class="product-name breakcss">{{ product.product.name }}</text>
-          <text class="product-stock">库存: {{ product.product.stock }}</text>
+          <text class="product-stock">库存: {{ product.product.display_stock }}</text>
           <view class="product-bottom">
             <text class="product-price">批发价: ฿ {{ product.product.original_price }}</text>
             <view class="product-actions">
@@ -216,22 +216,14 @@ async function confirmConfig() {
   try {
     // 接口：PUT mall/my-shop/products/:id/config
     // 这里按“数量”做 modifier（用于销量展示修饰），type 使用 add_value
-    await updateMyShopProductDisplayConfig(Number(currentProduct.value.product_id), {
-      display_sold_type: 'add_value',
-      display_sold_modifier: configQty.value,
+    await updateMyShopProductDisplayConfig(Number(currentProduct.value.product.id), {
+      custom_stock: Number(configQty.value)+Number(currentProduct.value.product.display_stock),
     });
-
-    // 本地回写，便于后续页面展示/调试
-    (currentProduct.value as any).display_sold_type = 'add_value';
-    (currentProduct.value as any).display_sold_modifier = String(configQty.value);
-
     globalTool.showToast('已保存', false, 'success');
     closeConfigSheet();
-  } catch (e: any) {
+  } catch (e) {
     console.error('保存失败', e);
-    globalTool.showToast(e?.message || '保存失败，请稍后重试', false, 'none');
-  } finally {
-    submitting.value = false;
+    globalTool.showToast('保存失败，请稍后重试', false, 'none');
   }
 }
 
