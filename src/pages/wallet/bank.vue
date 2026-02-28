@@ -81,8 +81,9 @@ function onSave() {
   });
 
   bindUserPaymentMethod({
+    name: '银行',
     bank_template_id: cny.value.id,
-    account_info: accountInfo,
+    details: accountInfo,
   }).then((res: any) => {
     console.log(res);
     globalTool.showToast('保存成功', true, 'success');

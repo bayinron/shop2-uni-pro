@@ -163,10 +163,11 @@ export function getBankTemplates(params: GetBankTemplatesParams = {}) {
  */
 
 export interface BindPaymentMethodPayload {
+  name: string;
   /** 銀行模板 ID */
   bank_template_id: number;
   /** 帳戶信息（依模板字段而定） */
-  account_info: Record<string, any>;
+  details: Record<string, any>;
   /** 是否設為預設，默認 false */
   is_default?: boolean;
 }
@@ -186,7 +187,7 @@ export interface UserPaymentMethod {
  * POST /api/user/payment-methods
  */
 export function bindUserPaymentMethod(data: BindPaymentMethodPayload) {
-  return http<UserPaymentMethod>({
+  return http<any>({
     method: 'POST',
     url: 'user/payment-methods',
     data,

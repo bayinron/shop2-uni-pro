@@ -111,8 +111,9 @@ function onSave() {
   });
 
   bindUserPaymentMethod({
+    name: 'USDT',
     bank_template_id: tpl.value.id,
-    account_info: accountInfo,
+    details: accountInfo,
   }).then((res: any) => {
     console.log(res);
     globalTool.showToast('保存成功', true, 'success');
