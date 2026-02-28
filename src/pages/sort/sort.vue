@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getCategoryTree, getShopCategoryShops } from '@/api';
+import { getCategoryProducts, getCategoryTree, getShopCategoryShops } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 
 const userStore = useUserStore();
@@ -73,9 +73,7 @@ onLoad(() => {
     categories.value = res;
     if(res.length > 0){
       activeCateId.value = res[0].id;
-      getShopCategoryShops(res[0].id).then((res: any) => {
-        currentProducts.value = res.data;
-      });
+      onCateClick(res[0]);
     }
   });
 });
@@ -108,89 +106,6 @@ const categories = ref<Category[]>([
   { id: 8, name: '运动户外' },
 ]);
 
-// 测试商品数据（简单模拟几类）
-const allProducts = ref<Product[]>([
-  {
-    id: 'p1',
-    cateId: 1,
-    title: '爆款蓝牙耳机',
-    price: 199,
-    img: '/static/img/clock.png',
-    sold: 325,
-  },
-  {
-    id: 'p2',
-    cateId: 1,
-    title: '夏季人气T恤',
-    price: 89,
-    img: '/static/img/profit.png',
-    sold: 612,
-  },
-  {
-    id: 'p3',
-    cateId: 2,
-    title: '5G 智能手机 128G',
-    price: 2699,
-    img: '/static/img/invitebg.png',
-    sold: 128,
-  },
-  {
-    id: 'p4',
-    cateId: 2,
-    title: '平板电脑 学习娱乐两用',
-    price: 1499,
-    img: '/static/img/money-bag.png',
-    sold: 85,
-  },
-  {
-    id: 'p5',
-    cateId: 3,
-    title: '智能扫地机器人',
-    price: 899,
-    img: '/static/img/clock.png',
-    sold: 54,
-  },
-  {
-    id: 'p6',
-    cateId: 4,
-    title: '补水保湿面膜 10片',
-    price: 59,
-    img: '/static/img/profit.png',
-    sold: 412,
-  },
-  {
-    id: 'p7',
-    cateId: 5,
-    title: '百搭运动鞋',
-    price: 239,
-    img: '/static/img/money-bag.png',
-    sold: 203,
-  },
-  {
-    id: 'p8',
-    cateId: 6,
-    title: '北欧风客厅地毯',
-    price: 329,
-    img: '/static/img/invitebg.png',
-    sold: 67,
-  },
-  {
-    id: 'p9',
-    cateId: 7,
-    title: '机械键盘 青轴',
-    price: 299,
-    img: '/static/img/clock.png',
-    sold: 188,
-  },
-  {
-    id: 'p10',
-    cateId: 8,
-    title: '户外登山背包 40L',
-    price: 199,
-    img: '/static/img/profit.png',
-    sold: 42,
-  },
-]);
 
 const activeCateId = ref<number>(categories.value[0]?.id || 1);
 
