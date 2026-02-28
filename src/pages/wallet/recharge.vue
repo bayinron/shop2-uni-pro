@@ -73,7 +73,7 @@ import { useUserStoreHook } from '@/stores/modules/userStore';
 import globalTool from '@/utils/globalTool';
 
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.getUserInfo());
+const userInfo = computed(() => userStore.userInfo);
 
 
 const form = ref({

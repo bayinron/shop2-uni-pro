@@ -50,7 +50,7 @@ const formData = ref({
 });
 
 const userStore = useUserStoreHook();
-const userInfo = userStore.getUserInfo() as any;
+const userInfo = userStore.userInfo;
 
 const nickname = ref<string>(userInfo.nickname || '');
 const avatar = ref<string>(userInfo.avatar || '');

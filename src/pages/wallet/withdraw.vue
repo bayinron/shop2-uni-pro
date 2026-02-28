@@ -77,7 +77,7 @@ const withdrawTypes: WithdrawType[] = [
 const currentWithdrawType = ref<WithdrawType>(withdrawTypes[0]);
 
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.getUserInfo() as any);
+const userInfo = computed(() => userStore.userInfo);
 const availableBalance = computed(() => userInfo.value?.balance ?? '0');
 
 function onWithdrawTypeClick() {

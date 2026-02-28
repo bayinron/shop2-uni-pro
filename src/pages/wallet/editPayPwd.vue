@@ -5,7 +5,7 @@
 
     <!-- 表单区域 -->
     <view class="form-card">
-      <view class="form-item">
+      <view class="form-item" v-if="!first">
         <text class="form-label">原密码</text>
         <input
           class="form-input"
@@ -48,15 +48,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import { updateWithdrawPassword, type UpdateWithdrawPasswordPayload } from '@/api/auth';
+import globalTool from '@/utils/globalTool';
+const first = ref(false);
 const form = ref({
   oldPwd: '',
   newPwd: '',
   confirmPwd: '',
 });
-
-function onSubmit() {
-  if (!form.value.oldPwd.trim()) {
+onLoad((options :any) => {
+  if (options.first) {
+    first.value = options.first === 'true';
+  }
+});
+async function onSubmit() {
+  if (!first.value && !form.value.oldPwd.trim()) {
     uni.showToast({ title: '请输入原密码', icon: 'none' });
     return;
   }
@@ -73,14 +79,19 @@ function onSubmit() {
     return;
   }
 
-  // TODO: 接入修改支付密码的真实接口
-  uni.showToast({
-    title: '修改成功（示例）',
-    icon: 'none',
-  });
-  setTimeout(() => {
-    uni.navigateBack();
-  }, 1500);
+  const payload: UpdateWithdrawPasswordPayload = {
+    old_password: form.value.oldPwd,
+    new_password: form.value.newPwd,
+    confirm_password: form.value.confirmPwd,
+  };
+
+  try {
+    await updateWithdrawPassword(payload);
+    globalTool.showToast('修改成功', true, 'success');
+  } catch (e) {
+    // 具体错误提示已在全局 http 拦截器中处理，这里只做兜底
+    console.error('修改提现密码失败', e);
+  }
 }
 </script>
 

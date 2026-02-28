@@ -71,7 +71,6 @@ export const useUserStore = defineStore('user', () => {
         "avatar": null,
         "gender": null,
         "birthday": null,
-        "withdraw_status": true,
         "status": 1,
         "invite_code_status": true,
         "level": 1,
@@ -88,7 +87,8 @@ export const useUserStore = defineStore('user', () => {
         "deleted_at": null,
         "roles": [],
         "role_names": [],
-        user_role: 'user'
+        user_role: 'user',
+        withdraw_status: false
     });
     const homeConfig = ref<any>({});
     function reqHomeConfig() {
@@ -100,9 +100,7 @@ export const useUserStore = defineStore('user', () => {
     function setUserInfo(user: UserInfo) {
         userInfo.value = user;
     }
-    function getUserInfo() {
-        return userInfo.value;
-    }
+
     function reqUserInfo() {
         authGetMe().then((res: any) => {
             userInfo.value = res;
@@ -111,7 +109,7 @@ export const useUserStore = defineStore('user', () => {
     return {
         url,
         setUserInfo,
-        getUserInfo,
+        userInfo,
         reqUserInfo
     };
 });

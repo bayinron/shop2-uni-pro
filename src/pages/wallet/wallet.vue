@@ -72,7 +72,7 @@ import { computed } from 'vue';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 
 const userStore = useUserStoreHook();
-const userInfo = computed<any>(() => userStore.getUserInfo() as any);
+const userInfo = computed(() => userStore.userInfo);
 const balance = computed(() => userInfo.value.balance ?? '0');
 
 function goRecharge() {

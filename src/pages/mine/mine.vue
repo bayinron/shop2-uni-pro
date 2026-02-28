@@ -137,7 +137,7 @@ type Product = {
 
 const isLoggedIn = ref(false);
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.getUserInfo());
+const userInfo = computed(() => userStore.userInfo);
 const displayAccount = computed(() => userInfo.value.phone || userInfo.value.username || '未登录');
 const userBalance = computed(() => userInfo.value.balance ?? '0');
 

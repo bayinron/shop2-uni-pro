@@ -123,7 +123,7 @@
             <view class="tool-icon">
               <uni-icons type="locked" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">修改支付密码</text>
+            <text class="tool-text">{{ userInfo.withdraw_status ? '修改支付密码' : '设置支付密码' }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('logout')">
             <view class="tool-icon">
@@ -142,7 +142,7 @@ import { ref } from 'vue';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.getUserInfo());
+const userInfo = computed(() => userStore.userInfo);
 const shopUser = ref({
   id: '10905',
   name: 'AABBC',
@@ -187,7 +187,7 @@ function onToolClick(type: string) {
   }
   else if (type === 'password') {
     uni.navigateTo({
-        url: '/pages/wallet/editPayPwd',
+        url: `/pages/wallet/editPayPwd?first=${!userInfo.value.withdraw_status}`,
     });
   }else if (type === 'logout') {
     uni.navigateTo({
