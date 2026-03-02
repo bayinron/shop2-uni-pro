@@ -174,12 +174,28 @@ export interface BindPaymentMethodPayload {
 
 export interface UserPaymentMethod {
   id: number;
-  user_id?: number;
-  bank_template_id: number;
-  bank_name?: string;
-  account_info: Record<string, any>;
+  /** 系統自動判定的類型：fiat（法幣）或 crypto（加密貨幣） */
+  type: 'fiat' | 'crypto' | string;
+  /** 用戶自訂的帳戶別名 */
+  name: string;
+  /** 是否為預設打款帳戶 */
   is_default: boolean;
-  created_at?: string;
+  /** 帳戶詳細資訊，對應綁定時填入的 Key/Value */
+  details: Record<string, any>;
+  /**
+   * 所屬銀行模板（type = fiat 時存在）
+   *  - name: 銀行名稱
+   *  - currency: 幣種
+   *  - fields_config: 欄位定義
+   */
+  bank_template?: {
+    id: number;
+    name: string;
+    currency: string;
+    fields_config?: any;
+    [key: string]: any;
+  } | null;
+  [key: string]: any;
 }
 
 /**
@@ -198,10 +214,11 @@ export function bindUserPaymentMethod(data: BindPaymentMethodPayload) {
  * 獲取我的收款方式列表
  * GET /api/user/payment-methods
  */
-export function getUserPaymentMethods() {
+export function getUserPaymentMethods(params?: { bank_template_id?: number }) {
   return http<UserPaymentMethod[]>({
     method: 'GET',
     url: 'user/payment-methods',
+    data: params,
   });
 }
 

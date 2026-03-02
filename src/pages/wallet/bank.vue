@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import {getBankTemplates,bindUserPaymentMethod} from '@/api/pay';
+import {getBankTemplates,bindUserPaymentMethod, getUserPaymentMethods} from '@/api/pay';
 import { onLoad } from '@dcloudio/uni-app';
 import globalTool from '@/utils/globalTool';
 const cny = ref<any>(null);
@@ -49,6 +49,13 @@ onLoad(() => {
       if (form.value[key] === undefined) {
         form.value[key] = '';
       }
+    });
+    nextTick(() => {
+      getUserPaymentMethods({ bank_template_id: cny.value.id }).then((res: any) => {
+        if (res.length > 0) {
+          form.value = res[0].details;
+        }
+      });
     });
   });
 });

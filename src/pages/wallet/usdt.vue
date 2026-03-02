@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { getBankTemplates, bindUserPaymentMethod } from '@/api/pay';
+import { getBankTemplates, bindUserPaymentMethod,getUserPaymentMethods } from '@/api/pay';
 import globalTool from '@/utils/globalTool';
 
 const tpl = ref<any>(null);
@@ -67,6 +67,14 @@ onLoad(() => {
       if (form.value[f.key] === undefined) {
         form.value[f.key] = '';
       }
+    });
+
+    nextTick(() => {
+      getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {
+        if (res.length > 0) {
+          form.value = res[0].details;
+        }
+      });
     });
   });
 });
