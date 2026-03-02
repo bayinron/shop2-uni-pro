@@ -3,7 +3,7 @@
       <!-- 顶部标题栏占位（导航由 pages.json 控制） -->
       <view class="header-placeholder" />
   
-      <!-- 充值记录列表（测试数据） -->
+  <!-- 提现记录列表 -->
       <view class="list">
         <view
           v-for="item in logs"
@@ -28,20 +28,31 @@
   </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { getMyBalanceLogs, type BalanceLogItem } from '@/api/log';
+import { onLoad } from '@dcloudio/uni-app';
   
-  type RechargeLogItem = {
-    id: number;
-    amount: number | string;
-    time: string;
-  };
-  
-  // 测试数据
-  const logs = ref<RechargeLogItem[]>([
-    { id: 1, amount: 32, time: '2026-02-26 14:30:39' },
-    { id: 2, amount: 128.5, time: '2026-02-25 10:12:08' },
-    { id: 3, amount: 50, time: '2026-02-24 18:05:21' },
-  ]);
+  const logs = ref<BalanceLogItem[]>([]);
+
+  async function loadLogs() {
+    try {
+      // 只拉取提现相关流水：type = withdraw 或 related_type = withdrawal
+      const res: any = await getMyBalanceLogs({
+        type: 'withdraw',
+        page: 1,
+        limit: 50,
+      });
+      const list = res?.list || res?.data?.list || res?.data || res || [];
+      logs.value = list as BalanceLogItem[];
+    } catch (e) {
+      console.error('加载提现日志失败', e);
+      uni.showToast({ title: '加载失败', icon: 'none' });
+    }
+  }
+
+  onLoad(() => {
+    loadLogs();
+  });
   </script>
   
   <style scoped lang="scss">
