@@ -73,13 +73,6 @@ type QuickEntry = {
   bgClass: string;
 };
 
-type Product = {
-  id: string;
-  title: string;
-  price: string;
-  img: string;
-};
-
 const placeholderText = '请输入产品名称';
 
 // banner（接口拉取失败时用项目内资源兜底）
@@ -97,12 +90,7 @@ const quickEntries: QuickEntry[] = [
 const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
 const noticeText = ref(fallbackNoticeText);
 
-const fallbackProducts: Product[] = [
-  { id: 'p1', title: '推荐商品 1', price: '199', img: '/static/img/clock.png' },
-  { id: 'p2', title: '推荐商品 2', price: '299', img: '/static/img/profit.png' },
-  { id: 'p3', title: '推荐商品 3', price: '159', img: '/static/img/money-bag.png' },
-  { id: 'p4', title: '推荐商品 4', price: '499', img: '/static/img/invitebg.png' },
-];
+
 const products = ref<any[]>([]);
 
 function pickData<T>(res: any): T | undefined {
@@ -176,7 +164,7 @@ function onQuickClick(item: QuickEntry) {
 
 function onProductClick(p: Product) {
   uni.navigateTo({
-    url: '/pages/goodsDetail/goodsDetail?id=' + p.id
+    url: '/pages/goodsDetail/goodsDetail?id=' + p.product.id
   });
 }
 

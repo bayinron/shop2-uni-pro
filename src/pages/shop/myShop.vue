@@ -10,15 +10,15 @@
         <view class="my-shop-user-info">
           <view class="my-shop-id-row">
             <text class="my-shop-id-label">ID：</text>
-            <text class="my-shop-id-value">{{ shopUser.id }}</text>
+            <text class="my-shop-id-value">{{ userInfo.id }}</text>
           </view>
           <view class="my-shop-name-row">
-            <text class="my-shop-name">{{ shopUser.name }}</text>
-            <image class="my-shop-badge" src="/static/img/invitebg.png" mode="aspectFill" />
+            <text class="my-shop-name">{{ userInfo.phone }}</text>
+            <!-- <image class="my-shop-badge" src="/static/img/invitebg.png" mode="aspectFill" /> -->
           </view>
-          <view class="my-shop-phone-wrap">
-            <text class="my-shop-phone">{{ shopUser.phone }}</text>
-          </view>
+          <!-- <view class="my-shop-phone-wrap">
+            <text class="my-shop-phone">{{ userInfo.phone }}</text>
+          </view> -->
         </view>
       </view>
     </view>
@@ -143,11 +143,7 @@ import { useUserStoreHook } from '@/stores/modules/userStore';
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-const shopUser = ref({
-  id: '10905',
-  name: 'AABBC',
-  phone: '13100000001',
-});
+
 
 function goAllOrders() {
   uni.navigateTo({

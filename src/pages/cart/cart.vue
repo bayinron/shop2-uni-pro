@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
-import { getMallCart, getUserAddresses, updateMallCartItem } from '@/api';
+import { deleteMallCartItem, getMallCart, getUserAddresses, updateMallCartItem } from '@/api';
 type CartItem = {
   /** 购物车项 ID，用于更新数量 */
   id: number;
@@ -187,7 +187,35 @@ function toggleItem(shop: CartShop, item: CartItem) {
 }
 
 function decreaseQty(shop: CartShop, item: CartItem) {
-  if (item.qty <= 1) return;
+  if (item.qty <= 1) {
+    uni.showModal({
+      title: '提示',
+      content: '数量将变为 0，是否删除该商品？',
+      confirmText: '删除',
+      cancelText: '取消',
+      success: (res) => {
+        if (!res.confirm) return;
+        deleteMallCartItem(item.id)
+          .then(() => {
+            const idx = shop.items.findIndex((it) => it.id === item.id);
+            if (idx >= 0) shop.items.splice(idx, 1);
+
+            // 如果店铺下已无商品，则移除店铺
+            if (shop.items.length === 0) {
+              const shopIdx = shops.value.findIndex((s) => s.id === shop.id);
+              if (shopIdx >= 0) shops.value.splice(shopIdx, 1);
+            } else {
+              // 更新店铺是否全选
+              shop.checked = shop.items.every((it) => it.checked);
+            }
+          })
+          .catch(() => {
+            uni.showToast({ title: '删除失败', icon: 'none' });
+          });
+      },
+    });
+    return;
+  }
   const next = item.qty - 1;
   updateMallCartItem(item.id, { quantity: next })
     .then(() => {

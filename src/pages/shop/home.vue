@@ -69,16 +69,10 @@ import { getMallShopDetail, getMallShopProducts } from '@/api';
 import { ref } from 'vue';
 import { onReachBottom } from '@dcloudio/uni-app';
 
-type Goods = {
-  id: number | string;
-  title: string;
-  price: string | number;
-  sold: number;
-  img: string;
-};
+
 
 // 商品列表（从服务器加载）
-const goodsList = ref<Goods[]>([]);
+const goodsList = ref<any[]>([]);
 const shopInfo = ref<any>({});
 const shopId = ref<number>(0);
 
@@ -88,9 +82,9 @@ const limit = ref<number>(20);
 const hasMore = ref<boolean>(true);
 const loading = ref<boolean>(false);
 
-function onGoodsClick(item: Goods) {
+function onGoodsClick(item: any) {
   uni.navigateTo({
-    url: `/pages/goodsDetail/goodsDetail?id=${item.id}`,
+    url: `/pages/goodsDetail/goodsDetail?id=${item.product.id}`,
   });
 }
 
