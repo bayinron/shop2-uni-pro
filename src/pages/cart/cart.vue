@@ -460,6 +460,7 @@ async function onCheckout() {
   color: #ffffff;
   font-size: 30rpx;
   border: none;
+  margin: 0;
 }
 
 .empty-cart {

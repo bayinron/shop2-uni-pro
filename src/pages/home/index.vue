@@ -93,29 +93,6 @@ const noticeText = ref(fallbackNoticeText);
 
 const products = ref<any[]>([]);
 
-function pickData<T>(res: any): T | undefined {
-  return (res?.data ?? res?.result ?? res?.rows) as T | undefined;
-}
-
-function asArray<T>(v: any): T[] {
-  if (Array.isArray(v)) return v as T[];
-  if (Array.isArray(v?.list)) return v.list as T[];
-  if (Array.isArray(v?.rows)) return v.rows as T[];
-  return [];
-}
-
-function bannerToUrl(b: LerpBannerItem): string | undefined {
-  return (b.image || b.img || b.pic) as string | undefined;
-}
-
-function goodsToCard(g: LerpGoodsItem): Product | null {
-  const id = String(g.id ?? '');
-  if (!id) return null;
-  const title = String(g.title ?? g.name ?? '').trim() || '商品';
-  const price = String(g.price ?? g.originalPrice ?? '').trim() || '--';
-  const img = String(g.cover ?? g.img ?? (Array.isArray(g.images) ? g.images[0] : '') ?? '').trim();
-  return { id, title, price, img: img || '/static/img/empty.svg' };
-}
 
 async function loadHomeFromApi() {
   getPublicAdList({ position: 'home_carousel' }).then((res: any) => {
@@ -162,7 +139,7 @@ function onQuickClick(item: QuickEntry) {
   uni.showToast({ title: item.text, icon: 'none' });
 }
 
-function onProductClick(p: Product) {
+function onProductClick(p: any) {
   uni.navigateTo({
     url: '/pages/goodsDetail/goodsDetail?id=' + p.product.id
   });
