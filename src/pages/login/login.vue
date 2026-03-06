@@ -16,7 +16,7 @@
         <view class="input-group">
           <input
             class="input-field"
-            type="number"
+            type="text"
             v-model="formData.login"
             placeholder="请输入手机号码或邮箱"
             maxlength="11"

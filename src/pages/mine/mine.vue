@@ -5,7 +5,7 @@
     <view v-if="!isLoggedIn" class="header">
       <view class="header-left">
         <view class="logo-box">
-          <text class="logo-text">S</text>
+          <image class="logo-img" src="/static/img/car.png" mode="aspectFill" />
         </view>
         <text class="brand-text">商城</text>
       </view>
@@ -19,7 +19,7 @@
     <view v-else class="header header--logged">
       <view class="header-logged-left">
         <view class="logo-box">
-          <text class="logo-text">S</text>
+          <image class="logo-img" src="/static/img/car.png" mode="aspectFill" />
         </view>
         <view class="header-user-info">
           <view class="header-user-row">
@@ -295,6 +295,10 @@ function goApply() {
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
+  .logo-img {
+    width: 60rpx;
+    height: 60rpx;
+  }
 }
 
 .logo-text {
@@ -350,7 +354,7 @@ function goApply() {
 }
 
 .header-recharge-btn {
-  padding: 18rpx 40rpx;
+  padding: 0rpx 40rpx;
   border-radius: 40rpx;
   background: #ff3e6c;
   color: #fff;
