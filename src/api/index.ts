@@ -34,6 +34,7 @@ export interface UserInfo {
     roles: any[];
     role_names: string[];
     user_role: string;
+    has_withdraw_password:boolean;//是否有提现密码
 }
 
 //获取主页配置

@@ -3,49 +3,38 @@
     <!-- 顶部标题栏（由导航栏控制，这里只预留背景） -->
     <view class="header-placeholder" />
 
-   
-      <!-- 提现金额 -->
-      <view class="section">
-        <text class="section-label">提现金额</text>
-        <view class="amount-input-wrap">
-          <text class="currency-symbol">฿</text>
-          <input
-            class="amount-input"
-            type="number"
-            v-model="form.amount"
-            placeholder="请输入提现金额"
-          />
+
+    <!-- 提现金额 -->
+    <view class="section">
+      <text class="section-label">提现金额</text>
+      <view class="amount-input-wrap">
+        <text class="currency-symbol">฿</text>
+        <input class="amount-input" type="number" v-model="form.amount" placeholder="请输入提现金额" />
+      </view>
+    </view>
+
+    <!-- 提现类型 -->
+    <view class="section">
+      <view class="section-row" @click="onWithdrawTypeClick">
+        <text class="section-label">提现类型</text>
+        <view class="section-right">
+          <text class="section-value">{{ currentWithdrawType.name }}</text>
+          <uni-icons type="bottom" size="18" color="#999" />
         </view>
       </view>
+    </view>
 
-      <!-- 提现类型 -->
-      <view class="section">
-        <view class="section-row" @click="onWithdrawTypeClick">
-          <text class="section-label">提现类型</text>
-          <view class="section-right">
-            <text class="section-value">{{ currentWithdrawType.name }}</text>
-            <uni-icons type="bottom" size="18" color="#999" />
-          </view>
-        </view>
+    <!-- 支付密码 -->
+    <view class="section">
+      <text class="section-label">支付密码</text>
+      <input class="password-input" type="text" password v-model="form.payPassword" placeholder="请输入支付密码" />
+
+      <view class="balance-row">
+        <text class="balance-text">
+          可用余额：<text class="balance-amount">฿ {{ availableBalance }}</text>
+        </text>
       </view>
-
-      <!-- 支付密码 -->
-      <view class="section">
-        <text class="section-label">支付密码</text>
-        <input
-          class="password-input"
-          type="text"
-          password
-          v-model="form.payPassword"
-          placeholder="请输入支付密码"
-        />
-
-        <view class="balance-row">
-          <text class="balance-text">
-            可用余额：<text class="balance-amount">฿ {{ availableBalance }}</text>
-          </text>
-        </view>
-      </view>
+    </view>
 
     <!-- 底部按钮 -->
     <view class="bottom-bar">
@@ -57,6 +46,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useUserStoreHook } from '@/stores/modules/userStore';
+import { getBankTemplates, getUserPaymentMethods, submitWalletWithdraw } from '@/api/pay';
+import globalTool from '@/utils/globalTool';
 
 type WithdrawType = {
   key: string;
@@ -79,7 +70,39 @@ const currentWithdrawType = ref<WithdrawType>(withdrawTypes[0]);
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
 const availableBalance = computed(() => userInfo.value?.balance ?? '0');
+watch(userInfo, (newVal) => {
+  if (!newVal.has_withdraw_password) {
+    globalTool.showToast('请先设置提现密码', () => {
+      uni.navigateTo({
+        url: '/pages/wallet/editPayPwd?first=true',
+      });
+    });
+  }
+});
+onLoad(() => {
+  //提现之前先看是否有绑定提现地址
+  // 与银行卡页类似，这里使用 country_code: 'usdt'
+  getBankTemplates({ country_code: 'usdt' }).then((res: any) => {
+    const t = res?.[0] || null;
+    tpl.value = t;
+    const cfg = t?.fields_config || t?.fields || [];
 
+
+    nextTick(() => {
+      getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {
+        if (res.length <= 0) {
+          globalTool.showToast('请先绑定提现地址', () => {
+            uni.navigateTo({
+              url: '/pages/wallet/usdt',
+            });
+            return;
+          });
+        }
+        tpl.value = res[0];
+      });
+    });
+  });
+});
 function onWithdrawTypeClick() {
   const itemList = withdrawTypes.map((p) => p.name);
   uni.showActionSheet({
@@ -89,12 +112,14 @@ function onWithdrawTypeClick() {
       if (idx >= 0 && idx < withdrawTypes.length) {
         currentWithdrawType.value = withdrawTypes[idx];
         form.value.withdrawType = withdrawTypes[idx].key;
+
       }
     },
   });
 }
-
+const tpl = ref<any>(null);
 function onSubmit() {
+
   const amountNum = Number(form.value.amount);
   if (!amountNum || amountNum <= 0) {
     uni.showToast({ title: '请输入正确的提现金额', icon: 'none' });
@@ -105,12 +130,17 @@ function onSubmit() {
     return;
   }
 
-  // TODO: 接入真实提现接口
-  uni.showToast({
-    title: `提交提现：฿${amountNum.toFixed(2)}（${currentWithdrawType.value.name}）`,
-    icon: 'none',
-  });
-}
+  submitWalletWithdraw({
+    currency: currentWithdrawType.value.key,
+    amount: amountNum,
+    payment_method_id: tpl.value.id,
+    withdraw_password: form.value.payPassword,
+  }).then((res: any) => {
+    globalTool.showToast('提现成功', () => {
+      uni.navigateBack();
+    });
+  })
+} 
 </script>
 
 <style scoped lang="scss">

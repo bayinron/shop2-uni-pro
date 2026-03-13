@@ -10,6 +10,86 @@ import { http } from '@/utils/request';
 
 /**
  * =========================
+ * 多幣種錢包基礎
+ * =========================
+ */
+
+/**
+ * 幣種資訊
+ * GET /api/wallet/currencies
+ */
+export interface WalletCurrency {
+  code: string;
+  name: string;
+  symbol: string;
+  decimal_places: number;
+  is_fiat: boolean;
+  [key: string]: any;
+}
+
+export function getWalletCurrencies() {
+  return http<WalletCurrency[]>({
+    method: 'GET',
+    url: 'wallet/currencies',
+  });
+}
+
+/**
+ * 餘額總覽
+ * GET /api/wallet/balance
+ */
+export interface WalletBalanceItem {
+  currency: string;
+  available: string;
+  frozen: string;
+  balance: string;
+  [key: string]: any;
+}
+
+export interface WalletBalanceOverviewResponse {
+  list: WalletBalanceItem[];
+  total_value_usd?: string | number;
+  [key: string]: any;
+}
+
+export function getWalletBalanceOverview() {
+  return http<WalletBalanceOverviewResponse>({
+    method: 'GET',
+    url: 'wallet/balance',
+  });
+}
+
+/**
+ * 查詢單一幣種餘額
+ * GET /api/wallet/:currency/balance
+ */
+export function getWalletBalanceByCurrency(currency: string) {
+  return http<WalletBalanceItem>({
+    method: 'GET',
+    url: `wallet/${currency}/balance`,
+  });
+}
+
+/**
+ * 幣種相互兌換
+ * POST /api/wallet/convert
+ */
+export interface WalletConvertPayload {
+  from_currency: string;
+  to_currency: string;
+  amount: number;
+}
+
+export function convertWalletCurrency(data: WalletConvertPayload) {
+  return http<any>({
+    method: 'POST',
+    url: 'wallet/convert',
+    data,
+  });
+}
+
+/**
+ * =========================
  * 支付渠道
  * =========================
  */
@@ -108,7 +188,7 @@ export function submitWalletDeposit(payload: WalletDepositPayload) {
   return http<any>({
     method: 'POST',
     url: 'wallet/deposit',
-    data:payload,
+    data: payload,
   });
 }
 
@@ -236,6 +316,17 @@ export function setDefaultUserPaymentMethod(id: number) {
 }
 
 /**
+ * 刪除收款帳戶
+ * DELETE /api/user/payment-methods/:id
+ */
+export function deleteUserPaymentMethod(id: number) {
+  return http<{ success?: boolean } & Record<string, any>>({
+    method: 'DELETE',
+    url: `user/payment-methods/${id}`,
+  });
+}
+
+/**
  * =========================
  * 提現相關
  * =========================
@@ -260,56 +351,120 @@ export function getWithdrawalRules() {
   });
 }
 
-export interface MyShopFinancialSummary {
-  total_sales: number;
-  total_commission: number;
-  available_balance: number;
-  pending_withdrawal: number;
+/**
+ * 主動向平台申請提現
+ * POST /api/wallet/withdraw
+ */
+export interface WalletWithdrawPayload {
+  currency: string;
+  amount: number;
+  payment_method_id?: number;
+  remark?: string;
+  withdraw_password:string;
 }
 
-/**
- * 查看錢包餘額 / 財務摘要
- * GET /api/mall/my-shop/financial/summary
- */
-export function getMyShopFinancialSummary() {
-  return http<MyShopFinancialSummary>({
-    method: 'GET',
-    url: 'mall/my-shop/financial/summary',
+export interface WalletWithdrawResponse {
+  withdrawal_id: number;
+  status: string; // pending
+  status_text?: string;
+  currency: string;
+  amount: number;
+  available?: number;
+  frozen?: number;
+  [key: string]: any;
+}
+
+export function submitWalletWithdraw(data: WalletWithdrawPayload) {
+  return http<WalletWithdrawResponse>({
+    method: 'POST',
+    url: 'wallet/withdraw',
+    data,
   });
 }
 
-export interface ShopWithdrawPayload {
-  /** 提現金額 */
-  amount: number;
-  /** 貨幣代碼 (如: TWD, USD) */
-  currency: string;
-  /** 收款方式 ID（不提供則使用預設） */
-  payment_method_id?: number;
-  /** 備註 */
-  remark?: string;
+/**
+ * 查詢充值申請記錄與審核狀態
+ * GET /api/wallet/deposits
+ */
+export interface WalletDepositListQuery {
+  status?: number; // 0=審核中、1=已通過、2=已拒絕
+  page?: number;
+  limit?: number;
 }
 
-export type ShopWithdrawStatus = 'pending' | 'approved' | 'processing' | 'completed' | 'rejected';
-
-export interface ShopWithdrawResponse {
-  withdrawal_id: number;
-  amount: number;
+export interface WalletDepositListItem {
+  id: number;
   currency: string;
-  fee: number;
-  actual_amount: number;
-  status: ShopWithdrawStatus;
+  amount: string;
+  proof_img?: string | null;
+  tx_id?: string | null;
+  status: number;
+  status_text?: string;
+  admin_note?: string | null;
   created_at: string;
+  updated_at: string;
+  [key: string]: any;
+}
+
+export interface WalletDepositListResponse {
+  list: WalletDepositListItem[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;
+}
+
+export function getWalletDeposits(params: WalletDepositListQuery = {}) {
+  return http<WalletDepositListResponse>({
+    method: 'GET',
+    url: 'wallet/deposits',
+    data: params,
+  });
 }
 
 /**
- * 提交提現申請
- * POST /api/mall/my-shop/financial/withdraw
+ * 查詢提現申請記錄與審核狀態
+ * GET /api/wallet/withdrawals
  */
-export function submitShopWithdraw(data: ShopWithdrawPayload) {
-  return http<ShopWithdrawResponse>({
-    method: 'POST',
-    url: 'mall/my-shop/financial/withdraw',
-    data,
+export interface WalletWithdrawalListQuery {
+  status?: number; // 0=審核中、1=已通過、2=已拒絕
+  page?: number;
+  limit?: number;
+}
+
+export interface WalletWithdrawalListItem {
+  id: number;
+  currency: string;
+  amount: string;
+  fee: string;
+  actual_amount: string;
+  method?: string;
+  bank_name?: string | null;
+  account_name?: string | null;
+  account_number?: string | null;
+  to_address?: string | null;
+  tx_id?: string | null;
+  status: number;
+  status_text?: string;
+  admin_note?: string | null;
+  created_at: string;
+  updated_at: string;
+  [key: string]: any;
+}
+
+export interface WalletWithdrawalListResponse {
+  list: WalletWithdrawalListItem[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;
+}
+
+export function getWalletWithdrawals(params: WalletWithdrawalListQuery = {}) {
+  return http<WalletWithdrawalListResponse>({
+    method: 'GET',
+    url: 'wallet/withdrawals',
+    data: params,
   });
 }
 
