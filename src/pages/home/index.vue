@@ -96,13 +96,13 @@ const products = ref<any[]>([]);
 
 async function loadHomeFromApi() {
   getPublicAdList({ position: 'home_carousel' }).then((res: any) => {
-    banners.value = res;
+    banners.value = res.data;
   });
   getArticleList().then((res: any) => {
-    noticeText.value = res.data[0].content;
+    noticeText.value = res.data.data[0].content;
   });
   getMallProductList().then((res: any) => {
-    products.value = res.data;
+    products.value = res.data.data;
   });
 
 }

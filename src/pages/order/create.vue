@@ -157,9 +157,7 @@ async function onSubmitOrder() {
   uni.showLoading({ title: '提交中...' });
   createMallOrder(payload).then((res: any) => {
     uni.hideLoading();
-    setTimeout(() => {
-      uni.navigateBack();
-    }, 1500);
+    globalTool.showToast(res?.message, true, 'success');
   })
 
 

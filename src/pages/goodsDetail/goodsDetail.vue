@@ -199,7 +199,7 @@ onLoad((options: any) => {
     console.log('商品ID:', options.id);
     getMallProductDetail(options.id).then((res: any) => {
       console.log(res);
-      goodsData.value = res;
+      goodsData.value = res.data;
     });
     requestCartCount();
   }
@@ -256,7 +256,7 @@ function onAddToCart() {
 const requestCartCount = () => {
   // 更新購物車角標時不需要全局 loading，避免覆蓋 Toast
   getMallCart({ noLoading: true }).then((res: any) => {
-    cartCount.value = res.items.length;
+    cartCount.value = res.data.items.length;
   });
 }
 

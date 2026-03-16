@@ -534,7 +534,7 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
 }
 
 .action-btn {
-  padding: 16rpx 32rpx;
+  padding: 0rpx 32rpx;
   border-radius: 40rpx;
   font-size: 26rpx;
   border: 2rpx solid #e5e5e5;

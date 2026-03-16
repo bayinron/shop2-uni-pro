@@ -143,14 +143,14 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                     }
                 } else {
                     // const data = res.data.data ? JSON.parse(globalTool.Base64.decode(res.data.data)) : res.data.data;
-                    const data = res.data.data;
+                    const data = res.data;
                     if (res.header.refresh_token) {
                         uni.setStorageSync('token', res.header.refresh_token);
                     }
                     console.log(`${options.url}:`, data);
-                    if(data?.message) {
-                        globalTool.showToast(data?.message);
-                    }
+                    // if(res.data?.message) {
+                    //     globalTool.showToast(res.data?.message);
+                    // }
                     //if(res.data.result)
                     // 2.1 提取核心数据 res.data
                     resolve(data);

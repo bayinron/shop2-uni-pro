@@ -101,7 +101,6 @@ onShow(async () => {
     const shopsList: any[] = data.shops || [];
     const groupByShop: Record<string, number[]> = data.group_by_shop || {};
 
-    if (!items.length || !shopsList.length) return;
 
     // 创建商品映射表（cart_item_id => item）
     const itemMap: Record<number, any> = {};
