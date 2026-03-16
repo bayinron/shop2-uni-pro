@@ -125,7 +125,7 @@
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
-import { type UserInfo } from '@/api/index';
+import { type UserInfo } from '@/api';
 
 type Product = {
   id: string;

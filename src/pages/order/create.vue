@@ -7,7 +7,8 @@
           <text class="address-name">{{ selectedAddress.receiver_name }}</text>
           <text class="address-phone">{{ selectedAddress.receiver_phone }}</text>
         </view>
-        <text class="address-detail">{{ selectedAddress.city }}{{ selectedAddress.district }}{{ selectedAddress.address }}</text>
+        <text class="address-detail">{{ selectedAddress.city }}{{ selectedAddress.district }}{{ selectedAddress.address
+          }}</text>
         <uni-icons type="right" size="18" color="#999" />
       </view>
       <view class="address-card address-card--empty" @click="onSelectAddress" v-else>
@@ -23,11 +24,7 @@
 
       <!-- 商品列表 -->
       <view class="product-card">
-        <view
-          v-for="item in orderItems"
-          :key="item.id"
-          class="product-item"
-        >
+        <view v-for="item in orderItems" :key="item.id" class="product-item">
           <image class="product-img" :src="item.img" mode="aspectFill" />
           <view class="product-info">
             <text class="product-title breakcss">{{ item.title }}</text>
@@ -56,6 +53,7 @@ import { computed, ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { createMallOrder, getUserAddresses } from '@/api';
 import type { MallCreateOrderPayload, UserAddress } from '@/api';
+import globalTool from '@/utils/globalTool';
 
 type OrderItem = {
   id: number; // 购物车项 ID
@@ -155,29 +153,16 @@ async function onSubmitOrder() {
     },
   };
 
-  try {
-    uni.showLoading({ title: '提交中...' });
-    const res: any = await createMallOrder(payload);
-    uni.hideLoading();
 
-    if (res?.code === 0 || res?.id) {
-      uni.showToast({ title: '订单创建成功', icon: 'success' });
-      // 跳转到订单详情或订单列表
-      setTimeout(() => {
-        uni.navigateBack();
-        // 或者跳转到订单详情
-        // uni.navigateTo({
-        //   url: `/pages/order/detail?id=${res.id || res.data?.id}`,
-        // });
-      }, 1500);
-    } else {
-      uni.showToast({ title: res?.message || '订单创建失败', icon: 'none' });
-    }
-  } catch (e: any) {
+  uni.showLoading({ title: '提交中...' });
+  createMallOrder(payload).then((res: any) => {
     uni.hideLoading();
-    console.error('创建订单失败', e);
-    uni.showToast({ title: e?.message || '订单创建失败', icon: 'none' });
-  }
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1500);
+  })
+
+
 }
 </script>
 

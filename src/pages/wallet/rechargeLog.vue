@@ -10,9 +10,12 @@
         :key="item.id"
         class="log-card"
       >
-        <view class="log-card-top" />
         <view class="log-card-body">
-          <text class="log-amount">฿ {{ item.amount }}</text>
+          <view class="log-card-body-top">
+            <text class="log-amount"> {{ item.currency }} {{ item.amount }}</text>
+            <text class="log-status">{{ item.status_text }}</text>
+
+          </view>
           <text class="log-time">{{ item.time }}</text>
         </view>
       </view>
@@ -30,20 +33,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { getMyBalanceLogs, type BalanceLogItem } from '@/api/log';
+import { getWalletDeposits, type WalletDepositListItem } from '@/api/pay';
 
-const logs = ref<BalanceLogItem[]>([]);
+const logs = ref<WalletDepositListItem[]>([]);
 
 async function loadLogs() {
   try {
     // 充值相关流水：type = deposit
-    const res: any = await getMyBalanceLogs({
-      type: 'deposit',
+    const res: any = await getWalletDeposits({
       page: 1,
       limit: 50,
     });
     const list = res?.list || res?.data?.list || res?.data || res || [];
-    logs.value = list as BalanceLogItem[];
+    logs.value = list as WalletDepositListItem[];
   } catch (e) {
     console.error('加载充值日志失败', e);
     uni.showToast({ title: '加载失败', icon: 'none' });
@@ -85,11 +87,14 @@ onLoad(() => {
   padding: 20rpx 24rpx 24rpx;
 }
 
+
 .log-amount {
   font-size: 32rpx;
   color: #e74c3c;
 }
+.log-status{
 
+}
 .log-time {
   margin-top: 10rpx;
   font-size: 24rpx;

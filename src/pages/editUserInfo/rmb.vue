@@ -68,7 +68,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { bankRecharge, getuserdetail } from '@/api/index';
+import { bankRecharge, getuserdetail } from '@/api';
 import type { UserInfo } from '@/api/types';
 import globalTool from '@/utils/globalTool';
 const money  = ref<number>();

@@ -1,13 +1,6 @@
 <template>
   <view class="order-page">
-    <!-- 顶部头部 -->
-    <view class="order-header">
-      <view class="header-back" @click="onBack">
-        <uni-icons type="left" size="24" color="#fff" />
-      </view>
-      <text class="header-title">我的订单</text>
-      <view class="header-placeholder"></view>
-    </view>
+
 
     <!-- 订单状态标签页 -->
     <view class="order-tabs">
@@ -99,9 +92,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
-import { getMallOrderList } from '@/api';
+import {
+  getMallOrderList,
+  type MallOrderStatus,
+  type MallOrder,
+  type MallOrderListResponse,
+} from '@/api/mall';
 
-// 本页面使用的订单状态子集
+// 本页面展示用的订单状态子集
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed';
 
 type OrderItem = {
@@ -113,35 +111,25 @@ type OrderItem = {
 };
 
 type OrderAction = {
-  key: string;
+  key: 'cancel' | 'pay' | 'contact' | 'track' | 'confirm';
   text: string;
   type: 'primary' | 'default';
 };
 
-type Order = {
-  id: string;
+type ViewOrder = {
+  id: number;
   no: string;
-  status: OrderStatus;
+  status: MallOrderStatus;
   statusText: string;
   time: string;
   total: string;
   items: OrderItem[];
-  actions?: OrderAction[];
+  actions: OrderAction[];
+  raw: MallOrder;
 };
 
-const orderTabs = ref<Array<{ key: OrderStatus; text: string }>>([
-  { key: 'pending', text: '待付款' },
-  { key: 'paid', text: '待发货' },
-  { key: 'processing', text: '待收货' }, // 对接接口时，可根据实际状态文案调整
-  { key: 'completed', text: '已完成' },
-]);
-
-const activeTab = ref<OrderStatus>('pending');
-
-const PAGE_SIZE = 10;
-
 type StatusState = {
-  list: Order[];
+  list: ViewOrder[];
   page: number;
   hasMore: boolean;
   loading: boolean;
@@ -149,6 +137,16 @@ type StatusState = {
 };
 
 type StatusStateMap = Record<OrderStatus, StatusState>;
+
+const orderTabs = ref<Array<{ key: OrderStatus; text: string }>>([
+  { key: 'pending', text: '待付款' },
+  { key: 'paid', text: '待发货' },
+  { key: 'processing', text: '待收货' },
+  { key: 'completed', text: '已完成' },
+]);
+
+const activeTab = ref<OrderStatus>('pending');
+const PAGE_SIZE = 10;
 
 const statusState = ref<StatusStateMap>({
   pending: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
@@ -161,41 +159,76 @@ const currentOrders = computed(() => {
   return statusState.value[activeTab.value].list;
 });
 
-function onBack() {
-  uni.navigateBack();
+const statusTextMap: Record<string, string> = {
+  pending: '待付款',
+  paid: '待发货',
+  processing: '备货中',
+  shipped: '已发货',
+  delivered: '待确认',
+  completed: '已完成',
+  cancelled: '已取消',
+};
+
+function buildActions(order: MallOrder): OrderAction[] {
+  const actions: OrderAction[] = [];
+  if (order.status === 'pending') {
+    actions.push(
+      { key: 'cancel', text: '取消订单', type: 'default' },
+      { key: 'pay', text: '立即付款', type: 'primary' },
+    );
+  } else if (order.status === 'paid' || order.status === 'processing') {
+    actions.push({ key: 'contact', text: '联系客服', type: 'default' });
+  } else if (order.status === 'shipped' || order.status === 'delivered') {
+    actions.push(
+      { key: 'track', text: '查看物流', type: 'default' },
+      { key: 'confirm', text: '确认收货', type: 'primary' },
+    );
+  } else if (order.status === 'completed') {
+    actions.push({ key: 'track', text: '查看物流', type: 'default' });
+  }
+  return actions;
+}
+
+function normalizeOrder(order: MallOrder): ViewOrder {
+  const items: OrderItem[] = (order.items || []).map((it) => ({
+    name: it.product_name,
+    img: it.product_image_url,
+    price: it.total_price || it.unit_price,
+    quantity: it.quantity,
+    spec: it.sku,
+  }));
+
+  const statusText = statusTextMap[order.status as string] || order.status || '';
+
+  return {
+    id: order.id,
+    no: order.order_no,
+    status: order.status,
+    statusText,
+    time: order.created_at,
+    total: order.total_amount,
+    items,
+    actions: buildActions(order),
+    raw: order,
+  };
 }
 
 function onTabClick(key: OrderStatus) {
   activeTab.value = key;
   const state = statusState.value[key];
-  // 如果该状态下已经有数据，则不重新请求
-  if (!state.loaded || state.list.length === 0) {
+  if (!state.loaded) {
     loadOrders(key, false);
   }
-}
-
-function normalizeOrderList(res: any): Order[] {
-  const raw =
-    res?.data?.data ??
-    res?.data?.list ??
-    res?.data ??
-    res?.result ??
-    res?.rows ??
-    res ??
-    [];
-  if (Array.isArray(raw)) return raw as Order[];
-  return [];
 }
 
 function loadOrders(status: OrderStatus, loadMore: boolean) {
   const state = statusState.value[status];
   if (state.loading) return;
-  if (loadMore && !state.hasMore) return;
 
   const nextPage = loadMore ? state.page + 1 : 1;
-
   state.loading = true;
-  const params: any = {
+
+  const params = {
     status,
     page: nextPage,
     limit: PAGE_SIZE,
@@ -203,15 +236,18 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
 
   getMallOrderList(params)
     .then((res: any) => {
-      const list = normalizeOrderList(res);
+      const data = res.data as MallOrderListResponse;
+      const viewList = data.map(normalizeOrder);
+
       if (!loadMore) {
-        state.list = list;
+        state.list = viewList;
       } else {
-        state.list = state.list.concat(list);
+        state.list = state.list.concat(viewList);
       }
+
       state.page = nextPage;
-      // 如果本次返回数量小于页面大小，认为没有更多
-      state.hasMore = list.length >= PAGE_SIZE;
+      const pageLimit = data.limit ?? PAGE_SIZE;
+      state.hasMore = data.length >= pageLimit;
       state.loaded = true;
     })
     .finally(() => {
@@ -236,13 +272,12 @@ onReachBottom(() => {
   loadOrders(currentStatus, true);
 });
 
-
-function onOrderClick(order: Order) {
+function onOrderClick(order: ViewOrder) {
   uni.showToast({ title: `查看订单：${order.no}`, icon: 'none' });
 }
 
-function onActionClick(order: Order, action: OrderAction) {
-  const actionMap: Record<string, string> = {
+function onActionClick(order: ViewOrder, action: OrderAction) {
+  const actionMap: Record<OrderAction['key'], string> = {
     cancel: '取消订单',
     pay: '立即付款',
     contact: '联系客服',

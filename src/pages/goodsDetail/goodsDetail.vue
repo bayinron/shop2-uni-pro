@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { addMallCartItem, getMallCart, getMallProductDetail } from '@/api/index';
+import { addMallCartItem, getMallCart, getMallProductDetail } from '@/api';
 type GoodsData = {
   id: string;
   shop_id: string;

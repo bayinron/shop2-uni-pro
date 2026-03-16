@@ -148,6 +148,9 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                         uni.setStorageSync('token', res.header.refresh_token);
                     }
                     console.log(`${options.url}:`, data);
+                    if(data?.message) {
+                        globalTool.showToast(data?.message);
+                    }
                     //if(res.data.result)
                     // 2.1 提取核心数据 res.data
                     resolve(data);

@@ -41,7 +41,7 @@
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
-import {authUpdateMe} from '@/api/index';
+import { authUpdateMe } from '@/api';
 import globalTool from '@/utils/globalTool';
 
 const formData = ref({

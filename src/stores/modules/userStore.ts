@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { store } from '@/stores';
 import { ref } from 'vue';
 import globalTool from '@/utils/globalTool';
-import {   type UserInfo,  authGetMe,  getHomeConfig  } from '@/api/index';
+import { type UserInfo, authGetMe, getHomeConfig } from '@/api';
 // import { getSystemConfig, type SystemConfig, } from '@/api';
 import langData from '@/static/lang.json'
 
