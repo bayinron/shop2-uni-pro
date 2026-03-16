@@ -236,8 +236,9 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
 
   getMallOrderList(params)
     .then((res: any) => {
-      const data = res.data as MallOrderListResponse;
-      const viewList = data.map(normalizeOrder);
+      const data = res.data.data as MallOrderListResponse;
+      const list = data || [];
+      const viewList = list.map(normalizeOrder);
 
       if (!loadMore) {
         state.list = viewList;
@@ -247,7 +248,7 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
 
       state.page = nextPage;
       const pageLimit = data.limit ?? PAGE_SIZE;
-      state.hasMore = data.length >= pageLimit;
+      state.hasMore = list.length >= pageLimit;
       state.loaded = true;
     })
     .finally(() => {

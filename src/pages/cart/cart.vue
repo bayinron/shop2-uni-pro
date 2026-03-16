@@ -94,7 +94,7 @@ const shops = ref<CartShop[]>([]);
 onShow(async () => {
   try {
     const res: any = await getMallCart();
-    const data = res || {};
+    const data = res?.data || res || {};
     
     // 数据结构：{ items: [], shops: [], group_by_shop: {} }
     const items: any[] = data.items || [];
