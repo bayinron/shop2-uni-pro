@@ -209,7 +209,7 @@
             },
             {
                 "pagePath": "pages/cart/cart",
-                "text": "购物车",
+                "text": "Cart",
                 "iconPath": "static/tab/gwc.png",
                 "selectedIconPath": "static/tab/gwc_a.png"
             },

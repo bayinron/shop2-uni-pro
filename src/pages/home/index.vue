@@ -136,7 +136,27 @@ function onSearchConfirm(e: any) {
 }
 
 function onQuickClick(item: QuickEntry) {
-  uni.showToast({ title: item.text, icon: 'none' });
+  if (item.key === 'shop') {
+    uni.navigateTo({
+      url: '/pages/shop/myShop',
+    });
+  }else if (item.key === 'cs') {
+    uni.navigateTo({
+      url: '/pages/cs/cs',
+    });
+  }else if (item.key === 'help') {
+    uni.navigateTo({
+      url: '/pages/help/help',
+    });
+  }else if (item.key === 'about') {
+    uni.navigateTo({
+      url: '/pages/about/about',
+    });
+  }else if (item.key === 'order') {
+    uni.navigateTo({
+      url: '/pages/shop/myShopOrder',
+    });
+  }
 }
 
 function onProductClick(p: any) {

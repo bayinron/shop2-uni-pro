@@ -186,8 +186,10 @@ function onToolClick(type: string) {
         url: `/pages/wallet/editPayPwd?first=${!userInfo.value.has_withdraw_password}`,
     });
   }else if (type === 'logout') {
-    uni.navigateTo({
-      url: '/pages/shop/logout',
+    uni.removeStorageSync('token');
+    uni.removeStorageSync('userInfo');
+    uni.redirectTo({
+      url: '/pages/login/login',
     });
   }else if (type === 'order') {
     uni.navigateTo({
