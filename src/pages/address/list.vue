@@ -50,7 +50,7 @@ function loadAddresses() {
   getUserAddresses()
     .then((res: any) => {
       
-      addresses.value = res;
+      addresses.value = res.data;
     })
     .finally(() => {
       loading.value = false;

@@ -16,7 +16,7 @@
             <text class="log-status">{{ item.status_text }}</text>
 
           </view>
-          <text class="log-time">{{ item.time }}</text>
+          <text class="log-time">{{ item.created_at }}</text>
         </view>
       </view>
 
@@ -44,7 +44,7 @@ async function loadLogs() {
       page: 1,
       limit: 50,
     });
-    const list = res?.list || res?.data?.list || res?.data || res || [];
+    const list = res.data?.list || res?.data || res || [];
     logs.value = list as WalletDepositListItem[];
   } catch (e) {
     console.error('加载充值日志失败', e);
@@ -85,6 +85,16 @@ onLoad(() => {
 
 .log-card-body {
   padding: 20rpx 24rpx 24rpx;
+  .log-card-body-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .log-card-body-bottom{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 
@@ -93,7 +103,9 @@ onLoad(() => {
   color: #e74c3c;
 }
 .log-status{
-
+  font-size: 24rpx;
+  color: #b3b3b3;
+  display: block;
 }
 .log-time {
   margin-top: 10rpx;

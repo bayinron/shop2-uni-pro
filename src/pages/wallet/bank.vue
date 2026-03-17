@@ -38,7 +38,7 @@ const cny = ref<any>(null);
 const fieldConfigs = ref<any[]>([]);
 onLoad(() => {
   getBankTemplates({country_code: 'cny'}).then((res: any) => {
-    const tpl = res?.[0] || null;
+    const tpl = res.data?.[0] || null;
     cny.value = tpl;
     // 兼容字段名为 fields_config 或 fields
     const cfg = tpl?.fields_config || tpl?.fields || [];
@@ -52,8 +52,8 @@ onLoad(() => {
     });
     nextTick(() => {
       getUserPaymentMethods({ bank_template_id: cny.value.id }).then((res: any) => {
-        if (res.length > 0) {
-          form.value = res[0].details;
+        if (res.data.length > 0) {
+          form.value = res.data[0].details;
         }
       });
     });

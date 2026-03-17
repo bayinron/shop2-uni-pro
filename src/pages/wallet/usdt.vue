@@ -57,7 +57,7 @@ const form = ref<Record<string, any>>({});
 onLoad(() => {
   // 与银行卡页类似，这里使用 country_code: 'usdt'
   getBankTemplates({ country_code: 'usdt' }).then((res: any) => {
-    const t = res?.[0] || null;
+    const t = res.data?.[0] || null;
     tpl.value = t;
     const cfg = t?.fields_config || t?.fields || [];
     fieldConfigs.value = Array.isArray(cfg) ? cfg : [];
@@ -71,8 +71,8 @@ onLoad(() => {
 
     nextTick(() => {
       getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {
-        if (res.length > 0) {
-          form.value = res[0].details;
+        if (res.data.length > 0) {
+          form.value = res.data[0].details;
         }
       });
     });

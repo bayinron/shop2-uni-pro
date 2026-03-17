@@ -83,14 +83,14 @@ onLoad(() => {
   //提现之前先看是否有绑定提现地址
   // 与银行卡页类似，这里使用 country_code: 'usdt'
   getBankTemplates({ country_code: 'usdt' }).then((res: any) => {
-    const t = res?.[0] || null;
+    const t = res.data?.[0] || null;
     tpl.value = t;
     const cfg = t?.fields_config || t?.fields || [];
 
 
     nextTick(() => {
       getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {
-        if (res.length <= 0) {
+        if (res.data.length <= 0) {
           globalTool.showToast('请先绑定提现地址', () => {
             uni.navigateTo({
               url: '/pages/wallet/usdt',
@@ -98,7 +98,7 @@ onLoad(() => {
             return;
           });
         }
-        tpl.value = res[0];
+        tpl.value = res.data[0];
       });
     });
   });
