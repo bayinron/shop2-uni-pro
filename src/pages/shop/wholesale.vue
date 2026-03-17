@@ -122,7 +122,7 @@
   import { onReachBottom } from '@dcloudio/uni-app';
   import {  getShopCategories } from '@/api';
   import { addProductToMyShop, getMyShopProductPool } from '@/api/myshop';
-  import type { MyShopProductsParams } from '@/api';
+  import type { MallShopProductsParams } from '@/api';
   import globalTool from '@/utils/globalTool';
   
   type Product = {
@@ -165,7 +165,7 @@
   
     loading.value = true;
     try {
-      const params: MyShopProductsParams & { category_id?: number } = {
+      const params: MallShopProductsParams & { category_id?: number } = {
         page: page.value,
         limit: limit.value,
       };
@@ -181,7 +181,7 @@
       }
   
       const res: any = await getMyShopProductPool(params);
-      const data = res?.data || res || [];
+      const data = res?.data.data || res || [];
       const productList = Array.isArray(data) ? data : (data.list || data.items || []);
   
       // 映射服务器返回的数据到前端需要的格式
@@ -296,7 +296,7 @@
     // 先加载商品类型（参考 shop.vue 的处理方式）
     getShopCategories()
       .then((res: any) => {
-        categories.value = res?.data || res || [];
+        categories.value = res?.data || [];
         if (categories.value.length > 0) {
           activeCateId.value = categories.value[0].id;
         }

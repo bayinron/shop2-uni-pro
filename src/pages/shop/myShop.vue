@@ -189,6 +189,10 @@ function onToolClick(type: string) {
     uni.navigateTo({
       url: '/pages/shop/logout',
     });
+  }else if (type === 'order') {
+    uni.navigateTo({
+      url: '/pages/shop/myShopOrder',
+    });
   }
 }
 </script>

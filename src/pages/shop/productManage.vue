@@ -136,7 +136,7 @@ async function loadProducts(reset: boolean = false) {
     }
 
     getMyShopProducts(params as MyShopProductsParams).then((res: any) => {
-      const newProducts = res?.data || [];
+      const newProducts = res?.data.data || [];
       if (reset) {
         products.value = newProducts;
       } else {

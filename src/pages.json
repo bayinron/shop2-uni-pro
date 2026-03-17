@@ -111,6 +111,12 @@
             }
         },
         {
+            "path": "pages/shop/myShopOrder",
+            "style": {
+                "navigationBarTitleText": "店铺订单"
+            }
+        },
+        {
             "path": "pages/shop/productManage",
             "style": {
                 "navigationBarTitleText": "商品管理",

@@ -295,6 +295,82 @@ export function getMyShopStats() {
 
 /**
  * =========================
+ * 訂單管理（賣家視角）
+ * =========================
+ */
+
+export interface MyShopOrderBuyer {
+  id: number;
+  username: string;
+  nickname?: string | null;
+  avatar?: string | null;
+  [key: string]: any;
+}
+
+export interface MyShopOrderItem {
+  id: number;
+  product_id: number;
+  product_name: string;
+  product_image_url: string;
+  sku: string;
+  quantity: number;
+  unit_price: string;
+  total_price: string;
+  discount_amount: string;
+  refund_status: string;
+  refund_amount: string;
+  [key: string]: any;
+}
+
+export interface MyShopOrder {
+  id: number;
+  order_no: string;
+  status: string;
+  payment_status: 'unpaid' | 'paid' | 'refunding' | 'refunded' | string;
+  subtotal: string;
+  shipping_fee: string;
+  discount_amount: string;
+  total_amount: string;
+  paid_amount: string;
+  receiver_name: string;
+  receiver_phone: string;
+  shipping_address: Record<string, any>;
+  buyer: MyShopOrderBuyer;
+  items: MyShopOrderItem[];
+  created_at: string;
+  [key: string]: any;
+}
+
+export interface GetMyShopOrdersParams {
+  status?: string;
+  payment_status?: 'unpaid' | 'paid' | 'refunding' | 'refunded' | string;
+  order_no?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface MyShopOrderListResponse {
+  list: MyShopOrder[];
+  total: number;
+  page: number;
+  limit: number;
+  [key: string]: any;
+}
+
+/**
+ * 店鋪訂單列表（賣家視角）
+ * GET /api/mall/my-shop/orders
+ */
+export function getMyShopOrders(params: GetMyShopOrdersParams = {}) {
+  return http<MyShopOrderListResponse>({
+    method: 'GET',
+    url: 'mall/my-shop/orders',
+    data: params,
+  });
+}
+
+/**
+ * =========================
  * 財務管理
  * =========================
  */
