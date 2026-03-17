@@ -310,20 +310,44 @@ export function previewMallOrder(data: MallOrderPreviewPayload) {
 }
 
 // 1. 創建訂單 (結帳下單) - POST /api/mall/orders
-export interface MallOrderAddress {
-  receiver_name: string;
-  receiver_phone: string;
-  city: string;
-  district: string;
-  address: string;
+// 支援兩種商品來源模式：cart_ids（購物車）或 items + shop_id（直接購買），二擇一（同時傳入時 cart_ids 優先）
+export interface MallCreateOrderItem {
+  product_id: number;
+  quantity: number;
+  sku?: string;
 }
 
-export interface MallCreateOrderPayload {
-  cart_ids: number[];
-  shop_id: number;
-  address: MallOrderAddress;
-  remark?: string;
+export interface MallCreateOrderAddressFields {
+  receiver_name: string;
+  receiver_phone: string;
+  address: string;
+  /** 搭配臨時地址使用，若為 true 則儲存到地址簿 */
+  save_address?: boolean;
 }
+
+export type MallCreateOrderPayload =
+  | {
+      /** 購物車模式 */
+      cart_ids: number[];
+      remark?: string;
+      /** 地址優先順序：address_id > 臨時地址欄位 > 系統預設地址 */
+      address_id?: number;
+      receiver_name?: string;
+      receiver_phone?: string;
+      address?: string;
+      save_address?: boolean;
+    }
+  | {
+      /** 直接購買模式 */
+      items: MallCreateOrderItem[];
+      shop_id: number;
+      remark?: string;
+      address_id?: number;
+      receiver_name?: string;
+      receiver_phone?: string;
+      address?: string;
+      save_address?: boolean;
+    };
 
 export function createMallOrder(data: MallCreateOrderPayload) {
   return http<MallOrder[]>({

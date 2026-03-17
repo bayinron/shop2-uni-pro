@@ -136,21 +136,15 @@ async function onSubmitOrder() {
     return;
   }
 
-  if (!cartIds.value.length || !shopId.value) {
+  if (!cartIds.value.length) {
     uni.showToast({ title: '订单数据不完整', icon: 'none' });
     return;
   }
 
   const payload: MallCreateOrderPayload = {
     cart_ids: cartIds.value,
-    shop_id: shopId.value,
-    address: {
-      receiver_name: selectedAddress.value.receiver_name,
-      receiver_phone: selectedAddress.value.receiver_phone,
-      city: selectedAddress.value.city,
-      district: selectedAddress.value.district,
-      address: selectedAddress.value.address,
-    },
+    // 地址优先使用已保存地址 ID（最稳定，符合新文档）
+    address_id: selectedAddress.value.id,
   };
 
 

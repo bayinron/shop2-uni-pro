@@ -96,7 +96,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { addMallCartItem, getMallCart, getMallProductDetail } from '@/api';
+import { addMallCartItem, createMallOrder, getMallCart, getMallProductDetail, getUserAddresses } from '@/api';
+import type { UserAddress } from '@/api';
 type GoodsData = {
   id: string;
   shop_id: string;
@@ -199,7 +200,7 @@ onLoad((options: any) => {
     console.log('商品ID:', options.id);
     getMallProductDetail(options.id).then((res: any) => {
       console.log(res);
-      goodsData.value = res.data;
+      goodsData.value = res?.data || res;
     });
     requestCartCount();
   }
@@ -256,17 +257,53 @@ function onAddToCart() {
 const requestCartCount = () => {
   // 更新購物車角標時不需要全局 loading，避免覆蓋 Toast
   getMallCart({ noLoading: true }).then((res: any) => {
-    cartCount.value = res.data.items.length;
+    const data = res?.data || res;
+    cartCount.value = (data?.items || []).length;
   });
 }
 
-function onBuyNow() {
-  // 跳转到订单创建页面
-  const itemsStr = encodeURIComponent(JSON.stringify(goodsData.value));
-  const cartIdsStr = encodeURIComponent(JSON.stringify([goodsData.value.id]));
-  uni.navigateTo({
-    url: `/pages/order/create?items=${itemsStr}&shopId=${goodsData.value.shop_id}&cartIds=${cartIdsStr}`,
-  });
+async function onBuyNow() {
+  if (!goodsData.value?.id || !goodsData.value?.shop_id) {
+    uni.showToast({ title: '商品数据异常', icon: 'none' });
+    return;
+  }
+
+  try {
+    uni.showLoading({ title: '下单中...' });
+
+    const addrRes: any = await getUserAddresses();
+    const addresses: UserAddress[] = addrRes?.data || addrRes || [];
+    const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
+    if (!defaultAddr?.id) {
+      uni.hideLoading();
+      uni.showToast({ title: '请先添加收货地址', icon: 'none' });
+      setTimeout(() => {
+        uni.navigateTo({ url: '/pages/address/add' });
+      }, 800);
+      return;
+    }
+
+    await createMallOrder({
+      items: [
+        {
+          product_id: Number(goodsData.value.id),
+          quantity: 1,
+          sku: goodsData.value.sku || undefined,
+        },
+      ],
+      shop_id: Number(goodsData.value.shop_id),
+      address_id: defaultAddr.id,
+    });
+
+    uni.hideLoading();
+    uni.showToast({ title: '下单成功', icon: 'success' });
+    setTimeout(() => {
+      uni.navigateTo({ url: '/pages/order/order?status=pending' });
+    }, 500);
+  } catch (e) {
+    uni.hideLoading();
+    uni.showToast({ title: '下单失败', icon: 'none' });
+  }
 }
 </script>
 
