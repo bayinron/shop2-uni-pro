@@ -36,16 +36,16 @@
         >
           <image
             class="goods-img"
-            :src="item.img"
+            :src="item.product.cover_image"
             mode="aspectFill"
           />
           <view class="goods-body">
             <text class="goods-title breakcss">
-              {{ item.title }}
+              {{ item.product.name }}
             </text>
             <view class="goods-price-row">
-              <text class="goods-price">฿{{ item.price }}</text>
-              <text class="goods-sold">已售{{ item.sold }}</text>
+              <text class="goods-price">฿{{ item.product.sale_price }}</text>
+              <text class="goods-sold">已售{{ item.product.sold_count }}</text>
             </view>
           </view>
         </view>
@@ -107,25 +107,17 @@ async function loadProducts(reset: boolean = false) {
       limit: limit.value,
     });
 
-    const products: any[] = productsRes?.data || productsRes || [];
+    const products: any[] = productsRes?.data.data || productsRes || [];
 
-    // 映射服务器返回的数据到前端需要的格式
-    const newProducts = products.map((item: any) => ({
-      id: item.id || item.product_id || 0,
-      title: item.name || item.title || item.product?.name || '商品',
-      price: item.sale_price || item.price || item.product?.sale_price || 0,
-      sold: item.sold_count || item.sold || item.product?.sold_count || 0,
-      img: item.images?.[0]?.url || item.image_url || item.product?.images?.[0]?.url || '/static/img/empty.svg',
-    }));
 
     if (reset) {
-      goodsList.value = newProducts;
+      goodsList.value = products;
     } else {
-      goodsList.value = [...goodsList.value, ...newProducts];
+      goodsList.value = [...goodsList.value, ...products];
     }
 
     // 判断是否还有更多数据
-    hasMore.value = newProducts.length >= limit.value;
+    hasMore.value = products.length >= limit.value;
     if (hasMore.value) {
       page.value += 1;
     }

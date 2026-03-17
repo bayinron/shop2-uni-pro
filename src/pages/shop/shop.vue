@@ -125,7 +125,7 @@ async function loadShops(reset: boolean = false) {
       limit: limit.value,
     });
 
-    const data = res?.data || res || [];
+    const data = res?.data.data || [];
     const newShops = Array.isArray(data) ? data : (data.list || data.items || []);
 
     if (reset) {

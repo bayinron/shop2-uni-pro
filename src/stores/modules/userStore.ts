@@ -88,7 +88,8 @@ export const useUserStore = defineStore('user', () => {
         "roles": [],
         "role_names": [],
         user_role: 'user',
-        withdraw_status: false
+        withdraw_status: false,
+        has_withdraw_password: false
     });
     const homeConfig = ref<any>({});
     function reqHomeConfig() {
@@ -103,7 +104,7 @@ export const useUserStore = defineStore('user', () => {
 
     function reqUserInfo() {
         authGetMe().then((res: any) => {
-            userInfo.value = res;
+            userInfo.value = res.data;
         });
     }
     return {
