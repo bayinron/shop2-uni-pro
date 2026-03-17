@@ -40,12 +40,16 @@
             :key="p.id"
             @click="onProductClick(p)"
           >
-            <image class="product-img" :src="p.product.images?.[0]?.url || '/static/img/empty.svg'" mode="aspectFill" />
+            <image
+              class="product-img"
+              :src="p.product?.images?.[0]?.url || p.product?.cover_image || '/static/img/empty.svg'"
+              mode="aspectFill"
+            />
             <view class="product-body">
-              <text class="product-title breakcss">{{ p.product.name }}</text>
+              <text class="product-title breakcss">{{ p.product?.name || p.name }}</text>
               <view class="product-row">
-                <text class="product-price">￥{{ p.product.sale_price }}</text>
-                <text class="product-sales">已售 {{ p.sold_count }} 件</text>
+                <text class="product-price">￥{{ p.product?.sale_price || p.actual_price || 0 }}</text>
+                <text class="product-sales">已售 {{ p.sold_count || p.display_sold_count || 0 }} 件</text>
               </view>
             </view>
           </view>
@@ -62,7 +66,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { getCategoryProducts, getCategoryTree, getShopCategoryShops } from '@/api';
+import { getCategoryTree, getMallProductList } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 
 const userStore = useUserStore();
@@ -114,23 +118,47 @@ const activeCateName = computed(() => {
 });
 
 const currentProducts = ref<any[]>([]);
+const searchKeyword = ref('');
+
+function parseProductList(res: any): any[] {
+  // 兼容 request.ts / 后端包裹：res.data.data / res.data / res
+  const data = res?.data?.data ?? res?.data ?? res ?? {};
+  if (Array.isArray(data?.list)) return data.list;
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
+function loadProducts() {
+  const params: any = {
+    category_id: activeCateId.value,
+    page: 1,
+    limit: 50,
+  };
+  if (searchKeyword.value.trim()) params.keyword = searchKeyword.value.trim();
+
+  getMallProductList(params).then((res: any) => {
+    currentProducts.value = parseProductList(res);
+  });
+}
 
 function onCateClick(c: Category) {
   activeCateId.value = c.id;
-  getCategoryProducts(c.id).then((res: any) => {
-    currentProducts.value = res.data.data;
-  });
+  searchKeyword.value = '';
+  loadProducts();
 }
 
 function onSearchConfirm(e: any) {
   const value = (e?.detail?.value ?? '').trim();
   if (!value) return;
-  uni.showToast({ title: `搜索：${value}`, icon: 'none' });
+  searchKeyword.value = value;
+  loadProducts();
 }
 
 function onProductClick(p: Product) {
+  const pid = (p as any)?.product?.id ?? (p as any)?.product_id ?? (p as any)?.id;
   uni.navigateTo({
-    url: '/pages/goodsDetail/goodsDetail?id=' + p.id
+    url: '/pages/goodsDetail/goodsDetail?id=' + pid
   });
 }
 </script>

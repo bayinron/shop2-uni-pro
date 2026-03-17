@@ -132,7 +132,9 @@ function stopMarquee() {
 function onSearchConfirm(e: any) {
   const value = (e?.detail?.value ?? '').trim();
   if (!value) return;
-  uni.showToast({ title: `搜索：${value}`, icon: 'none' });
+  uni.navigateTo({
+    url: `/pages/goods/list?keyword=${encodeURIComponent(value)}`,
+  });
 }
 
 function onQuickClick(item: QuickEntry) {
@@ -165,7 +167,7 @@ function onProductClick(p: any) {
   });
 }
 
-onMounted(() => {
+onLoad((options: any) => {
   startMarquee();
   loadHomeFromApi();
 });

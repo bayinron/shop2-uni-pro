@@ -68,6 +68,12 @@
             }
         },
         {
+            "path": "pages/goods/list",
+            "style": {
+                "navigationBarTitleText": "商品列表"
+            }
+        },
+        {
             "path": "pages/wallet/recharge",
             "style": {
                 "navigationBarTitleText": "充值"
