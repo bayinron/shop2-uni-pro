@@ -94,6 +94,8 @@ import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import {
   getMallOrderList,
+  payMallOrder,
+  cancelMallOrder,
   type MallOrderStatus,
   type MallOrder,
   type MallOrderListResponse,
@@ -169,6 +171,12 @@ const statusTextMap: Record<string, string> = {
   cancelled: '已取消',
 };
 
+function removeOrderFromState(status: OrderStatus, orderId: number) {
+  const state = statusState.value[status];
+  const idx = state.list.findIndex((o) => o.id === orderId);
+  if (idx >= 0) state.list.splice(idx, 1);
+}
+
 function buildActions(order: MallOrder): OrderAction[] {
   const actions: OrderAction[] = [];
   if (order.status === 'pending') {
@@ -236,8 +244,8 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
 
   getMallOrderList(params)
     .then((res: any) => {
-      const data = res.data.data as MallOrderListResponse;
-      const list = data || [];
+      // 兼容：request.ts 返回 res.data；有些后端仍会包一层 data
+      const list  = res?.data?.data as MallOrderListResponse;
       const viewList = list.map(normalizeOrder);
 
       if (!loadMore) {
@@ -247,7 +255,7 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
       }
 
       state.page = nextPage;
-      const pageLimit = data.limit ?? PAGE_SIZE;
+      const pageLimit = res.data.per_page ?? PAGE_SIZE;
       state.hasMore = list.length >= pageLimit;
       state.loaded = true;
     })
@@ -285,6 +293,58 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
     track: '查看物流',
     confirm: '确认收货',
   };
+
+  if (action.key === 'cancel') {
+    uni.showModal({
+      title: '提示',
+      content: '确定要取消该订单吗？',
+      confirmText: '确定',
+      cancelText: '再想想',
+      success: async (r) => {
+        if (!r.confirm) return;
+        try {
+          uni.showLoading({ title: '取消中...' });
+          await cancelMallOrder(order.id);
+          uni.hideLoading();
+          uni.showToast({ title: '已取消', icon: 'none' });
+          // 本地直接移除，避免整页刷新
+          removeOrderFromState(activeTab.value, order.id);
+        } catch (e) {
+          uni.hideLoading();
+          uni.showToast({ title: '取消失败', icon: 'none' });
+        }
+      },
+    });
+    return;
+  }
+
+  if (action.key === 'pay') {
+    uni.showModal({
+      title: '确认付款',
+      content: `确认使用钱包支付订单？\n金额：￥${order.total}`,
+      confirmText: '付款',
+      cancelText: '取消',
+      success: async (r) => {
+        if (!r.confirm) return;
+        try {
+          uni.showLoading({ title: '支付中...' });
+          await payMallOrder(order.id, { payment_method: 'wallet' });
+          uni.hideLoading();
+          uni.showToast({ title: '支付成功', icon: 'none' });
+          // 先从待付款列表移除，避免切回看到旧数据
+          removeOrderFromState('pending', order.id);
+          // 自动跳到「待发货/已付款」并刷新
+          activeTab.value = 'paid';
+          loadOrders('paid', false);
+        } catch (e) {
+          uni.hideLoading();
+          uni.showToast({ title: '支付失败', icon: 'none' });
+        }
+      },
+    });
+    return;
+  }
+
   uni.showToast({ title: `${actionMap[action.key]}（测试功能）`, icon: 'none' });
 }
 </script>

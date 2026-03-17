@@ -70,10 +70,10 @@ const url = computed(() => userStore.url);
 console.log(url);
 onLoad(() => {
   getCategoryTree().then((res: any) => {
-    categories.value = res;
-    if(res.length > 0){
-      activeCateId.value = res[0].id;
-      onCateClick(res[0]);
+    categories.value = res.data;
+    if(res.data.length > 0){
+      activeCateId.value = res.data[0].id;
+      onCateClick(res.data[0]);
     }
   });
 });
@@ -118,7 +118,7 @@ const currentProducts = ref<any[]>([]);
 function onCateClick(c: Category) {
   activeCateId.value = c.id;
   getCategoryProducts(c.id).then((res: any) => {
-    currentProducts.value = res.data;
+    currentProducts.value = res.data.data;
   });
 }
 

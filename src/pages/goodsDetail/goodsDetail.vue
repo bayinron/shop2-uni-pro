@@ -261,7 +261,12 @@ const requestCartCount = () => {
 }
 
 function onBuyNow() {
-
+  // 跳转到订单创建页面
+  const itemsStr = encodeURIComponent(JSON.stringify(goodsData.value));
+  const cartIdsStr = encodeURIComponent(JSON.stringify([goodsData.value.id]));
+  uni.navigateTo({
+    url: `/pages/order/create?items=${itemsStr}&shopId=${goodsData.value.shop_id}&cartIds=${cartIdsStr}`,
+  });
 }
 </script>
 

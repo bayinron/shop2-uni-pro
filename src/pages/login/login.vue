@@ -105,7 +105,7 @@ function onLogin() {
   }
 
   authLogin(formData.value).then((res:any) => {
-      uni.setStorageSync('token', res.token);
+      uni.setStorageSync('token', res.data.token);
       // userStore.setUserInfo(res.user);
       //保留登录信息
       uni.setStorageSync('loginInfo', formData.value);
