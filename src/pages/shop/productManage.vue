@@ -190,7 +190,7 @@ function openConfigSheet(p: MyShopProduct) {
 }
 
 function closeConfigSheet() {
-  if (submitting.value) return;
+  // if (submitting.value) return;
   configSheetVisible.value = false;
   currentProduct.value = null;
 }
