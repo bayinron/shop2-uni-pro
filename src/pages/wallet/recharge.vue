@@ -19,7 +19,7 @@
       </view>
 
       <!-- 充值方式 -->
-      <view class="section">
+      <view class="section" v-if="payTypes.length > 0">
         <view class="section-row" @click="onPayTypeClick">
           <text class="section-label">充值方式</text>
           <view class="section-right">
@@ -27,6 +27,10 @@
             <uni-icons type="right" size="18" color="#999" />
           </view>
         </view>
+        <view class="pay-account-info" v-if="currentPayType.bank_name">{{ currentPayType.bank_name }}</view>
+        <view class="pay-account-info" v-if="currentPayType.account_name">{{ currentPayType.account_name }}</view>
+
+        <view class="pay-account-info" v-if="currentPayType.account_detail">{{ currentPayType.account_detail }}</view>
         <view class="pay-desc">
           <text class="pay-desc-text">{{ currentPayType.instructions }}</text>
         </view>
@@ -83,28 +87,7 @@ const form = ref({
 });
 
 const payTypes = ref<PaymentChannel[]>([
-  {
-  "id": 4,
-  "name": "USDT-TRC20",
-  "type": "crypto",
-  "provider": "manual",
-  "config": null,
-  "is_online": 0,
-  "currency": "USDT",
-  "account_name": "",
-  "account_detail": "T9yD14Nj9j7xAB4dbGeSv4h8cG799",
-  "bank_name": "",
-  "branch_name": "",
-  "min_amount": "10.00000000",
-  "max_amount": "100000.00000000",
-  "status": 1,
-  "instructions": "請僅向此地址轉入 USDT-TRC20，其他幣種或網路轉帳將無法到帳。",
-  "sort_order": 2,
-  "bank_info": null,
-  "created_at": "2026-03-19 14:12:47",
-  "updated_at": "2026-03-19 14:12:47",
-  "deleted_at": null
-}
+
 ]);
 
 const currentPayType = ref<PaymentChannel>(payTypes.value[0]);
@@ -157,7 +140,8 @@ async function onSubmit() {
 }
 onLoad(() => {
   getPaymentChannels().then((res: any) => {
-    payTypes.value = res;
+    payTypes.value = res.data;
+    currentPayType.value = payTypes.value[0];
   });
 });
 </script>
@@ -224,6 +208,12 @@ onLoad(() => {
 .section-value {
   font-size: 26rpx;
   color: #333;
+}
+
+.pay-account-info {
+  font-size: 24rpx;
+  color: #333;
+  line-height: 1.6;
 }
 
 .pay-desc {

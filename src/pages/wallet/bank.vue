@@ -37,8 +37,8 @@ import globalTool from '@/utils/globalTool';
 const cny = ref<any>(null);
 const fieldConfigs = ref<any[]>([]);
 onLoad(() => {
-  getBankTemplates({country_code: 'cny'}).then((res: any) => {
-    const tpl = res.data?.[0] || null;
+  getBankTemplates().then((res: any) => {
+    const tpl = res.data.find((t: any) => t.currency === "USD");
     cny.value = tpl;
     // 兼容字段名为 fields_config 或 fields
     const cfg = tpl?.fields_config || tpl?.fields || [];

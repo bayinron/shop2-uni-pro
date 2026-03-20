@@ -82,11 +82,8 @@ watch(userInfo, (newVal) => {
 onLoad(() => {
   //提现之前先看是否有绑定提现地址
   // 与银行卡页类似，这里使用 country_code: 'usdt'
-  getBankTemplates({ country_code: 'usdt' }).then((res: any) => {
-    const t = res.data?.[0] || null;
-    tpl.value = t;
-    const cfg = t?.fields_config || t?.fields || [];
-
+  getBankTemplates().then((res: any) => {
+    tpl.value = res.data.find((t: any) => t.currency === 'USDT');
 
     nextTick(() => {
       getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {

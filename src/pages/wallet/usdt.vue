@@ -56,10 +56,10 @@ const form = ref<Record<string, any>>({});
 
 onLoad(() => {
   // 与银行卡页类似，这里使用 country_code: 'usdt'
-  getBankTemplates({ country_code: 'usdt' }).then((res: any) => {
-    const t = res.data?.[0] || null;
-    tpl.value = t;
-    const cfg = t?.fields_config || t?.fields || [];
+  getBankTemplates().then((res: any) => {
+    tpl.value = res.data.find((t: any) => t.currency === 'USDT');
+
+    const cfg = tpl.value?.fields_config || tpl.value?.fields || [];
     fieldConfigs.value = Array.isArray(cfg) ? cfg : [];
 
     // 初始化表单字段
