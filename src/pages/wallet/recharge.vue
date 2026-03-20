@@ -84,7 +84,7 @@ const form = ref({
 
 const payTypes = ref<PaymentChannel[]>([
   {
-  "id": 7,
+  "id": 4,
   "name": "USDT-TRC20",
   "type": "crypto",
   "provider": "manual",
@@ -98,11 +98,11 @@ const payTypes = ref<PaymentChannel[]>([
   "min_amount": "10.00000000",
   "max_amount": "100000.00000000",
   "status": 1,
-  "instructions": "Please transfer only USDT-TRC20 to this address.",
-  "sort_order": 10,
+  "instructions": "請僅向此地址轉入 USDT-TRC20，其他幣種或網路轉帳將無法到帳。",
+  "sort_order": 2,
   "bank_info": null,
-  "created_at": "2026-02-26 16:23:26",
-  "updated_at": "2026-02-26 16:23:26",
+  "created_at": "2026-03-19 14:12:47",
+  "updated_at": "2026-03-19 14:12:47",
   "deleted_at": null
 }
 ]);

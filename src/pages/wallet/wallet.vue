@@ -73,7 +73,7 @@ import { useUserStoreHook } from '@/stores/modules/userStore';
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-const balance = computed(() => userInfo.value.balance ?? '0');
+const balance = computed(() => userInfo.value.wallet.balance_wallet.balance_formatted ?? '0');
 
 function goRecharge() {
   uni.navigateTo({

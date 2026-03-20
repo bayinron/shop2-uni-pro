@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
-import { deleteMallCartItem, getMallCart, getUserAddresses, updateMallCartItem } from '@/api';
+import { createMallOrder, deleteMallCartItem, getMallCart, getUserAddresses, payMallOrder, type MallOrder, type UserAddress, updateMallCartItem } from '@/api';
 type CartItem = {
   /** 购物车项 ID，用于更新数量 */
   id: number;
@@ -236,6 +236,16 @@ function increaseQty(shop: CartShop, item: CartItem) {
     });
 }
 
+function pickCreatedOrder(res: any): MallOrder | null {
+  const data = res?.data ?? res;
+  if (!data) return null;
+  if (Array.isArray(data)) return (data[0] as MallOrder) || null;
+  if (Array.isArray(data?.data)) return (data.data[0] as MallOrder) || null;
+  if (data?.data && typeof data.data === 'object') return data.data as MallOrder;
+  if (typeof data === 'object') return data as MallOrder;
+  return null;
+}
+
 async function onCheckout() {
   if (!totalPrice.value) {
     uni.showToast({ title: '请先选择要结算的商品', icon: 'none' });
@@ -269,29 +279,71 @@ async function onCheckout() {
     return;
   }
 
-  // 检查地址
+  // 获取默认地址并下单
   try {
-    const res: any = await getUserAddresses();
-    const addresses: any[] = res?.data || res || [];
-    if (!addresses.length) {
+    uni.showLoading({ title: '下单中...' });
+
+    const addrRes: any = await getUserAddresses();
+    const addresses: UserAddress[] = addrRes?.data || addrRes || [];
+    const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
+    if (!defaultAddr?.id) {
+      uni.hideLoading();
       uni.showToast({ title: '请先添加收货地址', icon: 'none' });
       setTimeout(() => {
-        uni.navigateTo({
-          url: '/pages/address/add',
-        });
-      }, 1500);
+        uni.navigateTo({ url: '/pages/address/add' });
+      }, 800);
       return;
     }
-  } catch (e) {
-    console.error('获取地址失败', e);
-  }
 
-  // 跳转到订单创建页面
-  const itemsStr = encodeURIComponent(JSON.stringify(selectedItems));
-  const cartIdsStr = encodeURIComponent(JSON.stringify(cartIds));
-  uni.navigateTo({
-    url: `/pages/order/create?items=${itemsStr}&shopId=${currentShopId}&cartIds=${cartIdsStr}`,
-  });
+    const createRes: any = await createMallOrder({
+      cart_ids: cartIds,
+      address_id: defaultAddr.id,
+    });
+
+    uni.hideLoading();
+    const createdOrder = pickCreatedOrder(createRes);
+    const orderId = createdOrder?.id;
+    const orderAmount = createdOrder?.total_amount || String(totalPrice.value);
+
+    if (!orderId) {
+      uni.showToast({ title: '下单成功，请到订单页付款', icon: 'none' });
+      setTimeout(() => {
+        uni.navigateTo({ url: '/pages/order/order?status=pending' });
+      }, 500);
+      return;
+    }
+
+    uni.showModal({
+      title: '确认付款',
+      content: `确认使用钱包支付订单？\n金额：￥${orderAmount}`,
+      confirmText: '付款',
+      cancelText: '取消',
+      success: async (r) => {
+        if (!r.confirm) {
+          uni.showToast({ title: '已创建订单', icon: 'none' });
+          setTimeout(() => {
+            uni.navigateTo({ url: '/pages/order/order?status=pending' });
+          }, 300);
+          return;
+        }
+        try {
+          uni.showLoading({ title: '支付中...' });
+          await payMallOrder(orderId, { payment_method: 'wallet' });
+          uni.hideLoading();
+          uni.showToast({ title: '支付成功', icon: 'none' });
+          setTimeout(() => {
+            uni.navigateTo({ url: '/pages/order/order?status=paid' });
+          }, 300);
+        } catch (e) {
+          uni.hideLoading();
+         
+        }
+      },
+    });
+  } catch (e) {
+    uni.hideLoading();
+    console.error('结算下单失败', e);
+  }
 }
 </script>
 

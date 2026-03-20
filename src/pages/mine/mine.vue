@@ -125,7 +125,6 @@
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
-import { type UserInfo } from '@/api';
 
 type Product = {
   id: string;
@@ -139,7 +138,13 @@ const isLoggedIn = ref(false);
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
 const displayAccount = computed(() => userInfo.value.phone || userInfo.value.username || '未登录');
-const userBalance = computed(() => userInfo.value.balance ?? '0');
+const userBalance = computed(() => {
+  return (
+    userInfo.value.wallet?.balance_wallet?.balance_formatted ??
+    userInfo.value.balance ??
+    '0'
+  );
+});
 
 // 订单数量统计（测试数据）
 const orderCounts = ref({

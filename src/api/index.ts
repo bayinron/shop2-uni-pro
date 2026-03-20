@@ -7,35 +7,6 @@ import type {
     LerpPageResult
 } from './types';
 
-export interface UserInfo {
-    id: number;
-    phone: string;
-    email: string | null;
-    username: string;
-    nickname: string;
-    avatar: string | null;
-    gender: number | null;
-    birthday: string | null;
-    withdraw_status: boolean;
-    status: number;
-    invite_code_status: boolean;
-    level: number;
-    credit_score: number;
-    invite_code: string | null;
-    invited_by_code: string | null;
-    balance: string;
-    last_login_ip: string;
-    last_login_at: string | null;
-    email_verified_at: string | null;
-    phone_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-    roles: any[];
-    role_names: string[];
-    user_role: string;
-    has_withdraw_password:boolean;//是否有提现密码
-}
 
 //获取主页配置
 export function getHomeConfig() {
@@ -421,6 +392,31 @@ export function authRefreshToken() {
 
 // ===== 用戶資料管理 =====
 
+export interface AuthMeWallet {
+    user_id: number;
+    balance_wallet: {
+        balance: number;
+        frozen: number;
+        total: number;
+        balance_formatted: string;
+        frozen_formatted: string;
+        total_formatted: string;
+    };
+    settlement_wallet: {
+        balance: number;
+        frozen: number;
+        total: number;
+        balance_formatted: string;
+        frozen_formatted: string;
+        total_formatted: string;
+    };
+    total: number;
+    total_formatted: string;
+    balance_name: string;
+    balance_symbol: string;
+    updated_at: string;
+}
+
 export interface AuthMeResponse {
     id: number;
     username: string;
@@ -428,11 +424,30 @@ export interface AuthMeResponse {
     email?: string;
     phone?: string;
     avatar?: string | null;
-    gender?: 0 | 1 | 2;
-    status?: 0 | 1;
+    gender?: 0 | 1 | 2 | null;
+    birthday?: string | null;
+    withdraw_status?: boolean;
+    status: number;
+    invite_code_status?: boolean;
+    level?: number;
+    credit_score?: number;
+    invite_code?: string | null;
+    invited_by_code?: string | null;
+    balance?: string;
+    last_login_ip?: string;
+    last_login_at?: string | null;
+    email_verified_at?: string | null;
+    phone_verified_at?: string | null;
     created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
     roles?: any[];
     role_names?: string[];
+    user_role: string;
+    has_withdraw_password: boolean;
+    wallet: AuthMeWallet;
+    // 兼容旧字段
+    // withdraw_status: true（旧版字段；新前端通过 has_withdraw_password）
 }
 
 // 1. 獲取當前用戶信息 - GET /api/auth/me

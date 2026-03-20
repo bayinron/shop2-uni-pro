@@ -100,14 +100,7 @@ type Product = {
 
 // 测试分类数据
 const categories = ref<Category[]>([
-  { id: 1, name: '热门推荐' },
-  { id: 2, name: '手机数码' },
-  { id: 3, name: '家用电器' },
-  { id: 4, name: '美妆个护' },
-  { id: 5, name: '服饰鞋包' },
-  { id: 6, name: '家居家装' },
-  { id: 7, name: '电脑办公' },
-  { id: 8, name: '运动户外' },
+
 ]);
 
 

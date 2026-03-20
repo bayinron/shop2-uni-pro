@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { store } from '@/stores';
 import { ref } from 'vue';
 import globalTool from '@/utils/globalTool';
-import { type UserInfo, authGetMe, getHomeConfig } from '@/api';
+import { type AuthMeResponse, authGetMe, getHomeConfig } from '@/api';
 // import { getSystemConfig, type SystemConfig, } from '@/api';
 import langData from '@/static/lang.json'
 
@@ -62,34 +62,46 @@ export const useUserStore = defineStore('user', () => {
     function setAssetType(type: number) {
         assetType.value = type;
     }
-    const userInfo = ref<UserInfo>({
-        "id": 106,
-        "phone": "13111111111",
-        "email": null,
-        "username": "u_13111111111",
-        "nickname": "u_13111111111",
-        "avatar": null,
-        "gender": null,
-        "birthday": null,
-        "status": 1,
-        "invite_code_status": true,
-        "level": 1,
-        "credit_score": 100,
-        "invite_code": null,
-        "invited_by_code": null,
-        "balance": "0.00",
-        "last_login_ip": "45.192.2.32",
-        "last_login_at": null,
-        "email_verified_at": null,
-        "phone_verified_at": null,
-        "created_at": "2026-02-03 17:49:42",
-        "updated_at": "2026-02-06 16:22:14",
-        "deleted_at": null,
-        "roles": [],
-        "role_names": [],
-        user_role: 'user',
-        withdraw_status: false,
-        has_withdraw_password: false
+    const userInfo = ref<AuthMeResponse>({
+        id: 0,
+        username: '',
+        nickname: '',
+        email: '',
+        phone: '',
+        avatar: '',
+        gender: 0,
+        status: 0,
+        user_role: '',
+        has_withdraw_password: false,
+        wallet: {
+            user_id: 0,
+            balance_wallet: {
+                balance: 0,
+                frozen: 0,
+                total: 0,
+                balance_formatted: '',
+                frozen_formatted: '',
+                total_formatted: '',
+            },
+            settlement_wallet: {
+                balance: 0,
+                frozen: 0,
+                total: 0,
+                balance_formatted: '',
+                frozen_formatted: '',
+                total_formatted: '',
+            },
+            total: 0,
+            total_formatted: '',
+            balance_name: '',
+            balance_symbol: '',
+            updated_at: '',
+        },
+        created_at: '',
+        updated_at: '',
+        deleted_at: '',
+        roles: [],
+        role_names: [],
     });
     const homeConfig = ref<any>({});
     function reqHomeConfig() {
@@ -98,13 +110,28 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
-    function setUserInfo(user: UserInfo) {
+    function setUserInfo(user: AuthMeResponse) {
         userInfo.value = user;
     }
 
     function reqUserInfo() {
         authGetMe().then((res: any) => {
-            userInfo.value = res.data;
+            const data = res.data;
+            // 新接口：钱包信息统一在 `wallet`，但页面仍使用 `userInfo.balance` 字段
+            const wallet = data?.wallet;
+            const walletBalance =
+                wallet?.balance_wallet?.balance ??
+                wallet?.balance; // 兼容旧结构
+            if (walletBalance !== undefined && walletBalance !== null) {
+                data.balance = Number(walletBalance).toFixed(2);
+            } else if (wallet?.balance_wallet?.balance_formatted) {
+                // 从类似 "¥7,578.00" 中提取数字
+                data.balance = String(wallet.balance_wallet.balance_formatted).replace(/[^\d.-]/g, '');
+            } else if (wallet?.balance_formatted) {
+                // 旧结构：wallet.balance_formatted
+                data.balance = String(wallet.balance_formatted).replace(/[^\d.-]/g, '');
+            }
+            userInfo.value = data;
         });
     }
     return {
