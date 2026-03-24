@@ -282,7 +282,7 @@ onReachBottom(() => {
 });
 
 function onOrderClick(order: ViewOrder) {
-  uni.showToast({ title: `查看订单：${order.no}`, icon: 'none' });
+  // uni.showToast({ title: `查看订单：${order.no}`, icon: 'none' });
 }
 
 function onActionClick(order: ViewOrder, action: OrderAction) {

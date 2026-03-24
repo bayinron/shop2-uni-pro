@@ -240,7 +240,7 @@ function onRegister() {
   }
   authRegister(params).then((res:any) => {
     // 这里直接使用中文文案，避免在未正确挂载 i18n 插件时导致 useI18n 报错
-    globalTool.showModal('注册成功', () => {
+    globalTool.showToast('注册成功', () => {
       uni.navigateTo({ url: '/pages/login/login' });
     });
   })

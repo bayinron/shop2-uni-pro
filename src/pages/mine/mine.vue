@@ -145,6 +145,10 @@ const userBalance = computed(() => {
     '0'
   );
 });
+onShow(() => {
+  isLoggedIn.value = !!uni.getStorageSync('token');
+  userStore.reqUserInfo();
+});
 
 // 订单数量统计（测试数据）
 const orderCounts = ref({
