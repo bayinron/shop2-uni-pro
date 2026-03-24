@@ -159,33 +159,33 @@ const cartCount = ref(3);
 
 // 推荐商品（测试数据）
 const recommendProducts = ref<Product[]>([
-  {
-    id: 'p1',
-    title: '时尚连帽卫衣',
-    price: '199.00',
-    originalPrice: '299.00',
-    img: '/static/img/clock.png',
-  },
-  {
-    id: 'p2',
-    title: '休闲夹克外套',
-    price: '299.00',
-    originalPrice: '399.00',
-    img: '/static/img/profit.png',
-  },
-  {
-    id: 'p3',
-    title: '经典T恤',
-    price: '89.00',
-    img: '/static/img/money-bag.png',
-  },
-  {
-    id: 'p4',
-    title: '运动鞋',
-    price: '459.00',
-    originalPrice: '599.00',
-    img: '/static/img/invitebg.png',
-  },
+  // {
+  //   id: 'p1',
+  //   title: '时尚连帽卫衣',
+  //   price: '199.00',
+  //   originalPrice: '299.00',
+  //   img: '/static/img/clock.png',
+  // },
+  // {
+  //   id: 'p2',
+  //   title: '休闲夹克外套',
+  //   price: '299.00',
+  //   originalPrice: '399.00',
+  //   img: '/static/img/profit.png',
+  // },
+  // {
+  //   id: 'p3',
+  //   title: '经典T恤',
+  //   price: '89.00',
+  //   img: '/static/img/money-bag.png',
+  // },
+  // {
+  //   id: 'p4',
+  //   title: '运动鞋',
+  //   price: '459.00',
+  //   originalPrice: '599.00',
+  //   img: '/static/img/invitebg.png',
+  // },
 ]);
 
 function onExit() {
@@ -242,12 +242,9 @@ function addressClick() {
   });
 }
 function onServiceClick(type: string) {
-  const typeMap: Record<string, string> = {
-    customer: '客服',
-    address: '地址管理',
-    cart: '购物袋',
-  };
-  uni.showToast({ title: `${typeMap[type]}（测试功能）`, icon: 'none' });
+  uni.navigateTo({
+    url: '/pages/service/index?url=' + 'https://www.baidu.com',
+  });
 }
 
 
