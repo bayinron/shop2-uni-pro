@@ -182,6 +182,24 @@
             "style": {
                 "navigationBarTitleText": "提现日志"
             }
+        },
+        {
+            "path": "pages/service/index",
+            "style": {
+                "navigationBarTitleText": "客服"
+            }
+        },
+        {
+            "path": "pages/help/help",
+            "style": {
+                "navigationBarTitleText": "帮助"
+            }
+        },
+        {
+            "path": "pages/about/about",
+            "style": {
+                "navigationBarTitleText": "关于我们"
+            }
         }
     ],
     "globalStyle": {

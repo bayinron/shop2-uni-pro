@@ -156,7 +156,7 @@ function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
     }
   }else if (key === 'cs') {
     uni.navigateTo({
-      url: '/pages/cs/cs',
+      url: '/pages/service/index?url=' + 'https://www.baidu.com',
     });
   }else if (key === 'help') {
     uni.navigateTo({
