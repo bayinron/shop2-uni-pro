@@ -66,7 +66,7 @@
     <!-- 商品列表 -->
     <view class="list-wrap">
       <view class="card" v-for="p in products" :key="p.id" @click="onProductClick(p)">
-        <image class="card-img" :src="p.product.cover_image" mode="aspectFill" />
+        <image class="card-img" :src="p.product.images[0].url" mode="aspectFill" />
         <view class="card-body">
           <text class="card-title breakcss">{{ p.product.name }}</text>
           <view class="card-row">

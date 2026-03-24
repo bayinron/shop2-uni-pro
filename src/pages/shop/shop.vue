@@ -164,10 +164,10 @@ function onSearchConfirm(e: any) {
 // 搜索按钮点击
 function onSearchClick() {
   const value = keyword.value.trim();
-  if (!value) {
-    uni.showToast({ title: '请输入搜索关键词', icon: 'none' });
-    return;
-  }
+  // if (!value) {
+  //   uni.showToast({ title: '请输入搜索关键词', icon: 'none' });
+  //   return;
+  // }
   loadShops(true);
 }
 
