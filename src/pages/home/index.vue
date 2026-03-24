@@ -52,7 +52,7 @@
         <view class="card-body">
           <text class="card-title breakcss">{{ p.product.name }}</text>
           <view class="card-row">
-            <text class="price">฿ {{ p.product.sale_price }}</text>
+            <text class="price">￥ {{ p.product.sale_price }}</text>
             <view class="buy-btn">购买</view>
           </view>
         </view>

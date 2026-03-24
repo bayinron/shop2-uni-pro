@@ -146,11 +146,11 @@ const { currentLanguage, currentLanguageInfo, supportedLanguages, setLanguage, t
 
 // 使用 reactive，模板和脚本里都直接用 formData.xxx，避免 ref / .value 不一致导致的报错
 const formData = reactive({
-  phone: '13111111113',
-  email: '13111111111@163.com',
+  phone: '',
+  email: '',
   verifyCode: '',
-  password: '111111',
-  confirmPassword: '111111',
+  password: '',
+  confirmPassword: '',
 });
 const captcha_id = ref('');
 const showPassword = ref(false);
@@ -162,7 +162,7 @@ const verifyCodeImg = ref('');
 function generateVerifyCode() {
   // 这里使用一个简单的占位图，实际应该是验证码图片的 base64 或 URL
   // 为了演示，我们使用一个占位符
-  verifyCodeImg.value = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iNDAiIGZpbGw9IiNmNWY1ZjUiLz48dGV4dCB4PSI1MCIgeT0iMjUiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFCM0M8L3RleHQ+PC9zdmc+';
+  verifyCodeImg.value = '';
 }
 
 function refreshVerifyCode() {
@@ -254,8 +254,8 @@ onMounted(() => {
   // generateVerifyCode();
   getCaptcha().then((res:any) => {
     console.log(res);
-    verifyCodeImg.value = res.image;
-    captcha_id.value = res.captcha_id;
+    verifyCodeImg.value = res.data.image;
+    captcha_id.value = res.data.captcha_id;
   });
 });
 </script>

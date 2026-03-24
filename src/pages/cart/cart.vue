@@ -43,7 +43,7 @@
               {{ item.title }}
             </text>
             <view class="item-bottom">
-              <text class="item-price">฿{{ item.price }}</text>
+              <text class="item-price">￥{{ item.price }}</text>
               <view class="quantity-wrap">
                 <text class="qty-btn" @click="decreaseQty(shop, item)">－</text>
                 <text class="qty-value">{{ item.qty }}</text>
@@ -59,7 +59,7 @@
     <view class="cart-footer">
       <view class="cart-total">
         <text class="total-label">合计：</text>
-        <text class="total-amount">฿{{ totalPrice }}</text>
+        <text class="total-amount">￥{{ totalPrice }}</text>
       </view>
       <button class="checkout-btn" @click="onCheckout">去结算</button>
     </view>

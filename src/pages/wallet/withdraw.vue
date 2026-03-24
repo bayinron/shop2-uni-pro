@@ -8,7 +8,7 @@
     <view class="section">
       <text class="section-label">提现金额</text>
       <view class="amount-input-wrap">
-        <text class="currency-symbol">฿</text>
+        <text class="currency-symbol">￥</text>
         <input class="amount-input" type="number" v-model="form.amount" placeholder="请输入提现金额" />
       </view>
     </view>
@@ -31,7 +31,7 @@
 
       <view class="balance-row">
         <text class="balance-text">
-          可用余额：<text class="balance-amount">฿ {{ availableBalance }}</text>
+          可用余额：<text class="balance-amount">￥ {{ availableBalance }}</text>
         </text>
       </view>
     </view>

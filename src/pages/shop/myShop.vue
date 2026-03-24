@@ -68,7 +68,7 @@
             <text class="wallet-label">余额</text>
           </view>
           <view class="wallet-amount">
-            <text class="wallet-currency">฿</text>
+            <text class="wallet-currency">￥</text>
             <text class="wallet-value">{{ userInfo.balance }}</text>
           </view>
         </view>

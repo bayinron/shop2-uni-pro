@@ -48,7 +48,7 @@
                 <text class="card-title breakcss">{{ product.name }}</text>
                 <text class="card-stock">库存：{{ product.stock }}</text>
                 <view class="card-bottom">
-                  <text class="card-price">฿{{ formatPrice(product.displayPrice) }}</text>
+                  <text class="card-price">￥{{ formatPrice(product.displayPrice) }}</text>
                   <button
                     v-if="product.in_my_shop"
                     class="card-btn card-btn--listed"
@@ -93,7 +93,7 @@
           <image class="sheet-img" :src="currentProduct?.image || ''" mode="aspectFill" />
           <view class="sheet-info">
             <text class="sheet-title breakcss">{{ currentProduct?.name || '' }}</text>
-            <text class="sheet-price">฿{{ formatPrice(currentProduct?.displayPrice) }}</text>
+            <text class="sheet-price">￥{{ formatPrice(currentProduct?.displayPrice) }}</text>
           </view>
           <view class="sheet-stock">
             <text class="sheet-stock-text">库存：{{ currentProduct?.stock ?? 0 }}</text>

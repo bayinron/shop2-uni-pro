@@ -44,7 +44,7 @@
               {{ item.product.name }}
             </text>
             <view class="goods-price-row">
-              <text class="goods-price">฿{{ item.product.sale_price }}</text>
+              <text class="goods-price">￥{{ item.product.sale_price }}</text>
               <text class="goods-sold">已售{{ item.product.sold_count }}</text>
             </view>
           </view>

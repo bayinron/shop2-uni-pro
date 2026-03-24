@@ -2,7 +2,7 @@
   <view class="wallet-page">
     <!-- 顶部余额区域 -->
     <view class="wallet-header">
-      <text class="wallet-label">余额（฿）</text>
+      <text class="wallet-label">余额（￥）</text>
       <text class="wallet-amount">{{ balance }}</text>
     </view>
 
