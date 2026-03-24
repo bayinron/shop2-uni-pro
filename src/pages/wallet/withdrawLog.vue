@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { getWalletWithdrawals, type WalletWithdrawalListItem } from '@/api/pay';
 import { onLoad } from '@dcloudio/uni-app';
 

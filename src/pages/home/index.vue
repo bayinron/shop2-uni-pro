@@ -47,20 +47,16 @@
       </view>
     </view>
 
-    <!-- 公告/跑马灯 -->
+    <!-- 公告 -->
     <view class="notice-wrap">
-      <view class="notice-left">
-        <text class="icon iconfont icon-xitongtongzhi" />
-      </view>
-      <view class="notice-marquee">
-        <view class="notice-marquee-inner" :style="marqueeStyle">
-          <rich-text class="notice-text" :nodes="noticeText"></rich-text>
-          <rich-text class="notice-text notice-text--gap" :nodes="noticeText"></rich-text>
-        </view>
-      </view>
-      <view class="notice-right">
-        <image class="notice-badge" :src="badgeImg" mode="aspectFit" />
-      </view>
+      <uni-notice-bar
+        color="#3a3a3a"
+        background-color="#ffffff"
+        :speed="40"
+        scrollable
+        show-icon
+        :text="noticePlainText"
+      />
     </view>
 
     <!-- 商品列表 -->
@@ -80,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { getPublicAdList, getArticleList, getMallProductList } from '@/api';
 import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
 import { useUserStore } from '@/stores/modules/userStore';
@@ -91,10 +87,9 @@ const placeholderText = '请输入产品名称';
 // banner（接口拉取失败时用项目内资源兜底）
 const banners = ref<any>();
 
-const badgeImg = '/static/img/money-bag.png';
-
 const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
 const noticeText = ref(fallbackNoticeText);
+const noticePlainText = computed(() => String(noticeText.value || '').replace(/<[^>]*>/g, '').trim() || fallbackNoticeText);
 
 
 const products = ref<any[]>([]);
@@ -111,28 +106,6 @@ async function loadHomeFromApi() {
     products.value = res.data.data;
   });
 
-}
-
-const marqueeX = ref(0);
-let marqueeTimer: number | null = null;
-
-const marqueeStyle = computed(() => ({
-  transform: `translateX(${marqueeX.value}px)`,
-}));
-
-function startMarquee() {
-  // 简单循环滚动：每帧左移 1px，到 -宽度后回到 0
-  // 这里不精准测宽度，按经验值滚动，保证 H5/小程序都能跑
-  const minX = -420;
-  marqueeTimer = setInterval(() => {
-    marqueeX.value = marqueeX.value - 1;
-    if (marqueeX.value <= minX) marqueeX.value = 0;
-  }, 16) as unknown as number;
-}
-
-function stopMarquee() {
-  if (marqueeTimer) clearInterval(marqueeTimer);
-  marqueeTimer = null;
 }
 
 function onSearchConfirm(e: any) {
@@ -180,10 +153,8 @@ function onProductClick(p: any) {
 }
 
 onLoad((options: any) => {
-  startMarquee();
   loadHomeFromApi();
 });
-onUnmounted(() => stopMarquee());
 </script>
 
 <style lang="scss" scoped>
@@ -296,60 +267,8 @@ onUnmounted(() => stopMarquee());
 
 .notice-wrap {
   margin: 14rpx 20rpx 0;
-  background: #fff;
   border-radius: 12rpx;
-  height: 84rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 14rpx;
-}
-
-.notice-left {
-  width: 56rpx;
-  display: flex;
-  justify-content: center;
-}
-
-.notice-left .icon {
-  color: #2c7bff;
-  font-size: 34rpx;
-}
-
-.notice-marquee {
-  flex: 1;
   overflow: hidden;
-  height: 84rpx;
-  display: flex;
-  align-items: center;
-}
-
-.notice-marquee-inner {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  will-change: transform;
-}
-
-.notice-text {
-  font-size: 26rpx;
-  color: #3a3a3a;
-  white-space: nowrap;
-}
-
-.notice-text--gap {
-  padding-left: 60rpx;
-}
-
-.notice-right {
-  width: 64rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.notice-badge {
-  width: 46rpx;
-  height: 46rpx;
 }
 
 .list-wrap {

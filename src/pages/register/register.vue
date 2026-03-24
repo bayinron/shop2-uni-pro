@@ -137,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onMounted } from 'vue';
+import { computed, ref, reactive } from 'vue';
 import { authRegister, authCheckUsername, authCheckEmail, getCaptcha } from '@/api';
 import globalTool from '@/utils/globalTool';
 const registerType = ref<'phone' | 'email'>('phone');
@@ -250,7 +250,7 @@ function onGoToLogin() {
   uni.navigateTo({ url: '/pages/login/login' });
 }
 
-onMounted(() => {
+onLoad(() => {
   // generateVerifyCode();
   getCaptcha().then((res:any) => {
     console.log(res);
