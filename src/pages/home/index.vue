@@ -20,11 +20,29 @@
     <!-- 宫格入口 -->
     <view class="quick-wrap">
       <view class="quick-grid">
-        <view v-for="item in quickEntries" :key="item.key" class="quick-item" @click="onQuickClick(item)">
-          <view class="quick-icon" :class="item.bgClass">
-            <text class="icon iconfont" :class="item.icon" />
+        <view class="quick-item" @click="onQuickClick('shop')">
+          <view class="quick-icon">
+            <text class="icon iconfont icon-zijinmingxi" />
           </view>
-          <text class="quick-text">{{ item.text }}</text>
+          <text class="quick-text">{{ userInfo.user_role == 'merchant' ? '管理店铺' : '申请成为商家' }}</text>
+        </view>
+        <view class="quick-item" @click="onQuickClick('cs')">
+          <view class="quick-icon">
+            <text class="icon iconfont icon-vzaixiankefu" />
+          </view>
+          <text class="quick-text">在线客服</text>
+        </view>
+        <view class="quick-item" @click="onQuickClick('help')">
+          <view class="quick-icon">
+            <text class="icon iconfont icon-xitongtongzhi" />
+          </view>
+          <text class="quick-text">帮助</text>
+        </view>
+        <view class="quick-item" @click="onQuickClick('about')">
+          <view class="quick-icon">
+            <text class="icon iconfont icon-guanyuwomen" />
+          </view>
+          <text class="quick-text">关于我们</text>
         </view>
       </view>
     </view>
@@ -65,27 +83,15 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { getPublicAdList, getArticleList, getMallProductList } from '@/api';
 import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
-
-type QuickEntry = {
-  key: string;
-  text: string;
-  icon: string; // iconfont class
-  bgClass: string;
-};
-
+import { useUserStore } from '@/stores/modules/userStore';
+const userStore = useUserStore();
+const userInfo = computed(() => userStore.userInfo);
 const placeholderText = '请输入产品名称';
 
 // banner（接口拉取失败时用项目内资源兜底）
 const banners = ref<any>();
 
 const badgeImg = '/static/img/money-bag.png';
-
-const quickEntries: QuickEntry[] = [
-  { key: 'shop', text: '管理店铺', icon: 'icon-zijinmingxi', bgClass: 'bg-red' },
-  { key: 'cs', text: '在线客服', icon: 'icon-vzaixiankefu', bgClass: 'bg-pink' },
-  { key: 'help', text: '帮助', icon: 'icon-xitongtongzhi', bgClass: 'bg-cream' },
-  { key: 'about', text: '关于我们', icon: 'icon-guanyuwomen', bgClass: 'bg-orange' },
-];
 
 const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
 const noticeText = ref(fallbackNoticeText);
@@ -137,24 +143,30 @@ function onSearchConfirm(e: any) {
   });
 }
 
-function onQuickClick(item: QuickEntry) {
-  if (item.key === 'shop') {
-    uni.navigateTo({
-      url: '/pages/shop/myShop',
-    });
-  }else if (item.key === 'cs') {
+function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
+  if (key === 'shop') {
+    if(userInfo.value.user_role == 'merchant') {
+      uni.navigateTo({
+        url: '/pages/shop/myShop',
+      });
+    } else {
+      uni.navigateTo({
+        url: '/pages/shop/apply',
+      });
+    }
+  }else if (key === 'cs') {
     uni.navigateTo({
       url: '/pages/cs/cs',
     });
-  }else if (item.key === 'help') {
+  }else if (key === 'help') {
     uni.navigateTo({
       url: '/pages/help/help',
     });
-  }else if (item.key === 'about') {
+  }else if (key === 'about') {
     uni.navigateTo({
       url: '/pages/about/about',
     });
-  }else if (item.key === 'order') {
+  }else if (key === 'order') {
     uni.navigateTo({
       url: '/pages/shop/myShopOrder',
     });
@@ -266,19 +278,19 @@ onUnmounted(() => stopMarquee());
   text-align: center;
 }
 
-.bg-red .icon {
+.quick-item:nth-child(1) .quick-icon .icon {
   color: #ff5a5f;
 }
 
-.bg-pink .icon {
+.quick-item:nth-child(2) .quick-icon .icon {
   color: #ff4aa3;
 }
 
-.bg-cream .icon {
+.quick-item:nth-child(3) .quick-icon .icon {
   color: #ffb02e;
 }
 
-.bg-orange .icon {
+.quick-item:nth-child(4) .quick-icon .icon {
   color: #ff7a2f;
 }
 
