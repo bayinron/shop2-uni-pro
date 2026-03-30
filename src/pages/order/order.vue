@@ -40,7 +40,7 @@
           <!-- 商品列表 -->
           <view class="order-products">
             <view v-for="(item, idx) in order.items" :key="idx" class="product-item">
-              <image class="product-img" :src="item.img" mode="aspectFill" />
+              <image class="product-img" :src="prefixUrl + item.img" mode="aspectFill" />
               <view class="product-info">
                 <text class="product-name">{{ item.name }}</text>
                 <view class="product-spec" v-if="item.spec">
@@ -52,6 +52,15 @@
                 </view>
               </view>
             </view>
+          </view>
+
+          <!-- 收货信息 -->
+          <view class="order-address" v-if="order.receiverName || order.receiverPhone || order.fullAddress">
+            <view class="address-header">
+              <text class="address-name" v-if="order.receiverName">{{ order.receiverName }}</text>
+              <text class="address-phone" v-if="order.receiverPhone">{{ order.receiverPhone }}</text>
+            </view>
+            <text class="address-detail" v-if="order.fullAddress">{{ order.fullAddress }}</text>
           </view>
 
           <!-- 订单底部 -->
@@ -100,7 +109,9 @@ import {
   type MallOrder,
   type MallOrderListResponse,
 } from '@/api/mall';
-
+import { useUserStore } from '@/stores/modules/userStore';
+const prefixUrl = computed(() => userStore.prefixUrl);
+const userStore = useUserStore();
 // 本页面展示用的订单状态子集
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed';
 
@@ -125,6 +136,9 @@ type ViewOrder = {
   statusText: string;
   time: string;
   total: string;
+  receiverName: string;
+  receiverPhone: string;
+  fullAddress: string;
   items: OrderItem[];
   actions: OrderAction[];
   raw: MallOrder;
@@ -207,6 +221,18 @@ function normalizeOrder(order: MallOrder): ViewOrder {
   }));
 
   const statusText = statusTextMap[order.status as string] || order.status || '';
+  const shippingAddress = order.shipping_address || {};
+  const receiverName = order.receiver_name || shippingAddress?.receiver_name || '';
+  const receiverPhone = order.receiver_phone || shippingAddress?.receiver_phone || '';
+  const fullAddress = typeof shippingAddress === 'string'
+    ? shippingAddress
+    : (
+      shippingAddress?.full_address
+      || shippingAddress?.address
+      || [shippingAddress?.province, shippingAddress?.city, shippingAddress?.district, shippingAddress?.detail]
+        .filter(Boolean)
+        .join('')
+    );
 
   return {
     id: order.id,
@@ -215,6 +241,9 @@ function normalizeOrder(order: MallOrder): ViewOrder {
     statusText,
     time: order.created_at,
     total: order.total_amount,
+    receiverName,
+    receiverPhone,
+    fullAddress: fullAddress || '',
     items,
     actions: buildActions(order),
     raw: order,
@@ -553,6 +582,38 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
 .product-quantity {
   font-size: 26rpx;
   color: #666;
+}
+
+.order-address {
+  background: #fafafa;
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.address-name {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.address-phone {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.address-detail {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
 }
 
 .order-card-footer {

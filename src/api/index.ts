@@ -741,22 +741,6 @@ export function uploadFile(payload: UploadFilePayload) {
 
 
 
-/**
- * 商戶申請/重新提交商戶申請
- * POST /api/merchant-application
- * 注意：證件照片、銀行存摺及店鋪 LOGO 圖片須先通過 uploadFile 上傳取得 URL，再傳入此接口
- */
-
-export interface MerchantApplicationPayload {
-    applicant_name: string;         // 申請人真實姓名（必填）
-    shop_name: string;              // 預期建立的商鋪名稱（必填）
-    shop_description?: string;      // 商鋪介紹（可選）
-    shop_category_id?: number;      // 店鋪類別 ID（可選，可通過 GET /api/mall/shop-categories 取得）
-    id_doc_front_url: string;       // 身份證正面照片 URL（必填）
-    id_doc_back_url: string;        // 身份證背面照片 URL（必填）
-    bank_passbook_url: string;      // 銀行存摺照片 URL（必填）
-    shop_logo_url?: string;         // 店鋪 Logo URL（可選）
-}
 
 export interface MerchantApplicationResponse {
     id: number;
@@ -764,17 +748,3 @@ export interface MerchantApplicationResponse {
     // ...其它回應字段
 }
 
-/**
- * 提交/重新提交商戶申請
- * @param payload - 商戶申請資料
- */
-export function submitMerchantApplication(payload: MerchantApplicationPayload) {
-    return http<any>({
-        method: 'POST',
-        url: '/merchant-application',
-        header: {
-            'Content-Type': 'application/json'
-        },
-        data: payload
-    });
-}

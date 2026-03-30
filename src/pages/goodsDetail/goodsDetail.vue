@@ -4,7 +4,7 @@
     <view class="goods-images">
       <swiper class="swiper" :indicator-dots="true" :autoplay="false" :interval="3000" :duration="500">
         <swiper-item v-for="(img, idx) in goodsData.images" :key="idx">
-          <image class="swiper-img" :src="img.url" mode="aspectFill" />
+          <image class="swiper-img" :src="prefixUrl + img.url" mode="aspectFill" />
         </swiper-item>
       </swiper>
     </view>
@@ -67,7 +67,7 @@
     <view class="detail-section">
       <text class="detail-title">商品详情</text>
       <view class="detail-content">
-        <image v-for="(img, idx) in goodsData.images" :key="idx" class="detail-img" :src="img.url" mode="widthFix" />
+        <image v-for="(img, idx) in goodsData.images" :key="idx" class="detail-img" :src="prefixUrl + img.url" mode="widthFix" />
         <text class="detail-text">{{ goodsData.description }}</text>
       </view>
     </view>
@@ -98,6 +98,9 @@ import { ref, onMounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { addMallCartItem, createMallOrder, getMallCart, getMallProductDetail, getUserAddresses, payMallOrder } from '@/api';
 import type { MallOrder, UserAddress } from '@/api';
+import { useUserStore } from '@/stores/modules/userStore';
+const prefixUrl = computed(() => userStore.prefixUrl);
+const userStore = useUserStore();
 type GoodsData = {
   id: string;
   shop_id: string;

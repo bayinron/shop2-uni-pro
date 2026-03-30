@@ -35,7 +35,7 @@
                 <view v-if="item.checked" class="check-dot" />
               </view>
             </view>
-            <image class="item-img" :src="item.img" mode="aspectFill" />
+            <image class="item-img" :src="prefixUrl + item.img" mode="aspectFill" />
           </view>
 
           <view class="item-right">
@@ -70,6 +70,9 @@
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { createMallOrder, deleteMallCartItem, getMallCart, getUserAddresses, payMallOrder, type MallOrder, type UserAddress, updateMallCartItem } from '@/api';
+import { useUserStore } from '@/stores/modules/userStore';
+const prefixUrl = computed(() => userStore.prefixUrl);
+const userStore = useUserStore();
 type CartItem = {
   /** 购物车项 ID，用于更新数量 */
   id: number;

@@ -147,6 +147,8 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                     if (res.header.refresh_token) {
                         uni.setStorageSync('token', res.header.refresh_token);
                     }
+                    const parsedata = res.data.data? JSON.parse(globalTool.Base64.decode(res.data.data)):res.data.data;
+                    data.data = parsedata;
                     console.log(`${options.url}:`, data);
                     // if(res.data?.message) {
                     //     globalTool.showToast(res.data?.message);

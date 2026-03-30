@@ -135,6 +135,7 @@ export const useUserStore = defineStore('user', () => {
         });
     }
     return {
+        prefixUrl,
         url,
         setUserInfo,
         userInfo,

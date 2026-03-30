@@ -12,7 +12,7 @@
     <view class="banner-wrap">
       <swiper class="banner" :indicator-dots="true" :autoplay="true" :interval="3500" :duration="300">
         <swiper-item v-for="(b, idx) in banners" :key="idx">
-          <image class="banner-img" :src="b.image_url" mode="aspectFill" />
+          <image class="banner-img" :src="prefixUrl + b.image_url" mode="aspectFill" />
         </swiper-item>
       </swiper>
     </view>
@@ -62,7 +62,7 @@
     <!-- 商品列表 -->
     <view class="list-wrap">
       <view class="card" v-for="p in products" :key="p.id" @click="onProductClick(p)">
-        <image class="card-img" :src="p.product.images[0].url" mode="aspectFill" />
+        <image class="card-img" :src="prefixUrl + p.product.images[0].url" mode="aspectFill" />
         <view class="card-body">
           <text class="card-title breakcss">{{ p.product.name }}</text>
           <view class="card-row">
@@ -80,13 +80,42 @@ import { computed, ref } from 'vue';
 import { getPublicAdList, getArticleList, getMallProductList } from '@/api';
 import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
 import { useUserStore } from '@/stores/modules/userStore';
+import { getLatestMerchantApplication, type MerchantApplicationInfo } from '@/api/myshop';
 const userStore = useUserStore();
 const userInfo = computed(() => userStore.userInfo);
 const placeholderText = '请输入产品名称';
-
+const prefixUrl = computed(() => userStore.prefixUrl);
 // banner（接口拉取失败时用项目内资源兜底）
 const banners = ref<any>();
-
+//监听userInfo的user_role，如果是user，就去请求申请商家的状态
+watch(() => userInfo.value.user_role, (newVal: string) => {
+  if(newVal == 'user') {
+    getLatestMerchantApplication().then((res: any) => {
+      const data = res.data as MerchantApplicationInfo
+      if(data.status == 'pending') {
+        uni.showToast({
+          title: '您的申请正在审核中，请耐心等待',
+          icon: 'none',
+        });
+      } else if(data.status == 'approved') {
+        uni.showToast({
+          title: '您的申请已通过，请等待审核通过后登录店铺',
+          icon: 'none',
+        });
+      } else if(data.status == 'rejected') {
+        uni.showToast({
+          title: '您的申请已拒绝，请重新申请',
+          icon: 'none',
+        });
+      } else if(data.status == 'processing') {
+        uni.showToast({
+          title: '您的申请正在处理中，请耐心等待',
+          icon: 'none',
+        });
+      }
+    });   
+  }
+}, { immediate: true });
 const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
 const noticeText = ref(fallbackNoticeText);
 const noticePlainText = computed(() => String(noticeText.value || '').replace(/<[^>]*>/g, '').trim() || fallbackNoticeText);

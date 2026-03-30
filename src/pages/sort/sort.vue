@@ -42,7 +42,7 @@
           >
             <image
               class="product-img"
-              :src="p.product?.images?.[0]?.url || p.product?.cover_image || '/static/img/empty.svg'"
+              :src="prefixUrl + (p.product?.images?.[0]?.url || p.product?.cover_image || '/static/img/empty.svg')"
               mode="aspectFill"
             />
             <view class="product-body">
@@ -68,7 +68,7 @@
 import { computed, ref } from 'vue';
 import { getCategoryTree, getMallProductList } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
-
+const prefixUrl = computed(() => userStore.prefixUrl);
 const userStore = useUserStore();
 const url = computed(() => userStore.url);
 console.log(url);
