@@ -79,9 +79,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { submitMerchantApplication, getShopCategories } from '@/api';
-import type { MerchantApplicationPayload } from '@/api';
+import { submitMerchantApplication } from '@/api/myshop';
+import type { MerchantApplicationPayload } from '@/api/myshop';
 import globalTool from '@/utils/globalTool';
+import { getShopCategories } from '@/api';
 
 const form = ref({
   name: '',
