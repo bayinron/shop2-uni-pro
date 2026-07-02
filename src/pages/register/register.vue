@@ -27,88 +27,119 @@
         <!-- 手机号注册 -->
         <template v-if="registerType === 'phone'">
           <!-- 手机号输入 -->
-          <view class="input-group">
-            <input
-              class="input-field"
-              type="number"
-              v-model="formData.phone"
-              placeholder="请输入手机号码"
-              maxlength="11"
-            />
+          <view class="form-item">
+            <view class="input-group" :class="{ 'input-group--error': errors.phone }">
+              <input
+                class="input-field"
+                type="text"
+                v-model="formData.phone"
+                placeholder="请输入手机号码"
+                maxlength="32"
+                @blur="onFieldBlur('phone')"
+                @input="onFieldInput('phone')"
+              />
+            </view>
+            <text v-if="errors.phone" class="field-error">{{ errors.phone }}</text>
           </view>
 
           <!-- 验证码输入 -->
-          <view class="input-group input-group--code">
-            <input
-              class="input-field"
-              type="text"
-              v-model="formData.verifyCode"
-              placeholder="请输入验证码"
-              maxlength="6"
-            />
-            <view class="verify-code-wrap" @click="refreshVerifyCode">
-              <image class="verify-code-img" :src="verifyCodeImg" mode="aspectFit" />
+          <view class="form-item">
+            <view class="input-group input-group--code" :class="{ 'input-group--error': errors.verifyCode }">
+              <input
+                class="input-field"
+                type="text"
+                v-model="formData.verifyCode"
+                placeholder="请输入验证码"
+                maxlength="6"
+                @blur="onFieldBlur('verifyCode')"
+                @input="onFieldInput('verifyCode')"
+              />
+              <view class="verify-code-wrap" @click="refreshVerifyCode">
+                <image class="verify-code-img" :src="verifyCodeImg" mode="aspectFit" />
+              </view>
             </view>
+            <text v-if="errors.verifyCode" class="field-error">{{ errors.verifyCode }}</text>
           </view>
         </template>
 
         <!-- 邮箱注册 -->
         <template v-if="registerType === 'email'">
           <!-- 邮箱输入 -->
-          <view class="input-group">
-            <input
-              class="input-field"
-              type="text"
-              v-model="formData.email"
-              placeholder="请输入邮箱地址"
-            />
+          <view class="form-item">
+            <view class="input-group" :class="{ 'input-group--error': errors.email }">
+              <input
+                class="input-field"
+                type="text"
+                v-model="formData.email"
+                placeholder="请输入邮箱地址"
+                maxlength="64"
+                @blur="onFieldBlur('email')"
+                @input="onFieldInput('email')"
+              />
+            </view>
+            <text v-if="errors.email" class="field-error">{{ errors.email }}</text>
           </view>
 
           <!-- 验证码输入 -->
-          <view class="input-group input-group--code">
-            <input
-              class="input-field"
-              type="text"
-              v-model="formData.verifyCode"
-              placeholder="请输入验证码"
-              maxlength="6"
-            />
-            <view class="verify-code-wrap" @click="refreshVerifyCode">
-              <image class="verify-code-img" :src="verifyCodeImg" mode="aspectFit" />
+          <view class="form-item">
+            <view class="input-group input-group--code" :class="{ 'input-group--error': errors.verifyCode }">
+              <input
+                class="input-field"
+                type="text"
+                v-model="formData.verifyCode"
+                placeholder="请输入验证码"
+                maxlength="6"
+                @blur="onFieldBlur('verifyCode')"
+                @input="onFieldInput('verifyCode')"
+              />
+              <view class="verify-code-wrap" @click="refreshVerifyCode">
+                <image class="verify-code-img" :src="verifyCodeImg" mode="aspectFit" />
+              </view>
             </view>
+            <text v-if="errors.verifyCode" class="field-error">{{ errors.verifyCode }}</text>
           </view>
         </template>
 
         <!-- 密码输入 -->
-        <view class="input-group">
-          <input
-            class="input-field"
-            :type="showPassword ? 'text' : 'password'"
-            v-model="formData.password"
-            placeholder="请输入密码"
-            maxlength="20"
-          />
-          <view class="password-toggle" @click="togglePassword">
-            <uni-icons :type="showPassword ? 'eye-slash' : 'eye'" size="20" color="#999" />
+        <view class="form-item">
+          <view class="input-group input-group--password" :class="{ 'input-group--error': errors.password }">
+            <input
+              class="input-field"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="formData.password"
+              placeholder="请输入密码"
+              maxlength="20"
+              @blur="onFieldBlur('password')"
+              @input="onFieldInput('password')"
+            />
+            <view class="password-toggle" @click="togglePassword">
+              <uni-icons :type="showPassword ? 'eye-slash' : 'eye'" size="20" color="#999" />
+            </view>
           </view>
+          <text v-if="errors.password" class="field-error">{{ errors.password }}</text>
         </view>
 
         <!-- 确认密码输入 -->
-        <view class="input-group">
-          <input
-            class="input-field"
-            :type="showConfirmPassword ? 'text' : 'password'"
-            v-model="formData.confirmPassword"
-            placeholder="请再次输入密码"
-            maxlength="20"
-          />
-          <view class="password-toggle" @click="toggleConfirmPassword">
-            <uni-icons
-              :type="showConfirmPassword ? 'eye-slash' : 'eye'"
-              size="20"
-              color="#999"
+        <view class="form-item">
+          <view class="input-group input-group--password" :class="{ 'input-group--error': errors.confirmPassword }">
+            <input
+              class="input-field"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              v-model="formData.confirmPassword"
+              placeholder="请再次输入密码"
+              maxlength="20"
+              @blur="onFieldBlur('confirmPassword')"
+              @input="onFieldInput('confirmPassword')"
             />
+            <view class="password-toggle" @click="toggleConfirmPassword">
+              <uni-icons
+                :type="showConfirmPassword ? 'eye-slash' : 'eye'"
+                size="20"
+                color="#999"
+              />
+            </view>
           </view>
+          <text v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</text>
         </view>
 
         <!-- 协议复选框 -->
@@ -119,12 +150,17 @@
             </view>
             <text class="agreement-text">我已阅读并同意用户协议和隐私政策</text>
           </view>
+          <text v-if="agreementError" class="field-error field-error--agreement">{{ agreementError }}</text>
         </view>
 
         <!-- 注册按钮 -->
-        <button class="register-btn" :disabled="!canRegister" @click="onRegister">
-          注册
-        </button>
+        <view
+          class="register-btn"
+          :class="{ 'register-btn--disabled': !canRegister || registering }"
+          @click="onRegister"
+        >
+          <text class="register-btn-text">{{ registering ? '注册中...' : '注册' }}</text>
+        </view>
 
         <!-- 已有账户登录 -->
         <view class="login-hint">
@@ -137,14 +173,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive } from 'vue';
-import { authRegister, authCheckUsername, authCheckEmail, getCaptcha } from '@/api';
+import { computed, ref, reactive, watch } from 'vue';
+import { authRegister, getCaptcha } from '@/api';
 import globalTool from '@/utils/globalTool';
-const registerType = ref<'phone' | 'email'>('phone');
-import { useI18n, type SupportedLanguage } from '@/utils/i18n';
-const { currentLanguage, currentLanguageInfo, supportedLanguages, setLanguage, t } = useI18n();
+import { useI18n } from '@/utils/i18n';
 
-// 使用 reactive，模板和脚本里都直接用 formData.xxx，避免 ref / .value 不一致导致的报错
+type FieldKey = 'phone' | 'email' | 'verifyCode' | 'password' | 'confirmPassword';
+
+const registerType = ref<'phone' | 'email'>('phone');
+const { t } = useI18n();
+
 const formData = reactive({
   phone: '',
   email: '',
@@ -157,36 +195,116 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const agreed = ref(false);
 const verifyCodeImg = ref('');
+const registering = ref(false);
+const showAllErrors = ref(false);
+const touched = reactive<Record<FieldKey, boolean>>({
+  phone: false,
+  email: false,
+  verifyCode: false,
+  password: false,
+  confirmPassword: false,
+});
 
-// 生成验证码图片（测试数据 - 实际应该是后端接口返回）
-function generateVerifyCode() {
-  // 这里使用一个简单的占位图，实际应该是验证码图片的 base64 或 URL
-  // 为了演示，我们使用一个占位符
-  verifyCodeImg.value = '';
+function isEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidPhone(value: string) {
+  return value.trim().length >= 6;
+}
+
+function getFieldError(field: FieldKey): string {
+  switch (field) {
+    case 'phone':
+      if (registerType.value !== 'phone') return '';
+      if (!formData.phone.trim()) return '请输入手机号码';
+      if (!isValidPhone(formData.phone)) return '手机号码至少6位';
+      return '';
+    case 'email':
+      if (registerType.value !== 'email') return '';
+      if (!formData.email.trim()) return '请输入邮箱地址';
+      if (!isEmail(formData.email.trim())) return '请输入正确的邮箱地址';
+      return '';
+    case 'verifyCode':
+      if (!formData.verifyCode.trim()) return '请输入验证码';
+      if (formData.verifyCode.trim().length < 4) return '验证码至少4位';
+      return '';
+    case 'password':
+      if (!formData.password) return '请输入密码';
+      if (formData.password.length < 6) return '密码至少6位';
+      return '';
+    case 'confirmPassword':
+      if (!formData.confirmPassword) return '请再次输入密码';
+      if (formData.confirmPassword !== formData.password) return '两次密码输入不一致';
+      return '';
+  }
+}
+
+function shouldShowError(field: FieldKey) {
+  return showAllErrors.value || touched[field];
+}
+
+const errors = computed(() => ({
+  phone: shouldShowError('phone') ? getFieldError('phone') : '',
+  email: shouldShowError('email') ? getFieldError('email') : '',
+  verifyCode: shouldShowError('verifyCode') ? getFieldError('verifyCode') : '',
+  password: shouldShowError('password') ? getFieldError('password') : '',
+  confirmPassword: shouldShowError('confirmPassword') ? getFieldError('confirmPassword') : '',
+}));
+
+const agreementError = computed(() => {
+  if (!showAllErrors.value) return '';
+  if (!agreed.value) return '请先阅读并同意协议';
+  return '';
+});
+
+function onFieldBlur(field: FieldKey) {
+  touched[field] = true;
+}
+
+function onFieldInput(field: FieldKey) {
+  if (showAllErrors.value || touched[field]) {
+    touched[field] = true;
+  }
+  if (field === 'password' && (showAllErrors.value || touched.confirmPassword)) {
+    touched.confirmPassword = true;
+  }
+}
+
+function markAllFieldsTouched() {
+  (Object.keys(touched) as FieldKey[]).forEach((field) => {
+    touched[field] = true;
+  });
+}
+
+watch(registerType, () => {
+  showAllErrors.value = false;
+  touched.phone = false;
+  touched.email = false;
+  touched.verifyCode = false;
+});
+
+function loadCaptcha() {
+  return getCaptcha().then((res: any) => {
+    verifyCodeImg.value = res.data.image;
+    captcha_id.value = res.data.captcha_id;
+  });
 }
 
 function refreshVerifyCode() {
-  generateVerifyCode();
+  loadCaptcha();
 }
 
 const canRegister = computed(() => {
+  const verifyOk = formData.verifyCode.trim().length >= 4;
+  const passwordOk =
+    formData.password.length >= 6 &&
+    formData.password === formData.confirmPassword;
+
   if (registerType.value === 'phone') {
-    return (
-      formData.phone.length >= 11 &&
-      formData.verifyCode.length >= 4 &&
-      formData.password.length >= 6 &&
-      formData.password === formData.confirmPassword &&
-      agreed.value
-    );
-  } else {
-    return (
-      formData.email.includes('@') &&
-      formData.verifyCode.length >= 4 &&
-      formData.password.length >= 6 &&
-      formData.password === formData.confirmPassword &&
-      agreed.value
-    );
+    return isValidPhone(formData.phone) && verifyOk && passwordOk && agreed.value;
   }
+  return isEmail(formData.email.trim()) && verifyOk && passwordOk && agreed.value;
 });
 
 function togglePassword() {
@@ -201,49 +319,35 @@ function toggleAgreement() {
   agreed.value = !agreed.value;
 }
 
-function onRegister() {
-  if (!canRegister.value) {
-    if (registerType.value === 'phone' && formData.phone.length < 11) {
-      uni.showToast({ title: '请输入正确的手机号码', icon: 'none' });
-      return;
-    }
-    if (registerType.value === 'email' && !formData.email.includes('@')) {
-      uni.showToast({ title: '请输入正确的邮箱地址', icon: 'none' });
-      return;
-    }
-    if (formData.verifyCode.length < 4) {
-      uni.showToast({ title: '请输入验证码', icon: 'none' });
-      return;
-    }
-    if (formData.password.length < 6) {
-      uni.showToast({ title: '密码至少6位', icon: 'none' });
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      uni.showToast({ title: '两次密码输入不一致', icon: 'none' });
-      return;
-    }
-    if (!agreed.value) {
-      uni.showToast({ title: '请先阅读并同意协议', icon: 'none' });
-      return;
-    }
-  }
-  let params:any = {
+async function onRegister() {
+  if (registering.value) return;
+
+  showAllErrors.value = true;
+  markAllFieldsTouched();
+  if (!canRegister.value) return;
+
+  const params: any = {
     password: formData.password,
     captcha_id: captcha_id.value,
-    captcha_code: formData.verifyCode,
-  }
+    captcha_code: formData.verifyCode.trim(),
+  };
   if (registerType.value === 'phone') {
-    params.phone = formData.phone;
+    params.phone = formData.phone.trim();
   } else {
-    params.email = formData.email;
+    params.email = formData.email.trim();
   }
-  authRegister(params).then((res:any) => {
-    // 这里直接使用中文文案，避免在未正确挂载 i18n 插件时导致 useI18n 报错
+
+  registering.value = true;
+  try {
+    await authRegister(params);
     globalTool.showToast('注册成功', () => {
       uni.navigateTo({ url: '/pages/login/login' });
     });
-  })
+  } catch {
+    refreshVerifyCode();
+  } finally {
+    registering.value = false;
+  }
 }
 
 function onGoToLogin() {
@@ -251,19 +355,17 @@ function onGoToLogin() {
 }
 
 onLoad(() => {
-  // generateVerifyCode();
-  getCaptcha().then((res:any) => {
-    console.log(res);
-    verifyCodeImg.value = res.data.image;
-    captcha_id.value = res.data.captcha_id;
-  });
+  loadCaptcha();
 });
 </script>
 
 <style lang="scss" scoped>
 .register {
   min-height: 100vh;
-  background: #fff;
+  background: linear-gradient(180deg, #ffe5d9 0%, #fff0eb 30%, #f8f9fa 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 60rpx 40rpx;
 }
 
@@ -277,7 +379,7 @@ onLoad(() => {
   display: block;
   font-size: 48rpx;
   font-weight: 600;
-  color: #333;
+  color: #ff6b9d;
   text-align: center;
   margin-bottom: 50rpx;
 }
@@ -321,13 +423,35 @@ onLoad(() => {
   width: 100%;
 }
 
+.form-item {
+  margin-bottom: 30rpx;
+}
+
 .input-group {
   position: relative;
-  margin-bottom: 30rpx;
+  margin-bottom: 0;
   background: #fff;
   border-radius: 16rpx;
   border: 2rpx solid #e5e5e5;
   overflow: hidden;
+}
+
+.input-group--error {
+  border-color: #ff3e6c;
+}
+
+.field-error {
+  display: block;
+  margin-top: 10rpx;
+  padding-left: 8rpx;
+  font-size: 24rpx;
+  color: #ff3e6c;
+  line-height: 1.4;
+}
+
+.field-error--agreement {
+  margin-top: 12rpx;
+  padding-left: 48rpx;
 }
 
 .input-group--code {
@@ -342,6 +466,11 @@ onLoad(() => {
   font-size: 30rpx;
   color: #333;
   background: transparent;
+  box-sizing: border-box;
+}
+
+.input-group--password .input-field {
+  padding-right: 80rpx;
 }
 
 .verify-code-wrap {
@@ -417,21 +546,41 @@ onLoad(() => {
 .register-btn {
   width: 100%;
   height: 96rpx;
-  background: #ff3e6c;
-  color: #fff;
-  font-size: 32rpx;
-  font-weight: 600;
-  border-radius: 48rpx;
-  border: none;
   margin-bottom: 30rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff3e6c 100%);
+  box-shadow: 0 12rpx 32rpx rgba(255, 62, 108, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+
+  &:active:not(.register-btn--disabled) {
+    opacity: 0.92;
+    transform: scale(0.98);
+    box-shadow: 0 6rpx 20rpx rgba(255, 62, 108, 0.22);
+  }
 }
 
-.register-btn:disabled {
-  background: #ccc;
-  color: #999;
+.register-btn--disabled {
+  background: #e8e8e8;
+  box-shadow: none;
+}
+
+.register-btn--disabled:active {
+  opacity: 1;
+  transform: none;
+}
+
+.register-btn-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+
+.register-btn--disabled .register-btn-text {
+  color: #bbb;
 }
 
 .login-hint {

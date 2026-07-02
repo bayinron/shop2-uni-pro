@@ -115,7 +115,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     function reqUserInfo() {
-        authGetMe().then((res: any) => {
+        return authGetMe().then((res: any) => {
             const data = res.data;
             // 新接口：钱包信息统一在 `wallet`，但页面仍使用 `userInfo.balance` 字段
             const wallet = data?.wallet;
@@ -132,6 +132,7 @@ export const useUserStore = defineStore('user', () => {
                 data.balance = String(wallet.balance_formatted).replace(/[^\d.-]/g, '');
             }
             userInfo.value = data;
+            return data;
         });
     }
     return {

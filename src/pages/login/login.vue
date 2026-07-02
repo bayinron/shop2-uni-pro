@@ -19,7 +19,7 @@
             type="text"
             v-model="formData.login"
             placeholder="请输入手机号码或邮箱"
-            maxlength="11"
+            maxlength="64"
           />
         </view>
 
@@ -48,14 +48,18 @@
         </view>
 
         <!-- 登录按钮 -->
-        <button class="login-btn" :disabled="!canLogin" @click="onLogin">
-          登录
-        </button>
+        <view
+          class="login-btn"
+          :class="{ 'login-btn--disabled': !canLogin || loggingIn }"
+          @click="onLogin"
+        >
+          <text class="login-btn-text">{{ loggingIn ? '登录中...' : '登录' }}</text>
+        </view>
 
         <!-- 忘记密码 -->
-        <view class="forgot-password">
+        <!-- <view class="forgot-password">
           <text class="forgot-link" @click="onForgotPassword">忘记密码</text>
-        </view>
+        </view> -->
       </view>
     </view>
   </view>
@@ -64,8 +68,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { authLogin } from '@/api';
-import globalTool from '@/utils/globalTool';
 import { useUserStore } from '@/stores/modules/userStore';
+
 const userStore = useUserStore();
 const formData = ref({
   login: '',
@@ -73,10 +77,22 @@ const formData = ref({
 });
 
 const showPassword = ref(false);
-const agreed = ref(true);
+const agreed = ref(false);
+const loggingIn = ref(false);
+
+function isEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidLogin(value: string) {
+  if (!value) return false;
+  if (value.includes('@')) return isEmail(value);
+  return value.length >= 6;
+}
 
 const canLogin = computed(() => {
-  return formData.value.login.length >= 11 && formData.value.password.length >= 6 && agreed.value;
+  const login = formData.value.login.trim();
+  return isValidLogin(login) && formData.value.password.length >= 6 && agreed.value;
 });
 
 function togglePassword() {
@@ -92,26 +108,61 @@ function onRegister() {
     url: '/pages/register/register'
   });
 }
+
 onLoad(() => {
   const loginInfo = uni.getStorageSync('loginInfo');
-  if (loginInfo) {
-    formData.value = loginInfo;
+  if (loginInfo?.login) {
+    formData.value.login = loginInfo.login;
   }
 });
-function onLogin() {
-  if (!canLogin.value) {
-    uni.showToast({ title: '请完善登录信息', icon: 'none' });
+
+async function onLogin() {
+  if (loggingIn.value || !canLogin.value) return;
+
+  const login = formData.value.login.trim();
+  const password = formData.value.password;
+
+  if (!isValidLogin(login)) {
+    uni.showToast({ title: '请输入正确的手机号或邮箱', icon: 'none' });
+    return;
+  }
+  if (password.length < 6) {
+    uni.showToast({ title: '密码至少6位', icon: 'none' });
+    return;
+  }
+  if (!agreed.value) {
+    uni.showToast({ title: '请先阅读并同意协议', icon: 'none' });
     return;
   }
 
-  authLogin(formData.value).then((res:any) => {
-      uni.setStorageSync('token', res.data.token);
-      // userStore.setUserInfo(res.user);
-      //保留登录信息
-      uni.setStorageSync('loginInfo', formData.value);
-      userStore.reqUserInfo();
-      uni.switchTab({ url: '/pages/home/index' });
-  });
+  loggingIn.value = true;
+  try {
+    const res: any = await authLogin({ login, password });
+    const payload = res.data;
+
+    if (payload?.totp_required) {
+      uni.showToast({ title: '需要二次验证，请完成 TOTP 验证', icon: 'none' });
+      return;
+    }
+    if (!payload?.token) {
+      uni.showToast({ title: '登录失败，请重试', icon: 'none' });
+      return;
+    }
+
+    uni.setStorageSync('token', payload.token);
+    // 仅记住账号，不保存密码
+    uni.setStorageSync('loginInfo', { login });
+
+    if (payload.user) {
+      userStore.setUserInfo(payload.user as any);
+    }
+    await userStore.reqUserInfo();
+    uni.switchTab({ url: '/pages/home/index' });
+  } catch {
+    // 错误提示由 request 拦截器统一处理
+  } finally {
+    loggingIn.value = false;
+  }
 }
 
 function onForgotPassword() {
@@ -237,21 +288,37 @@ function onForgotPassword() {
 .login-btn {
   width: 100%;
   height: 96rpx;
-  background: #ff3e6c;
-  color: #fff;
-  font-size: 32rpx;
-  font-weight: 600;
-  border-radius: 48rpx;
-  border: none;
   margin-bottom: 30rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff3e6c 100%);
+  box-shadow: 0 12rpx 32rpx rgba(255, 62, 108, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+
+  &:active:not(.login-btn--disabled) {
+    opacity: 0.92;
+    transform: scale(0.98);
+    box-shadow: 0 6rpx 20rpx rgba(255, 62, 108, 0.22);
+  }
 }
 
-.login-btn:disabled {
-  background: #ccc;
-  color: #999;
+.login-btn--disabled {
+  background: #e8e8e8;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.login-btn-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+
+.login-btn--disabled .login-btn-text {
+  color: #bbb;
 }
 
 .forgot-password {
