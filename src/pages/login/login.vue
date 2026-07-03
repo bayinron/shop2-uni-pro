@@ -77,7 +77,7 @@ const formData = ref({
 });
 
 const showPassword = ref(false);
-const agreed = ref(false);
+const agreed = ref(true);
 const loggingIn = ref(false);
 
 function isEmail(value: string) {

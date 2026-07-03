@@ -66,6 +66,19 @@
           </view>
           <text class="upload-tip">图片文件最大上传 3 MB</text>
         </view>
+
+        <!-- 存折封面 -->
+        <view class="form-item">
+          <text class="form-label">存折封面</text>
+          <view class="passbook-upload" @click="onUploadBankPassbook">
+            <image v-if="form.bank_passbook" class="passbook-img" :src="resolveMediaUrl(form.bank_passbook)" mode="aspectFill" />
+            <view v-else class="passbook-placeholder">
+              <uni-icons type="camera" size="32" color="#4fc3f7" />
+              <text class="passbook-text">点击上传存折封面</text>
+            </view>
+          </view>
+          <text class="upload-tip">图片文件最大上传 3 MB</text>
+        </view>
       </view>
     </scroll-view>
 
@@ -91,6 +104,7 @@ const form = ref({
   avatar: '',
   id_photo_front: '',
   id_photo_back: '',
+  bank_passbook: '',
 });
 
 const categories = ref<any[]>([]);
@@ -118,6 +132,12 @@ function onUploadIdPhotoFront() {
 function onUploadIdPhotoBack() {
   globalTool.chooseAndUploadImage(3).then((url) => {
     if (url) form.value.id_photo_back = url;
+  });
+}
+
+function onUploadBankPassbook() {
+  globalTool.chooseAndUploadImage(3).then((url) => {
+    if (url) form.value.bank_passbook = url;
   });
 }
 
@@ -166,6 +186,10 @@ function validate(): boolean {
     globalTool.showToast('请上传身份证背面照片', false, 'none');
     return false;
   }
+  if (!globalTool.isUploadedMediaUrl(form.value.bank_passbook)) {
+    globalTool.showToast('请上传存折封面', false, 'none');
+    return false;
+  }
   return true;
 }
 
@@ -183,7 +207,7 @@ async function onSubmit() {
       shop_category_id: form.value.category_id,
       id_doc_front_url: globalTool.stripMediaUrl(form.value.id_photo_front),
       id_doc_back_url: globalTool.stripMediaUrl(form.value.id_photo_back),
-      bank_passbook_url: '',
+      bank_passbook_url: globalTool.stripMediaUrl(form.value.bank_passbook),
       shop_logo_url: globalTool.stripMediaUrl(form.value.avatar),
     };
     await submitMerchantApplication(payload);
@@ -402,6 +426,37 @@ onLoad(async () => {
   color: #ff3e6c;
   margin-top: 12rpx;
   display: block;
+}
+
+.passbook-upload {
+  width: 100%;
+  height: 200rpx;
+  margin-top: 20rpx;
+  border: 2rpx dashed #4fc3f7;
+  border-radius: 12rpx;
+  background: #f8fdff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.passbook-img {
+  width: 100%;
+  height: 100%;
+}
+
+.passbook-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.passbook-text {
+  font-size: 24rpx;
+  color: #666666;
 }
 
 .bottom-bar {
