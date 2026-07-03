@@ -64,11 +64,11 @@ function onAddAddress() {
   });
 }
 
+const SELECTED_ADDRESS_KEY = 'selectedAddress';
+
 function onSelect(item: UserAddress) {
-  uni.showToast({
-    title: `选择地址：${item.receiver_name}`,
-    icon: 'none',
-  });
+  uni.setStorageSync(SELECTED_ADDRESS_KEY, item);
+  uni.navigateBack();
 }
 
 onShow(() => {

@@ -1,4 +1,4 @@
-import { http } from './request';
+import { uploadFile, type UploadFileType } from '@/api/upload';
 
 // 兼容小程序端 wx 全局对象（用于文件系统等 API）
 declare const wx: any;
@@ -76,7 +76,7 @@ export default {
             return true;
         } else {
             uni.reLaunch({
-                url: '/pages/login/index'
+                url: '/pages/login/login'
             });
             return false;
         }
@@ -235,6 +235,85 @@ export default {
             }).join(''));
         }
     },
+    /** 媒體資源 URL 前綴（與 userStore.prefixUrl 邏輯一致） */
+    getMediaPrefixUrl: function (): string {
+        const baseURL = import.meta.env.VITE_APP_BASE_URL || '';
+        const isH5 = typeof window !== 'undefined' && typeof location !== 'undefined';
+        let currentDomain = isH5 ? window.location.origin : '';
+        if (currentDomain.includes('localhost')) {
+            currentDomain = '';
+        }
+        return baseURL || currentDomain;
+    },
+    /** 拼接前綴供前端圖片展示 */
+    resolveMediaUrl: function (url: string): string {
+        if (!url) return '';
+        if (/^(https?:|blob:|data:)/i.test(url)) return url;
+        const prefix = this.getMediaPrefixUrl();
+        if (!prefix) return url;
+        const base = prefix.replace(/\/+$/, '');
+        const path = url.replace(/^\/+/, '');
+        return `${base}/${path}`;
+    },
+    /** 去掉展示前綴，還原為 API 提交用的原始路徑 */
+    stripMediaUrl: function (url: string): string {
+        if (!url) return '';
+        if (/^(blob:|data:)/i.test(url)) return url;
+        const prefix = this.getMediaPrefixUrl();
+        if (prefix) {
+            const base = prefix.replace(/\/+$/, '');
+            if (url.startsWith(`${base}/`) || url === base) {
+                const stripped = url.slice(base.length);
+                return stripped.startsWith('/') ? stripped : `/${stripped}`;
+            }
+        }
+        return url;
+    },
+    /** 是否為有效上傳 URL（排除 blob / data 本地預覽） */
+    isUploadedMediaUrl: function (url: string): boolean {
+        if (!url || /^(blob:|data:)/i.test(url)) return false;
+        const submitUrl = this.stripMediaUrl(url);
+        return !!submitUrl && !/^(blob:|data:)/i.test(submitUrl);
+    },
+    /**
+     * 選圖並上傳至 /api/upload，返回後端原始 url（不含展示前綴）
+     * @param maxSizeMB 最大檔案大小（MB）
+     * @param fileType 上傳類型，默認 img
+     */
+    chooseAndUploadImage: function (maxSizeMB = 3, fileType: UploadFileType = 'img'): Promise<string> {
+        const maxSize = maxSizeMB * 1024 * 1024;
+        return new Promise((resolve) => {
+            uni.chooseImage({
+                count: 1,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+                success: (res) => {
+                    const tempFilePath = res.tempFilePaths[0];
+                    uni.getFileInfo({
+                        filePath: tempFilePath,
+                        success: async (fileInfo) => {
+                            if (fileInfo.size > maxSize) {
+                                this.showToast(`图片大小不能超过 ${maxSizeMB}MB`, false, 'none');
+                                resolve('');
+                                return;
+                            }
+                            try {
+                                const { data } = await uploadFile({
+                                    filePath: tempFilePath,
+                                    file_type: fileType,
+                                });
+                                resolve(data?.url || '');
+                            } catch {
+                                resolve('');
+                            }
+                        },
+                        fail: () => resolve(''),
+                    });
+                },
+                fail: () => resolve(''),
+            });
+        });
+    },
     upload: function (): Promise<any> {
         function decode(str: string) {
             return decodeURIComponent(atob(str).split('').map(function (c) {
@@ -287,85 +366,17 @@ export default {
             });
         });
     },
-    // 上传头像（根据本地文件路径上传，返回图片 URL 或空字符串）
+    /** @deprecated 請改用 chooseAndUploadImage */
     uploadAvatar: function (filePath: string): Promise<string> {
-        return new Promise((resolve) => {
-            const token = uni.getStorageSync('token');
-            uni.uploadFile({
-                url: 'upload?lang=zh',
-                filePath,
-                name: 'file',
-                header: {
-                    Authorization: 'Bearer ' + token
-                },
-                formData: {
-                    file_type: 'img',
-                    index: ''
-                },
-                success: (res) => {
-                    try {
-                        let data: any = JSON.parse(res.data);
-                        if (data.code === 0) {
-                            // 兼容 data.data 可能是 JSON 字符串或已解码对象
-                            let inner = data.data;
-                            
-                            if (inner && inner.url) {
-                                resolve(inner.url);
-                                return;
-                            }
-                        }
-                    } catch (e) {
-                        console.error('解析头像上传响应失败', e);
-                    }
-                    resolve('');
-                },
-                fail: (err: any) => {
-                    this.showToast(err && err.msg ? err.msg : '上传失败');
-                    console.log(err);
-                    resolve('');
-                }
-            });
-        });
+        return uploadFile({
+            filePath,
+            file_type: 'img',
+        })
+            .then(({ data }) => data?.url || '')
+            .catch(() => '');
     },
-    /** 选择图片并限制大小，返回本地临时路径（失败或取消返回空字符串） */
+    /** 選圖、限制大小並上傳，返回後端原始 url */
     chooseImageWithLimit: function (maxSizeMB: number = 3): Promise<string> {
-        const maxSize = maxSizeMB * 1024 * 1024;
-        return new Promise((resolve) => {
-            uni.chooseImage({
-                count: 1,
-                sizeType: ['compressed'],
-                sourceType: ['album', 'camera'],
-                success: (res) => {
-                    const tempFilePath = res.tempFilePaths[0];
-                    uni.getFileInfo({
-                        filePath: tempFilePath,
-                        success: (fileInfo) => {
-                            if (fileInfo.size > maxSize) {
-                                uni.showToast({
-                                    title: `图片大小不能超过 ${maxSizeMB}MB`,
-                                    icon: 'none'
-                                });
-                                resolve('');
-                                return;
-                            }
-                            resolve(tempFilePath);
-                            this.uploadAvatar(tempFilePath).then((url: string) => {
-                                if (url) {
-                                  resolve(url);
-                                }else{
-                                  resolve('');
-                                }
-                              });
-                        },
-                        fail: () => {
-                            resolve('');
-                        }
-                    });
-                },
-                fail: () => {
-                    resolve('');
-                }
-            });
-        });
+        return this.chooseAndUploadImage(maxSizeMB, 'img');
     }
 };

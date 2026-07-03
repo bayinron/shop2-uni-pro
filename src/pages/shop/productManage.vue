@@ -130,24 +130,22 @@ async function loadProducts(reset: boolean = false) {
       limit: limit.value,
     };
 
-    // 如果有搜索关键词，添加到参数中
     if (keyword.value.trim()) {
       params.keyword = keyword.value.trim();
     }
 
-    getMyShopProducts(params as MyShopProductsParams).then((res: any) => {
-      const newProducts = res?.data.data || [];
-      if (reset) {
-        products.value = newProducts;
-      } else {
-        products.value = [...products.value, ...newProducts];
-      }
-      // 判断是否还有更多数据
-      hasMore.value = newProducts.length >= limit.value;
-      if (hasMore.value) {
-        page.value += 1;
-      }
-    });
+    const res: any = await getMyShopProducts(params as MyShopProductsParams);
+    const raw = res?.data ?? res;
+    const newProducts = raw?.list ?? raw?.data?.list ?? raw?.data ?? [];
+    if (reset) {
+      products.value = newProducts;
+    } else {
+      products.value = [...products.value, ...newProducts];
+    }
+    hasMore.value = newProducts.length >= limit.value;
+    if (hasMore.value) {
+      page.value += 1;
+    }
   } catch (e) {
     console.error('加载商品列表失败', e);
     uni.showToast({ title: '加载失败', icon: 'none' });
@@ -217,7 +215,7 @@ async function confirmConfig() {
     // 接口：PUT mall/my-shop/products/:id/config
     // 这里按“数量”做 modifier（用于销量展示修饰），type 使用 add_value
     await updateMyShopProductDisplayConfig(Number(currentProduct.value.product.id), {
-      custom_stock: Number(configQty.value)+Number(currentProduct.value.product.display_stock),
+      custom_stock: Number(configQty.value),
     });
     globalTool.showToast('已保存', false, 'success');
     closeConfigSheet();

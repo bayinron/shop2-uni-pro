@@ -62,7 +62,7 @@
     <!-- 商品列表 -->
     <view class="list-wrap">
       <view class="card" v-for="p in products" :key="p.id" @click="onProductClick(p)">
-        <image class="card-img" :src="prefixUrl + p.product.images[0].url" mode="aspectFill" />
+        <image class="card-img" :src="productImage(p)" mode="aspectFill" />
         <view class="card-body">
           <text class="card-title breakcss">{{ p.product.name }}</text>
           <view class="card-row">
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getPublicAdList, getArticleList, getMallProductList } from '@/api';
 import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
 import { useUserStore } from '@/stores/modules/userStore';
@@ -89,32 +89,37 @@ const prefixUrl = computed(() => userStore.prefixUrl);
 const banners = ref<any>();
 //监听userInfo的user_role，如果是user，就去请求申请商家的状态
 watch(() => userInfo.value.user_role, (newVal: string) => {
-  if(newVal == 'user') {
-    getLatestMerchantApplication().then((res: any) => {
-      const data = res.data as MerchantApplicationInfo
-      if(data.status == 'pending') {
-        uni.showToast({
-          title: '您的申请正在审核中，请耐心等待',
-          icon: 'none',
-        });
-      } else if(data.status == 'approved') {
-        uni.showToast({
-          title: '您的申请已通过，请等待审核通过后登录店铺',
-          icon: 'none',
-        });
-      } else if(data.status == 'rejected') {
-        uni.showToast({
-          title: '您的申请已拒绝，请重新申请',
-          icon: 'none',
-        });
-      } else if(data.status == 'processing') {
-        uni.showToast({
-          title: '您的申请正在处理中，请耐心等待',
-          icon: 'none',
-        });
-      }
-    });   
-  }
+  if (newVal !== 'user') return;
+  getLatestMerchantApplication().then((res: any) => {
+    const data = res.data as MerchantApplicationInfo;
+    if (!data?.status) return;
+    const cacheKey = 'merchant_apply_toast_status';
+    const lastShown = uni.getStorageSync(cacheKey);
+    if (lastShown === data.status) return;
+    uni.setStorageSync(cacheKey, data.status);
+
+    if (data.status === 'pending') {
+      uni.showToast({
+        title: '您的申请正在审核中，请耐心等待',
+        icon: 'none',
+      });
+    } else if (data.status === 'approved') {
+      uni.showToast({
+        title: '您的申请已通过，请重新登录后进入店铺管理',
+        icon: 'none',
+      });
+    } else if (data.status === 'rejected') {
+      uni.showToast({
+        title: '您的申请已拒绝，请重新申请',
+        icon: 'none',
+      });
+    } else if (data.status === 'processing') {
+      uni.showToast({
+        title: '您的申请正在处理中，请耐心等待',
+        icon: 'none',
+      });
+    }
+  }).catch(() => {});
 }, { immediate: true });
 const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
 const noticeText = ref(fallbackNoticeText);
@@ -123,16 +128,24 @@ const noticePlainText = computed(() => String(noticeText.value || '').replace(/<
 
 const products = ref<any[]>([]);
 
+function productImage(p: any) {
+  const url = p?.product?.images?.[0]?.url ?? p?.product?.cover_image ?? '';
+  if (!url) return '/static/img/empty.svg';
+  return String(url).startsWith('http') ? url : prefixUrl.value + url;
+}
 
 async function loadHomeFromApi() {
   getPublicAdList({ position: 'home_carousel' }).then((res: any) => {
     banners.value = res.data;
   });
   getArticleList().then((res: any) => {
-    noticeText.value = res.data.data[0].content;
+    const articles = res?.data?.list ?? res?.data?.data ?? (Array.isArray(res?.data) ? res.data : []);
+    if (articles[0]?.content) {
+      noticeText.value = articles[0].content;
+    }
   });
   getMallProductList().then((res: any) => {
-    products.value = res.data.data;
+    products.value = res?.data?.list ?? res?.data?.data?.list ?? res?.data?.data ?? [];
   });
 
 }

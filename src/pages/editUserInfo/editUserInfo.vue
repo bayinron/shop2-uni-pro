@@ -44,11 +44,6 @@ import { useUserStoreHook } from '@/stores/modules/userStore';
 import { authUpdateMe } from '@/api';
 import globalTool from '@/utils/globalTool';
 
-const formData = ref({
-  nickname: '',
-  avatar: '',
-});
-
 const userStore = useUserStoreHook();
 const userInfo = userStore.userInfo;
 
@@ -66,12 +61,12 @@ function onChooseAvatar() {
 }
 
 function onConfirm() {
-  formData.value.nickname = nickname.value;
-  formData.value.avatar = avatar.value;
-  authUpdateMe(formData.value).then((res:any) => {
-    globalTool.showToast('保存成功',true);
-    userStore.setUserInfo(res.data);
-    
+  authUpdateMe({
+    real_name: nickname.value.trim(),
+    avatar: avatar.value,
+  }).then(() => {
+    globalTool.showToast('保存成功', true);
+    userStore.reqUserInfo();
   });
 }
 </script>

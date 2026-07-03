@@ -38,7 +38,11 @@ const cny = ref<any>(null);
 const fieldConfigs = ref<any[]>([]);
 onLoad(() => {
   getBankTemplates().then((res: any) => {
-    const tpl = res.data.find((t: any) => t.currency === "USD");
+    const tpl = res.data.find((t: any) => t.currency === 'USD');
+    if (!tpl?.id) {
+      globalTool.showToast('未找到银行卡模板', false, 'none');
+      return;
+    }
     cny.value = tpl;
     // 兼容字段名为 fields_config 或 fields
     const cfg = tpl?.fields_config || tpl?.fields || [];

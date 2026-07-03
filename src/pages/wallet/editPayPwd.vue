@@ -79,11 +79,16 @@ async function onSubmit() {
     return;
   }
 
-  const payload: UpdateWithdrawPasswordPayload = {
-    old_password: form.value.oldPwd,
-    new_password: form.value.newPwd,
-    confirm_password: form.value.confirmPwd,
-  };
+  const payload: UpdateWithdrawPasswordPayload = first.value
+    ? {
+        new_password: form.value.newPwd,
+        confirm_password: form.value.confirmPwd,
+      }
+    : {
+        old_password: form.value.oldPwd,
+        new_password: form.value.newPwd,
+        confirm_password: form.value.confirmPwd,
+      };
 
   try {
     await updateWithdrawPassword(payload);

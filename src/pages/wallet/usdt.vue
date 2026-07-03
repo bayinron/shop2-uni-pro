@@ -58,6 +58,10 @@ onLoad(() => {
   // 与银行卡页类似，这里使用 country_code: 'usdt'
   getBankTemplates().then((res: any) => {
     tpl.value = res.data.find((t: any) => t.currency === 'USDT');
+    if (!tpl.value?.id) {
+      globalTool.showToast('未找到 USDT 模板', false, 'none');
+      return;
+    }
 
     const cfg = tpl.value?.fields_config || tpl.value?.fields || [];
     fieldConfigs.value = Array.isArray(cfg) ? cfg : [];

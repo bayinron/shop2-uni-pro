@@ -14,14 +14,18 @@ export const useUserStore = defineStore('user', () => {
 
     let wxCode = ref(); //服务器用来获取用户搜索历史记录的唯一id
     const chanyeRange = ref<Array<Object>>([]); // 用户权限编码集合 → 判断按钮权限
-    let currentDomain = window.location.origin;
+    const isH5 = typeof window !== 'undefined' && typeof location !== 'undefined';
+    let currentDomain = isH5 ? window.location.origin : '';
     if (currentDomain.includes('localhost')) {
         currentDomain = '';
     }
-    const url = location.origin.indexOf('http://localhost') > -1 ? baseURL + '/' : location.origin + '/';
+    const url = isH5 && location.origin.indexOf('http://localhost') > -1
+        ? baseURL + '/'
+        : (isH5 ? location.origin + '/' : baseURL + '/');
 
-    // const yzmurl = location.origin +'/api/api/captcha?key=' ;
-    const yzmurl = location.origin.indexOf('http://localhost') > -1 ? location.origin + '/api/api/captcha?key=' : location.origin + '/api/captcha?key=';
+    const yzmurl = isH5 && location.origin.indexOf('http://localhost') > -1
+        ? location.origin + '/api/api/captcha?key='
+        : (isH5 ? location.origin + '/api/captcha?key=' : baseURL + '/api/captcha?key=');
     // const langData = require('@/static/lang.json');
     const prefixUrl = ref(import.meta.env.VITE_APP_BASE_URL || currentDomain);
     const userdetail = ref<any>({});

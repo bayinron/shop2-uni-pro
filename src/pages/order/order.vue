@@ -40,7 +40,7 @@
           <!-- 商品列表 -->
           <view class="order-products">
             <view v-for="(item, idx) in order.items" :key="idx" class="product-item">
-              <image class="product-img" :src="prefixUrl + item.img" mode="aspectFill" />
+              <image class="product-img" :src="orderItemImg(item.img)" mode="aspectFill" />
               <view class="product-info">
                 <text class="product-name">{{ item.name }}</text>
                 <view class="product-spec" v-if="item.spec">
@@ -211,13 +211,28 @@ function buildActions(order: MallOrder): OrderAction[] {
   return actions;
 }
 
+function parseOrderList(res: any): MallOrder[] {
+  const payload = res?.data ?? res;
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.list)) return payload.list;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(res?.data?.data)) return res.data.data;
+  if (Array.isArray(res?.list)) return res.list;
+  return [];
+}
+
+function orderItemImg(img?: string | null) {
+  if (!img) return '/static/img/empty.svg';
+  return String(img).startsWith('http') ? img : prefixUrl.value + img;
+}
+
 function normalizeOrder(order: MallOrder): ViewOrder {
   const items: OrderItem[] = (order.items || []).map((it) => ({
-    name: it.product_name,
-    img: it.product_image_url,
-    price: it.total_price || it.unit_price,
-    quantity: it.quantity,
-    spec: it.sku,
+    name: it.product_name || '商品',
+    img: it.product_image_url || it.product_image || '',
+    price: it.total_price || it.unit_price || '0',
+    quantity: it.quantity ?? 1,
+    spec: it.sku || undefined,
   }));
 
   const statusText = statusTextMap[order.status as string] || order.status || '';
@@ -263,7 +278,10 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
   if (state.loading) return;
 
   const nextPage = loadMore ? state.page + 1 : 1;
-  state.loading = true;
+  statusState.value = {
+    ...statusState.value,
+    [status]: { ...state, loading: true },
+  };
 
   const params = {
     status,
@@ -273,23 +291,35 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
 
   getMallOrderList(params)
     .then((res: any) => {
-      // 兼容：request.ts 返回 res.data；有些后端仍会包一层 data
-      const list  = res?.data?.data as MallOrderListResponse;
+      const list = parseOrderList(res);
       const viewList = list.map(normalizeOrder);
+      const payload = res?.data ?? res;
+      const pageLimit = (Array.isArray(payload) ? undefined : payload?.limit ?? payload?.per_page)
+        ?? res?.limit
+        ?? PAGE_SIZE;
 
-      if (!loadMore) {
-        state.list = viewList;
-      } else {
-        state.list = state.list.concat(viewList);
-      }
-
-      state.page = nextPage;
-      const pageLimit = res.data.per_page ?? PAGE_SIZE;
-      state.hasMore = list.length >= pageLimit;
-      state.loaded = true;
+      statusState.value = {
+        ...statusState.value,
+        [status]: {
+          ...statusState.value[status],
+          list: loadMore ? statusState.value[status].list.concat(viewList) : viewList,
+          page: nextPage,
+          hasMore: list.length >= pageLimit,
+          loaded: true,
+        },
+      };
+    })
+    .catch((err) => {
+      console.error('加载订单失败', err);
     })
     .finally(() => {
-      state.loading = false;
+      statusState.value = {
+        ...statusState.value,
+        [status]: {
+          ...statusState.value[status],
+          loading: false,
+        },
+      };
     });
 }
 

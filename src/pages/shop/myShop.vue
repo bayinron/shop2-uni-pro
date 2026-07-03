@@ -39,11 +39,11 @@
             <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
             <text class="order-icon-text">待付款</text>
           </view>
-          <view class="order-icon-item" @click="goOrderByStatus('shipping')">
+          <view class="order-icon-item" @click="goOrderByStatus('paid')">
             <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
             <text class="order-icon-text">待发货</text>
           </view>
-          <view class="order-icon-item" @click="goOrderByStatus('receiving')">
+          <view class="order-icon-item" @click="goOrderByStatus('processing')">
             <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
             <text class="order-icon-text">待收货</text>
           </view>
@@ -69,7 +69,7 @@
           </view>
           <view class="wallet-amount">
             <text class="wallet-currency">￥</text>
-            <text class="wallet-value">{{ userInfo.balance }}</text>
+            <text class="wallet-value">{{ userBalance }}</text>
           </view>
         </view>
       </view>
@@ -123,7 +123,7 @@
             <view class="tool-icon">
               <uni-icons type="locked" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">{{ userInfo.withdraw_status ? '修改支付密码' : '设置支付密码' }}</text>
+            <text class="tool-text">{{ userInfo.has_withdraw_password ? '修改支付密码' : '设置支付密码' }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('logout')">
             <view class="tool-icon">
@@ -138,11 +138,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
+const userBalance = computed(() =>
+  userInfo.value.wallet?.balance_wallet?.balance_formatted ??
+  userInfo.value.balance ??
+  '0'
+);
 
 
 function goAllOrders() {
@@ -165,9 +170,7 @@ function goWallet() {
 
 function onToolClick(type: string) {
   if (type === 'invite') {
-    uni.navigateTo({
-      url: '/pages/invite/invite',
-    });
+    uni.showToast({ title: '邀请好友功能开发中', icon: 'none' });
   } else if (type === 'address') {
     uni.navigateTo({
       url: '/pages/address/list',
@@ -191,7 +194,11 @@ function onToolClick(type: string) {
     uni.redirectTo({
       url: '/pages/login/login',
     });
-  }else if (type === 'order') {
+  } else if (type === 'service') {
+    uni.navigateTo({
+      url: '/pages/service/index?url=' + encodeURIComponent('https://www.baidu.com'),
+    });
+  } else if (type === 'order') {
     uni.navigateTo({
       url: '/pages/shop/myShopOrder',
     });

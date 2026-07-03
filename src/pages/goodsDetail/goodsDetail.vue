@@ -246,14 +246,20 @@ function onCustomerService() {
 }
 
 function onAddToCart() {
+  if (!goodsData.value?.id || !goodsData.value?.shop_id) {
+    uni.showToast({ title: '商品加载中，请稍后', icon: 'none' });
+    return;
+  }
   addMallCartItem({
     product_id: parseInt(goodsData.value.id),
     quantity: 1,
     selected_sku: goodsData.value.sku || '1',
     shop_id: parseInt(goodsData.value.shop_id),
-  }).then((res: any) => {
+  }).then(() => {
     uni.showToast({ title: '已加入购物车', icon: 'success' });
     requestCartCount();
+  }).catch(() => {
+    // 错误提示由 request 拦截器统一处理
   });
 }
 
@@ -281,74 +287,75 @@ async function onBuyNow() {
     return;
   }
 
-
   uni.showLoading({ title: '下单中...' });
+  try {
+    const addrRes: any = await getUserAddresses();
+    const addresses: UserAddress[] = addrRes?.data || addrRes || [];
+    const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
+    if (!defaultAddr?.id) {
+      uni.showToast({ title: '请先添加收货地址', icon: 'none' });
+      setTimeout(() => {
+        uni.navigateTo({ url: '/pages/address/add' });
+      }, 800);
+      return;
+    }
 
-  const addrRes: any = await getUserAddresses();
-  const addresses: UserAddress[] = addrRes?.data || addrRes || [];
-  const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
-  if (!defaultAddr?.id) {
-    uni.hideLoading();
-    uni.showToast({ title: '请先添加收货地址', icon: 'none' });
-    setTimeout(() => {
-      uni.navigateTo({ url: '/pages/address/add' });
-    }, 800);
-    return;
-  }
+    const createRes: any = await createMallOrder({
+      items: [
+        {
+          product_id: Number(goodsData.value.id),
+          quantity: 1,
+          sku: goodsData.value.sku || undefined,
+        },
+      ],
+      shop_id: Number(goodsData.value.shop_id),
+      address_id: defaultAddr.id,
+    });
 
-  const createRes: any = await createMallOrder({
-    items: [
-      {
-        product_id: Number(goodsData.value.id),
-        quantity: 1,
-        sku: goodsData.value.sku || undefined,
+    const createdOrder = pickCreatedOrder(createRes);
+    const orderId = createdOrder?.id;
+    const orderAmount = createdOrder?.total_amount || goodsData.value.sale_price;
+
+    if (!orderId) {
+      uni.showToast({ title: '下单成功，请到订单页付款', icon: 'none' });
+      setTimeout(() => {
+        uni.navigateTo({ url: '/pages/order/order?status=pending' });
+      }, 500);
+      return;
+    }
+
+    uni.showModal({
+      title: '确认付款',
+      content: `确认使用钱包支付订单？\n金额：￥${orderAmount}`,
+      confirmText: '付款',
+      cancelText: '取消',
+      success: async (r) => {
+        if (!r.confirm) {
+          uni.showToast({ title: '已创建订单', icon: 'none' });
+          setTimeout(() => {
+            uni.navigateTo({ url: '/pages/order/order?status=pending' });
+          }, 300);
+          return;
+        }
+        try {
+          uni.showLoading({ title: '支付中...' });
+          await payMallOrder(orderId, { payment_method: 'wallet' });
+          uni.showToast({ title: '支付成功', icon: 'none' });
+          setTimeout(() => {
+            uni.navigateTo({ url: '/pages/order/order?status=paid' });
+          }, 300);
+        } catch {
+          // 错误提示由 request 拦截器统一处理
+        } finally {
+          uni.hideLoading();
+        }
       },
-    ],
-    shop_id: Number(goodsData.value.shop_id),
-    address_id: defaultAddr.id,
-  });
-
-  uni.hideLoading();
-  const createdOrder = pickCreatedOrder(createRes);
-  const orderId = createdOrder?.id;
-  const orderAmount = createdOrder?.total_amount || goodsData.value.sale_price;
-
-  if (!orderId) {
-    uni.showToast({ title: '下单成功，请到订单页付款', icon: 'none' });
-    setTimeout(() => {
-      uni.navigateTo({ url: '/pages/order/order?status=pending' });
-    }, 500);
-    return;
+    });
+  } catch {
+    // 错误提示由 request 拦截器统一处理
+  } finally {
+    uni.hideLoading();
   }
-
-  uni.showModal({
-    title: '确认付款',
-    content: `确认使用钱包支付订单？\n金额：￥${orderAmount}`,
-    confirmText: '付款',
-    cancelText: '取消',
-    success: async (r) => {
-      if (!r.confirm) {
-        uni.showToast({ title: '已创建订单', icon: 'none' });
-        setTimeout(() => {
-          uni.navigateTo({ url: '/pages/order/order?status=pending' });
-        }, 300);
-        return;
-      }
-      try {
-        uni.showLoading({ title: '支付中...' });
-        await payMallOrder(orderId, { payment_method: 'wallet' });
-        uni.hideLoading();
-        uni.showToast({ title: '支付成功', icon: 'none' });
-        setTimeout(() => {
-          uni.navigateTo({ url: '/pages/order/order?status=paid' });
-        }, 300);
-      } catch (e) {
-        uni.hideLoading();
-
-      }
-    },
-  });
-
 }
 </script>
 

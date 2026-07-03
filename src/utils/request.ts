@@ -92,7 +92,8 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
             success(res: any) {
                 if (res.data.code != 0) {
                     if (res.data.code == 401) {
-                        // uni.clearStorage();
+                        uni.removeStorageSync('token');
+                        uni.removeStorageSync('userInfo');
                         uni.redirectTo({
                             url: '/pages/login/login'
                         });
@@ -129,9 +130,10 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                             icon: 'none',
                             title: res.data.message || t('用户在其他设备登录')
                         });
-                        uni.clearStorage();
+                        uni.removeStorageSync('token');
+                        uni.removeStorageSync('userInfo');
                         uni.redirectTo({
-                            url: '/pages/login'
+                            url: '/pages/login/login'
                         });
                         reject(res);
                     } else {
@@ -147,7 +149,19 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
                     if (res.header.refresh_token) {
                         uni.setStorageSync('token', res.header.refresh_token);
                     }
-                    const parsedata = res.data.data? JSON.parse(globalTool.Base64.decode(res.data.data)):res.data.data;
+                    let parsedata = res.data.data;
+                    if (typeof parsedata === 'string' && parsedata) {
+                        try {
+                            parsedata = JSON.parse(globalTool.Base64.decode(parsedata));
+                        } catch {
+                            try {
+                                parsedata = JSON.parse(parsedata);
+                            } catch {
+                                reject(new Error('响应数据解析失败'));
+                                return;
+                            }
+                        }
+                    }
                     data.data = parsedata;
                     console.log(`${options.url}:`, data);
                     // if(res.data?.message) {

@@ -36,11 +36,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getMallProductList } from '@/api';
+import { useUserStore } from '@/stores/modules/userStore';
 
-type ProductListItem = any; // 兼容后端返回字段差异
+const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
+
+type ProductListItem = any;
 
 const keyword = ref('');
 const products = ref<ProductListItem[]>([]);
@@ -96,12 +100,13 @@ function productName(p: any) {
 }
 
 function productCover(p: any) {
-  return (
+  const url =
     p?.product?.cover_image ??
     p?.product?.images?.[0]?.url ??
     p?.cover_image ??
-    '/static/img/empty.svg'
-  );
+    '';
+  if (!url) return '/static/img/empty.svg';
+  return String(url).startsWith('http') ? url : prefixUrl.value + url;
 }
 
 function productPrice(p: any) {

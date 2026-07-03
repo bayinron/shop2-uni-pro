@@ -52,13 +52,13 @@
           <text class="order-icon-text">待付款</text>
           <!-- <text class="order-badge" v-if="orderCounts.pending > 0">{{ orderCounts.pending }}</text> -->
         </view>
-        <view class="order-icon-item" @click="onOrderStatusClick('processing')">
+        <view class="order-icon-item" @click="onOrderStatusClick('paid')">
           <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
 
           <text class="order-icon-text">待发货</text>
           <!-- <text class="order-badge" v-if="orderCounts.shipping > 0">{{ orderCounts.shipping }}</text> -->
         </view>
-        <view class="order-icon-item" @click="onOrderStatusClick('shipped')">
+        <view class="order-icon-item" @click="onOrderStatusClick('processing')">
           <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
 
           <text class="order-icon-text">待收货</text>
@@ -93,7 +93,7 @@
         <text class="service-text">申请成为商家</text>
       </view>
     </view>
-    <view class="exit-btn" @click="onExit">
+    <view v-if="isLoggedIn" class="exit-btn" @click="onExit">
       <text class="exit-btn-text">退出登录</text>
     </view>
 
@@ -147,7 +147,9 @@ const userBalance = computed(() => {
 });
 onShow(() => {
   isLoggedIn.value = !!uni.getStorageSync('token');
-  userStore.reqUserInfo();
+  if (isLoggedIn.value) {
+    userStore.reqUserInfo();
+  }
 });
 
 // 订单数量统计（测试数据）
@@ -224,9 +226,6 @@ function onEditUserInfo() {
   });
 }
 
-onShow(() => {
-  isLoggedIn.value = !!uni.getStorageSync('token');
-});
 
 function onViewAllOrders() {
   uni.navigateTo({

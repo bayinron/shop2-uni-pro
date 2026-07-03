@@ -33,7 +33,7 @@
 <script setup lang="ts">
 function goService() {
   uni.navigateTo({
-    url: '/pages/service/index',
+    url: '/pages/service/index?url=' + encodeURIComponent('https://www.baidu.com'),
   });
 }
 </script>

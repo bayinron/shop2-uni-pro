@@ -23,16 +23,16 @@
         <view class="section-row" @click="onPayTypeClick">
           <text class="section-label">充值方式</text>
           <view class="section-right">
-            <text class="section-value">{{ currentPayType.name }}</text>
+            <text class="section-value">{{ currentPayType?.name || '请选择' }}</text>
             <uni-icons type="right" size="18" color="#999" />
           </view>
         </view>
-        <view class="pay-account-info" v-if="currentPayType.bank_name">{{ currentPayType.bank_name }}</view>
-        <view class="pay-account-info" v-if="currentPayType.account_name">{{ currentPayType.account_name }}</view>
+        <view class="pay-account-info" v-if="currentPayType?.bank_name">{{ currentPayType.bank_name }}</view>
+        <view class="pay-account-info" v-if="currentPayType?.account_name">{{ currentPayType.account_name }}</view>
 
-        <view class="pay-account-info" v-if="currentPayType.account_detail">{{ currentPayType.account_detail }}</view>
+        <view class="pay-account-info" v-if="currentPayType?.account_detail">{{ currentPayType.account_detail }}</view>
         <view class="pay-desc">
-          <text class="pay-desc-text">{{ currentPayType.instructions }}</text>
+          <text class="pay-desc-text">{{ currentPayType?.instructions }}</text>
         </view>
       </view>
 
@@ -90,7 +90,7 @@ const payTypes = ref<PaymentChannel[]>([
 
 ]);
 
-const currentPayType = ref<PaymentChannel>(payTypes.value[0]);
+const currentPayType = ref<PaymentChannel | null>(null);
 
 const tips = [
   '为确保充值及时到账，请严格按照充值金额进行支付。',
@@ -116,9 +116,7 @@ function onPayTypeClick() {
 function onUploadProofImg() {
   globalTool.chooseImageWithLimit(3).then((filePath: string) => {
     if (!filePath) return;
-    console.log(filePath);
     form.value.proof_img = filePath;
-   
   });
 }
 async function onSubmit() {
@@ -127,21 +125,31 @@ async function onSubmit() {
     uni.showToast({ title: '请输入正确的充值金额', icon: 'none' });
     return;
   }
+  if (!currentPayType.value?.id) {
+    uni.showToast({ title: '充值方式加载中，请稍后重试', icon: 'none' });
+    return;
+  }
+  if (!form.value.proof_img) {
+    uni.showToast({ title: '请上传付款凭证', icon: 'none' });
+    return;
+  }
   const payload: WalletDepositPayload = {
     amount: amountNum,
     currency: currentPayType.value.currency,
     channel_id: currentPayType.value.id,
     proof_img: form.value.proof_img,
   };
-   submitWalletDeposit(payload).then((res: any) => {
-      globalTool.showToast( '提交成功，请等待审核', true, 'success' );
-    
-  });
+  try {
+    await submitWalletDeposit(payload);
+    globalTool.showToast('提交成功，请等待审核', true, 'success');
+  } catch {
+    // 错误提示由 request 拦截器统一处理
+  }
 }
 onLoad(() => {
   getPaymentChannels().then((res: any) => {
-    payTypes.value = res.data;
-    currentPayType.value = payTypes.value[0];
+    payTypes.value = res.data || [];
+    currentPayType.value = payTypes.value[0] || null;
   });
 });
 </script>

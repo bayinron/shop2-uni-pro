@@ -69,7 +69,11 @@ const currentWithdrawType = ref<WithdrawType>(withdrawTypes[0]);
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-const availableBalance = computed(() => userInfo.value?.balance ?? '0');
+const availableBalance = computed(() =>
+  userInfo.value?.wallet?.balance_wallet?.balance_formatted ??
+  userInfo.value?.balance ??
+  '0'
+);
 watch(userInfo, (newVal) => {
   if (!newVal.has_withdraw_password) {
     globalTool.showToast('请先设置提现密码', () => {
@@ -79,24 +83,25 @@ watch(userInfo, (newVal) => {
     });
   }
 });
+const bankTemplate = ref<any>(null);
+const paymentMethod = ref<any>(null);
 onLoad(() => {
-  //提现之前先看是否有绑定提现地址
-  // 与银行卡页类似，这里使用 country_code: 'usdt'
   getBankTemplates().then((res: any) => {
-    tpl.value = res.data.find((t: any) => t.currency === 'USDT');
-
-    nextTick(() => {
-      getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {
-        if (res.data.length <= 0) {
-          globalTool.showToast('请先绑定提现地址', () => {
-            uni.navigateTo({
-              url: '/pages/wallet/usdt',
-            });
-            return;
+    bankTemplate.value = res.data.find((t: any) => t.currency === 'USDT');
+    if (!bankTemplate.value?.id) {
+      globalTool.showToast('未找到 USDT 提现模板', false, 'none');
+      return;
+    }
+    getUserPaymentMethods({ bank_template_id: bankTemplate.value.id }).then((methodsRes: any) => {
+      if (!methodsRes.data?.length) {
+        globalTool.showToast('请先绑定提现地址', () => {
+          uni.navigateTo({
+            url: '/pages/wallet/usdt',
           });
-        }
-        tpl.value = res.data[0];
-      });
+        });
+        return;
+      }
+      paymentMethod.value = methodsRes.data[0];
     });
   });
 });
@@ -114,7 +119,7 @@ function onWithdrawTypeClick() {
     },
   });
 }
-const tpl = ref<any>(null);
+
 function onSubmit() {
 
   const amountNum = Number(form.value.amount);
@@ -126,17 +131,21 @@ function onSubmit() {
     uni.showToast({ title: '请输入支付密码', icon: 'none' });
     return;
   }
+  if (!paymentMethod.value?.id) {
+    uni.showToast({ title: '请先绑定提现地址', icon: 'none' });
+    return;
+  }
 
   submitWalletWithdraw({
     currency: currentWithdrawType.value.key,
     amount: amountNum,
-    payment_method_id: tpl.value.id,
+    payment_method_id: paymentMethod.value.id,
     withdraw_password: form.value.payPassword,
-  }).then((res: any) => {
+  }).then(() => {
     globalTool.showToast('提现成功', () => {
       uni.navigateBack();
     });
-  })
+  });
 } 
 </script>
 

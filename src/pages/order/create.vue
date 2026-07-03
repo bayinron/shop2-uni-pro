@@ -104,8 +104,16 @@ onLoad((options: any) => {
   loadDefaultAddress();
 });
 
-// 页面显示时重新加载地址（从地址列表返回时）
+const SELECTED_ADDRESS_KEY = 'selectedAddress';
+
+// 页面显示时读取用户从地址列表选择的地址，否则加载默认地址
 onShow(() => {
+  const picked = uni.getStorageSync(SELECTED_ADDRESS_KEY);
+  if (picked?.id) {
+    selectedAddress.value = picked;
+    uni.removeStorageSync(SELECTED_ADDRESS_KEY);
+    return;
+  }
   loadDefaultAddress();
 });
 
@@ -124,7 +132,7 @@ async function loadDefaultAddress() {
 // 选择地址
 function onSelectAddress() {
   uni.navigateTo({
-    url: '/pages/address/list',
+    url: '/pages/address/list?select=1',
   });
 }
 
@@ -149,12 +157,17 @@ async function onSubmitOrder() {
 
 
   uni.showLoading({ title: '提交中...' });
-  createMallOrder(payload).then((res: any) => {
+  try {
+    await createMallOrder(payload);
     uni.hideLoading();
-    globalTool.showToast(res?.message, true, 'success');
-  })
-
-
+    globalTool.showToast('下单成功', true, 'success');
+    setTimeout(() => {
+      uni.navigateTo({ url: '/pages/order/order?status=pending' });
+    }, 800);
+  } catch (e) {
+    uni.hideLoading();
+    console.error('提交订单失败', e);
+  }
 }
 </script>
 

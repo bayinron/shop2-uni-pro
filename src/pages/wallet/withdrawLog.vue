@@ -38,7 +38,6 @@ async function loadLogs() {
   try {
     // 只拉取提现相关流水：type = withdraw 或 related_type = withdrawal
     const res: any = await getWalletWithdrawals({
-      status: 0, //0=审核中,1=已通过,2=已拒绝
       page: 1,
       limit: 50,
     });
