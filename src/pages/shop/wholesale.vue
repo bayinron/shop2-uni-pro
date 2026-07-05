@@ -43,7 +43,7 @@
             class="grid-item"
           >
             <view class="card">
-              <image class="card-img" :src="product.image" mode="aspectFill" />
+              <image class="card-img" :src="prefixUrl + product.cover_image" mode="aspectFill" />
               <view class="card-body">
                 <text class="card-title breakcss">{{ product.name }}</text>
                 <text class="card-stock">库存：{{ product.stock }}</text>
@@ -90,7 +90,7 @@
       <view v-if="shipSheetVisible" class="sheet-mask" @click="closeShipSheet" />
       <view v-if="shipSheetVisible" class="sheet" @click.stop>
         <view class="sheet-content">
-          <image class="sheet-img" :src="currentProduct?.image || ''" mode="aspectFill" />
+          <image class="sheet-img" :src="prefixUrl + currentProduct?.cover_image || ''" mode="aspectFill" />
           <view class="sheet-info">
             <text class="sheet-title breakcss">{{ currentProduct?.name || '' }}</text>
             <text class="sheet-price">￥{{ formatPrice(currentProduct?.displayPrice) }}</text>
@@ -124,11 +124,13 @@
   import { addProductToMyShop, getMyShopProductPool } from '@/api/myshop';
   import type { MallShopProductsParams } from '@/api';
   import globalTool from '@/utils/globalTool';
-  
+  import { useUserStore } from '@/stores/modules/userStore';
+  const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
   type Product = {
     id: number | string;
     name: string;
-    image: string;
+    cover_image: string;
     stock: number;
     displayPrice: number | string;
     in_my_shop: boolean;
@@ -188,7 +190,7 @@
       const newProducts = productList.map((item: any) => ({
         id: item.id || 0,
         name: item.name || item.title || '商品',
-        image: item.images?.[0]?.url || item.image_url || item.image || '/static/img/empty.svg',
+        cover_image: item.cover_image || item.images?.[0]?.url || item.image_url || item.image || '/static/img/empty.svg',
         stock: item.stock || item.stock_count || item.quantity || 0,
         // 优先展示平台售价/销售价，其次回退到批发价/price
         displayPrice: item.sale_price ?? item.original_price ?? item.wholesale_price ?? item.price ?? 0,
