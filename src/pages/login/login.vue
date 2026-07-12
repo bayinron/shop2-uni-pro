@@ -1,53 +1,48 @@
 <template>
   <view class="login">
-    <view class="login-container">
-      <!-- 标题 -->
-      <text class="login-title">账户登录</text>
+    <view class="login-bg" />
 
-      <!-- 注册提示 -->
+    <view class="login-container">
+      <text class="login-title">登录帐户</text>
+
       <view class="register-hint">
-        <text class="hint-text">还没有账户？</text>
+        <text class="hint-text">还没有账号？</text>
         <text class="register-link" @click="onRegister">立即注册</text>
       </view>
 
-      <!-- 登录表单 -->
       <view class="login-form">
-        <!-- 手机号输入 -->
         <view class="input-group">
           <input
             class="input-field"
             type="text"
             v-model="formData.login"
-            placeholder="请输入手机号码或邮箱"
+            placeholder="请输入您的手机号码。"
             maxlength="64"
           />
         </view>
 
-        <!-- 密码输入 -->
         <view class="input-group">
           <input
-            class="input-field"
+            class="input-field input-field--password"
             :type="showPassword ? 'text' : 'password'"
             v-model="formData.password"
-            placeholder="请输入密码"
+            placeholder="请输入密码。"
             maxlength="20"
           />
           <view class="password-toggle" @click="togglePassword">
-            <uni-icons :type="showPassword ? 'eye-slash' : 'eye'" size="20" color="#999" />
+            <uni-icons :type="!showPassword ? 'eye-slash' : 'eye'" size="22" color="#b8b8b8" />
           </view>
         </view>
 
-        <!-- 协议复选框 -->
         <view class="agreement-group">
           <view class="checkbox-wrap" @click="toggleAgreement">
             <view class="checkbox" :class="{ 'checkbox--checked': agreed }">
               <text class="checkbox-icon" v-if="agreed">✓</text>
             </view>
-            <text class="agreement-text">阅读协议</text>
+            <text class="agreement-text">阅读协议。</text>
           </view>
         </view>
 
-        <!-- 登录按钮 -->
         <view
           class="login-btn"
           :class="{ 'login-btn--disabled': !canLogin || loggingIn }"
@@ -56,10 +51,9 @@
           <text class="login-btn-text">{{ loggingIn ? '登录中...' : '登录' }}</text>
         </view>
 
-        <!-- 忘记密码 -->
-        <!-- <view class="forgot-password">
+        <view class="forgot-password">
           <text class="forgot-link" @click="onForgotPassword">忘记密码</text>
-        </view> -->
+        </view>
       </view>
     </view>
   </view>
@@ -67,6 +61,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { authLogin } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 
@@ -105,7 +100,7 @@ function toggleAgreement() {
 
 function onRegister() {
   uni.navigateTo({
-    url: '/pages/register/register'
+    url: '/pages/register/register',
   });
 }
 
@@ -123,7 +118,7 @@ async function onLogin() {
   const password = formData.value.password;
 
   if (!isValidLogin(login)) {
-    uni.showToast({ title: '请输入正确的手机号或邮箱', icon: 'none' });
+    uni.showToast({ title: '请输入正确的手机号码', icon: 'none' });
     return;
   }
   if (password.length < 6) {
@@ -150,7 +145,6 @@ async function onLogin() {
     }
 
     uni.setStorageSync('token', payload.token);
-    // 仅记住账号，不保存密码
     uni.setStorageSync('loginInfo', { login });
 
     if (payload.user) {
@@ -166,40 +160,52 @@ async function onLogin() {
 }
 
 function onForgotPassword() {
-  uni.showToast({ title: '跳转到忘记密码页面（测试功能）', icon: 'none' });
+  uni.showToast({ title: '请联系客服重置密码', icon: 'none' });
 }
 </script>
 
 <style lang="scss" scoped>
 .login {
   min-height: 100vh;
-  background: linear-gradient(180deg, #ffe5d9 0%, #fff0eb 30%, #f8f9fa 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60rpx 40rpx;
+  background: #f7f7f7;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-bg {
+  position: absolute;
+  top: -120rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 360rpx;
+  background:
+    radial-gradient(circle at 20% 40%, rgba(255, 182, 193, 0.55) 0%, transparent 55%),
+    radial-gradient(circle at 55% 20%, rgba(173, 216, 230, 0.45) 0%, transparent 50%),
+    radial-gradient(circle at 85% 35%, rgba(221, 160, 221, 0.4) 0%, transparent 55%);
+  filter: blur(40rpx);
+  pointer-events: none;
 }
 
 .login-container {
-  width: 100%;
-  max-width: 600rpx;
+  position: relative;
+  z-index: 1;
+  padding: 120rpx 48rpx 60rpx;
 }
 
 .login-title {
   display: block;
-  font-size: 48rpx;
-  font-weight: 600;
-  color: #ff6b9d;
-  text-align: center;
-  margin-bottom: 20rpx;
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16rpx;
 }
 
 .register-hint {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-  margin-bottom: 60rpx;
+  gap: 4rpx;
+  margin-bottom: 72rpx;
 }
 
 .hint-text {
@@ -209,7 +215,7 @@ function onForgotPassword() {
 
 .register-link {
   font-size: 28rpx;
-  color: #ff3e6c;
+  color: #f06292;
   font-weight: 500;
 }
 
@@ -219,42 +225,43 @@ function onForgotPassword() {
 
 .input-group {
   position: relative;
-  margin-bottom: 30rpx;
-  background: #fff;
-  border-radius: 16rpx;
-  border: 2rpx solid #e5e5e5;
-  overflow: hidden;
+  margin-bottom: 8rpx;
+  border-bottom: 2rpx solid #e8e8e8;
 }
 
 .input-field {
   width: 100%;
-  height: 100rpx;
-  padding: 0 30rpx;
+  height: 96rpx;
+  padding: 0 0 8rpx;
   font-size: 30rpx;
   color: #333;
   background: transparent;
 }
 
+.input-field--password {
+  padding-right: 72rpx;
+}
+
 .password-toggle {
   position: absolute;
-  right: 30rpx;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 40rpx;
-  height: 40rpx;
+  width: 48rpx;
+  height: 48rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .agreement-group {
-  margin-bottom: 40rpx;
+  margin: 36rpx 0 48rpx;
 }
 
 .checkbox-wrap {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 14rpx;
 }
 
 .checkbox {
@@ -266,64 +273,64 @@ function onForgotPassword() {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .checkbox--checked {
-  background: #ff3e6c;
-  border-color: #ff3e6c;
+  background: #e53e41;
+  border-color: #e53e41;
 }
 
 .checkbox-icon {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #fff;
   font-weight: 600;
+  line-height: 1;
 }
 
 .agreement-text {
-  font-size: 26rpx;
-  color: #666;
+  font-size: 28rpx;
+  color: #333;
 }
 
 .login-btn {
   width: 100%;
   height: 96rpx;
-  margin-bottom: 30rpx;
   border-radius: 48rpx;
-  background: linear-gradient(135deg, #ff6b9d 0%, #ff3e6c 100%);
-  box-shadow: 0 12rpx 32rpx rgba(255, 62, 108, 0.28);
+  background: #e53e41;
+  box-shadow: 0 8rpx 24rpx rgba(229, 62, 65, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
 
   &:active:not(.login-btn--disabled) {
-    opacity: 0.92;
+    opacity: 0.9;
     transform: scale(0.98);
-    box-shadow: 0 6rpx 20rpx rgba(255, 62, 108, 0.22);
   }
 }
 
 .login-btn--disabled {
-  background: #e8e8e8;
+  background: #e0e0e0;
   box-shadow: none;
   pointer-events: none;
 }
 
 .login-btn-text {
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: 600;
   color: #fff;
   line-height: 1;
 }
 
 .login-btn--disabled .login-btn-text {
-  color: #bbb;
+  color: #aaa;
 }
 
 .forgot-password {
   display: flex;
   justify-content: flex-end;
+  margin-top: 28rpx;
 }
 
 .forgot-link {

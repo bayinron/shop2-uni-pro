@@ -1,24 +1,22 @@
 <template>
   <view class="register">
     <view class="register-container">
-      <!-- 标题 -->
-      <text class="register-title">注册账户</text>
+      <text class="register-title">注册账号</text>
 
-      <!-- 注册方式标签页 -->
       <view class="register-tabs">
         <view
           class="tab-item"
           :class="{ 'tab-item--active': registerType === 'phone' }"
           @click="registerType = 'phone'"
         >
-          <text class="tab-text">手机号</text>
+          <text class="tab-text">电话号码</text>
         </view>
         <view
           class="tab-item"
           :class="{ 'tab-item--active': registerType === 'email' }"
           @click="registerType = 'email'"
         >
-          <text class="tab-text">邮箱</text>
+          <text class="tab-text">电子邮件</text>
         </view>
       </view>
 
@@ -33,7 +31,7 @@
                 class="input-field"
                 type="text"
                 v-model="formData.phone"
-                placeholder="请输入手机号码"
+                placeholder="请输入您的手机号码。"
                 maxlength="32"
                 @blur="onFieldBlur('phone')"
                 @input="onFieldInput('phone')"
@@ -49,7 +47,7 @@
                 class="input-field"
                 type="text"
                 v-model="formData.verifyCode"
-                placeholder="请输入验证码"
+                placeholder="请输入验证码。"
                 maxlength="6"
                 @blur="onFieldBlur('verifyCode')"
                 @input="onFieldInput('verifyCode')"
@@ -71,7 +69,7 @@
                 class="input-field"
                 type="text"
                 v-model="formData.email"
-                placeholder="请输入邮箱地址"
+                placeholder="请输入邮箱地址。"
                 maxlength="64"
                 @blur="onFieldBlur('email')"
                 @input="onFieldInput('email')"
@@ -87,7 +85,7 @@
                 class="input-field"
                 type="text"
                 v-model="formData.verifyCode"
-                placeholder="请输入验证码"
+                placeholder="请输入验证码。"
                 maxlength="6"
                 @blur="onFieldBlur('verifyCode')"
                 @input="onFieldInput('verifyCode')"
@@ -104,16 +102,16 @@
         <view class="form-item">
           <view class="input-group input-group--password" :class="{ 'input-group--error': errors.password }">
             <input
-              class="input-field"
+              class="input-field input-field--password"
               :type="showPassword ? 'text' : 'password'"
               v-model="formData.password"
-              placeholder="请输入密码"
+              placeholder="请输入密码。"
               maxlength="20"
               @blur="onFieldBlur('password')"
               @input="onFieldInput('password')"
             />
             <view class="password-toggle" @click="togglePassword">
-              <uni-icons :type="showPassword ? 'eye-slash' : 'eye'" size="20" color="#999" />
+              <uni-icons :type="!showPassword ? 'eye-slash' : 'eye'" size="22" color="#b8b8b8" />
             </view>
           </view>
           <text v-if="errors.password" class="field-error">{{ errors.password }}</text>
@@ -123,19 +121,19 @@
         <view class="form-item">
           <view class="input-group input-group--password" :class="{ 'input-group--error': errors.confirmPassword }">
             <input
-              class="input-field"
+              class="input-field input-field--password"
               :type="showConfirmPassword ? 'text' : 'password'"
               v-model="formData.confirmPassword"
-              placeholder="请再次输入密码"
+              placeholder="请再次输入密码。"
               maxlength="20"
               @blur="onFieldBlur('confirmPassword')"
               @input="onFieldInput('confirmPassword')"
             />
             <view class="password-toggle" @click="toggleConfirmPassword">
               <uni-icons
-                :type="showConfirmPassword ? 'eye-slash' : 'eye'"
-                size="20"
-                color="#999"
+                :type="!showConfirmPassword ? 'eye-slash' : 'eye'"
+                size="22"
+                color="#b8b8b8"
               />
             </view>
           </view>
@@ -159,13 +157,12 @@
           :class="{ 'register-btn--disabled': !canRegister || registering }"
           @click="onRegister"
         >
-          <text class="register-btn-text">{{ registering ? '注册中...' : '注册' }}</text>
+          <text class="register-btn-text">{{ registering ? '登记中...' : '登记' }}</text>
         </view>
 
-        <!-- 已有账户登录 -->
         <view class="login-hint">
-          <text class="hint-text">已有账户？</text>
-          <text class="login-link" @click="onGoToLogin">{{ t('立即登录') }}</text>
+          <text class="hint-text">已有账号?</text>
+          <text class="login-link" @click="onGoToLogin">登录</text>
         </view>
       </view>
     </view>
@@ -174,14 +171,13 @@
 
 <script setup lang="ts">
 import { computed, ref, reactive, watch } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { authRegister, getCaptcha } from '@/api';
 import globalTool from '@/utils/globalTool';
-import { useI18n } from '@/utils/i18n';
 
 type FieldKey = 'phone' | 'email' | 'verifyCode' | 'password' | 'confirmPassword';
 
 const registerType = ref<'phone' | 'email'>('phone');
-const { t } = useI18n();
 
 const formData = reactive({
   phone: '',
@@ -362,60 +358,51 @@ onLoad(() => {
 <style lang="scss" scoped>
 .register {
   min-height: 100vh;
-  background: linear-gradient(180deg, #ffe5d9 0%, #fff0eb 30%, #f8f9fa 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60rpx 40rpx;
+  background: #ffffff;
+  padding: 80rpx 48rpx 60rpx;
 }
 
 .register-container {
   width: 100%;
-  max-width: 600rpx;
-  margin: 0 auto;
 }
 
 .register-title {
   display: block;
-  font-size: 48rpx;
-  font-weight: 600;
-  color: #ff6b9d;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #3a3a3a;
   text-align: center;
-  margin-bottom: 50rpx;
+  margin-bottom: 48rpx;
 }
 
 .register-tabs {
   display: flex;
-  gap: 0;
-  margin-bottom: 40rpx;
-  border-bottom: 2rpx solid #e5e5e5;
+  padding: 8rpx;
+  margin-bottom: 48rpx;
+  background: #f2f2f2;
+  border-radius: 20rpx;
 }
 
 .tab-item {
   flex: 1;
-  padding: 20rpx 0;
+  padding: 22rpx 0;
   text-align: center;
-  background: #f5f5f5;
-  border-top-left-radius: 12rpx;
-  border-top-right-radius: 12rpx;
-  border: 2rpx solid #e5e5e5;
-  border-bottom: none;
-  margin-bottom: -2rpx;
+  border-radius: 16rpx;
+  transition: all 0.2s;
 }
 
 .tab-item--active {
-  background: #fff;
-  border-color: #e5e5e5;
-  border-bottom-color: #fff;
+  background: #ffffff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
 }
 
 .tab-text {
   font-size: 28rpx;
-  color: #333;
+  color: #999999;
 }
 
 .tab-item--active .tab-text {
-  color: #ff3e6c;
+  color: #333333;
   font-weight: 500;
 }
 
@@ -424,34 +411,29 @@ onLoad(() => {
 }
 
 .form-item {
-  margin-bottom: 30rpx;
+  margin-bottom: 16rpx;
 }
 
 .input-group {
   position: relative;
-  margin-bottom: 0;
-  background: #fff;
-  border-radius: 16rpx;
-  border: 2rpx solid #e5e5e5;
-  overflow: hidden;
+  border-bottom: 2rpx solid #eeeeee;
 }
 
 .input-group--error {
-  border-color: #ff3e6c;
+  border-bottom-color: #e54d42;
 }
 
 .field-error {
   display: block;
   margin-top: 10rpx;
-  padding-left: 8rpx;
   font-size: 24rpx;
-  color: #ff3e6c;
+  color: #e54d42;
   line-height: 1.4;
 }
 
 .field-error--agreement {
   margin-top: 12rpx;
-  padding-left: 48rpx;
+  padding-left: 50rpx;
 }
 
 .input-group--code {
@@ -461,28 +443,34 @@ onLoad(() => {
 
 .input-field {
   flex: 1;
-  height: 100rpx;
-  padding: 0 30rpx;
+  width: 100%;
+  height: 96rpx;
+  padding: 0 0 8rpx;
   font-size: 30rpx;
-  color: #333;
+  color: #333333;
   background: transparent;
   box-sizing: border-box;
 }
 
-.input-group--password .input-field {
-  padding-right: 80rpx;
+.input-field--password {
+  padding-right: 72rpx;
+}
+
+.input-group--code .input-field {
+  padding-right: 16rpx;
 }
 
 .verify-code-wrap {
-  width: 160rpx;
-  height: 60rpx;
-  margin-right: 20rpx;
+  width: 180rpx;
+  height: 64rpx;
+  margin-bottom: 8rpx;
   border-radius: 8rpx;
   overflow: hidden;
   background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .verify-code-img {
@@ -492,112 +480,108 @@ onLoad(() => {
 
 .password-toggle {
   position: absolute;
-  right: 30rpx;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 40rpx;
-  height: 40rpx;
+  width: 48rpx;
+  height: 48rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .agreement-group {
-  margin-bottom: 40rpx;
+  margin: 32rpx 0 40rpx;
 }
 
 .checkbox-wrap {
   display: flex;
   align-items: flex-start;
-  gap: 12rpx;
+  gap: 14rpx;
 }
 
 .checkbox {
   width: 36rpx;
   height: 36rpx;
   border-radius: 50%;
-  border: 2rpx solid #ddd;
-  background: #fff;
+  border: 2rpx solid #dddddd;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
   flex-shrink: 0;
   margin-top: 2rpx;
 }
 
 .checkbox--checked {
-  background: #ff3e6c;
-  border-color: #ff3e6c;
+  background: #e54d42;
+  border-color: #e54d42;
 }
 
 .checkbox-icon {
-  font-size: 24rpx;
-  color: #fff;
+  font-size: 22rpx;
+  color: #ffffff;
   font-weight: 600;
+  line-height: 1;
 }
 
 .agreement-text {
   font-size: 26rpx;
-  color: #666;
+  color: #666666;
   line-height: 1.6;
 }
 
 .register-btn {
   width: 100%;
   height: 96rpx;
-  margin-bottom: 30rpx;
+  margin-top: 16rpx;
   border-radius: 48rpx;
-  background: linear-gradient(135deg, #ff6b9d 0%, #ff3e6c 100%);
-  box-shadow: 0 12rpx 32rpx rgba(255, 62, 108, 0.28);
+  background: #e54d42;
+  box-shadow: 0 8rpx 24rpx rgba(229, 77, 66, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
 
   &:active:not(.register-btn--disabled) {
-    opacity: 0.92;
+    opacity: 0.9;
     transform: scale(0.98);
-    box-shadow: 0 6rpx 20rpx rgba(255, 62, 108, 0.22);
   }
 }
 
 .register-btn--disabled {
-  background: #e8e8e8;
+  background: #e0e0e0;
   box-shadow: none;
-}
-
-.register-btn--disabled:active {
-  opacity: 1;
-  transform: none;
+  pointer-events: none;
 }
 
 .register-btn-text {
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: 600;
-  color: #fff;
+  color: #ffffff;
   line-height: 1;
 }
 
 .register-btn--disabled .register-btn-text {
-  color: #bbb;
+  color: #aaaaaa;
 }
 
 .login-hint {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
+  justify-content: flex-end;
+  gap: 4rpx;
+  margin-top: 28rpx;
 }
 
 .hint-text {
-  font-size: 28rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: #666666;
 }
 
 .login-link {
-  font-size: 28rpx;
-  color: #ff3e6c;
+  font-size: 26rpx;
+  color: #e54d42;
   font-weight: 500;
 }
 </style>

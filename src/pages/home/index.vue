@@ -22,25 +22,25 @@
       <view class="quick-grid">
         <view class="quick-item" @click="onQuickClick('shop')">
           <view class="quick-icon">
-            <text class="icon iconfont icon-zijinmingxi" />
+            <image src="/static/images/index2.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">{{ userInfo.user_role == 'merchant' ? '管理店铺' : '申请成为商家' }}</text>
         </view>
         <view class="quick-item" @click="onQuickClick('cs')">
           <view class="quick-icon">
-            <text class="icon iconfont icon-vzaixiankefu" />
+            <image src="/static/images/index3.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">在线客服</text>
         </view>
         <view class="quick-item" @click="onQuickClick('help')">
           <view class="quick-icon">
-            <text class="icon iconfont icon-xitongtongzhi" />
+            <image src="/static/images/index10.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">帮助</text>
         </view>
         <view class="quick-item" @click="onQuickClick('about')">
           <view class="quick-icon">
-            <text class="icon iconfont icon-guanyuwomen" />
+            <image src="/static/images/index9.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">关于我们</text>
         </view>
@@ -49,14 +49,20 @@
 
     <!-- 公告 -->
     <view class="notice-wrap">
-      <uni-notice-bar
-        color="#3a3a3a"
-        background-color="#ffffff"
-        :speed="40"
-        scrollable
-        show-icon
-        :text="noticePlainText"
-      />
+      <view class="notice-bar">
+        <image class="notice-icon" src="/static/images/index8.png" mode="aspectFit" />
+        <view class="notice-content">
+          <uni-notice-bar
+            color="#3a3a3a"
+            background-color="#ffffff"
+            :speed="40"
+            scrollable
+            :show-icon="false"
+            :text="noticePlainText"
+          />
+        </view>
+        <image class="notice-icon-right notice-icon-right" src="/static/images/index6.png" mode="aspectFit" />
+      </view>
     </view>
 
     <!-- 商品列表 -->
@@ -277,6 +283,11 @@ onLoad((options: any) => {
   justify-content: center;
   background: #fff;
   box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.06);
+  .quick-icon-img {
+    width: 66rpx;
+    height: 66rpx;
+    border-radius: 10rpx;
+  }
 }
 
 .quick-icon .icon {
@@ -311,6 +322,38 @@ onLoad((options: any) => {
   margin: 14rpx 20rpx 0;
   border-radius: 12rpx;
   overflow: hidden;
+  background: #ffffff;
+}
+
+.notice-bar {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 12rpx;
+}
+
+.notice-icon {
+  width: 46rpx;
+  height: 46rpx;
+  flex-shrink: 0;
+  margin-right: 8rpx;
+}
+.notice-icon-right {
+  width: 66rpx;
+  height: 66rpx;
+  flex-shrink: 0;
+  margin-right: 8rpx;
+  margin-right: 0;
+  margin-left: 8rpx;
+}
+
+.notice-content {
+  flex: 1;
+  overflow: hidden;
+
+  :deep(.uni-noticebar) {
+    margin-bottom: 0;
+    padding: 0;
+  }
 }
 
 .list-wrap {

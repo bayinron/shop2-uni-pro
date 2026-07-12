@@ -246,8 +246,8 @@
             {
                 "pagePath": "pages/mine/mine",
                 "text": "我的",
-                "iconPath": "static/tab/my.png",
-                "selectedIconPath": "static/tab/my_a.png"
+                "iconPath": "static/tab/wd.png",
+                "selectedIconPath": "static/tab/wd_a.png"
             }
         ]
     }
