@@ -2,9 +2,9 @@
   <view class="product-manage-page">
     <!-- 顶部红色头部 -->
     <view class="header">
-      <view class="header-back" @click="onBack">
+      <!-- <view class="header-back" @click="onBack">
         <uni-icons type="left" size="20" color="#ffffff" />
-      </view>
+      </view> -->
       <view class="header-search">
         <uni-icons type="search" size="18" color="#c7c7c7" />
         <input
@@ -24,7 +24,7 @@
         :key="product.id"
         class="product-card"
       >
-        <image class="product-img" :src="product.product.images?.[0]?.url" mode="aspectFill" />
+        <image class="product-img" :src="prefixUrl + product.product.images?.[0]?.url" mode="aspectFill" />
         <view class="product-info">
           <text class="product-name breakcss">{{ product.product.name }}</text>
           <text class="product-stock">库存: {{ product.product.display_stock }}</text>
@@ -63,7 +63,7 @@
       <view class="sheet-content">
         <image
           class="sheet-img"
-          :src="currentProduct?.product?.images?.[0]?.url || currentProduct?.product?.cover_image || '/static/img/empty.svg'"
+          :src="prefixUrl + (currentProduct?.product?.images?.[0]?.url || currentProduct?.product?.cover_image || '/static/img/empty.svg')"
           mode="aspectFill"
         />
         <view class="sheet-info">
@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { onReachBottom } from '@dcloudio/uni-app';
 import {
   getMyShopProducts,
@@ -102,7 +102,9 @@ import {
   type MyShopProductsParams,
 } from '@/api/myshop';
 import globalTool from '@/utils/globalTool';
-
+import { useUserStore } from '@/stores/modules/userStore';
+  const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
 const products = ref<MyShopProduct[]>([]);
 const keyword = ref<string>('');
 
@@ -246,7 +248,7 @@ onLoad(() => {
 
 .header {
   position: fixed;
-  top: 0;
+  top: var(--window-top);
   left: 0;
   right: 0;
   height: 88rpx;

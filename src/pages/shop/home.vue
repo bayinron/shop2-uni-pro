@@ -36,7 +36,7 @@
         >
           <image
             class="goods-img"
-            :src="item.product.cover_image"
+            :src="prefixUrl + item.product.cover_image"
             mode="aspectFill"
           />
           <view class="goods-body">
@@ -69,7 +69,9 @@ import { getMallShopDetail, getMallShopProducts } from '@/api';
 import { ref } from 'vue';
 import { onReachBottom } from '@dcloudio/uni-app';
 
-
+import { useUserStore } from '@/stores/modules/userStore';
+  const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
 
 // 商品列表（从服务器加载）
 const goodsList = ref<any[]>([]);

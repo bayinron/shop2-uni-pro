@@ -17,7 +17,7 @@
         <text class="price-original" v-if="goodsData.original_price">￥{{ goodsData.original_price }}</text>
       </view>
       <view class="price-center">
-        <view class="points-btn" @click="onPointsClick">
+        <view class="points-btn">
           <text class="points-text">赠送 {{ goodsData.coupon_applicable || 0 }} 积分</text>
         </view>
       </view>

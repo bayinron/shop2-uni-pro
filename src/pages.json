@@ -125,8 +125,7 @@
         {
             "path": "pages/shop/productManage",
             "style": {
-                "navigationBarTitleText": "商品管理",
-                "navigationStyle": "custom"
+                "navigationBarTitleText": "商品管理"
             }
         },
         {

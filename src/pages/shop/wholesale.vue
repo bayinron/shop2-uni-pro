@@ -103,15 +103,19 @@
         <view class="sheet-row">
           <text class="sheet-row-label">数量</text>
           <view class="qty">
-            <button class="qty-btn" @click="decQty" :disabled="shipQty <= 1">－</button>
+            <view
+              class="qty-btn"
+              :class="{ 'qty-btn--disabled': shipQty <= 1 }"
+              @click="decQty"
+            >－</view>
             <view class="qty-num">{{ shipQty }}</view>
-            <button class="qty-btn" @click="incQty">＋</button>
+            <view class="qty-btn" @click="incQty">＋</view>
           </view>
         </view>
 
         <view class="sheet-actions">
-          <button class="sheet-btn sheet-btn--close" @click="closeShipSheet">关闭</button>
-          <button class="sheet-btn sheet-btn--ok" @click="confirmShip">确认</button>
+          <view class="sheet-btn sheet-btn--close" @click="closeShipSheet">关闭</view>
+          <view class="sheet-btn sheet-btn--ok" @click="confirmShip">确认</view>
         </view>
       </view>
     </view>
@@ -330,7 +334,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   
   .nav-wrap {
     background: #ffffff;
-    height: 50rpx;
+    //height: 50rpx;
     box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.04);
   }
   
@@ -404,8 +408,8 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   }
   
   .product-list {
-    // 80rpx(tab) + 88rpx(搜索栏) + 导航栏占用高度
-    margin-top: calc(88rpx + var(--window-top));
+    // 仅预留固定 top-bar 高度（分类 tab 50rpx + 搜索栏 88rpx），不再叠加 window-top
+    margin-top: calc(0rpx + 88rpx);
     padding: 16rpx;
   }
 
@@ -575,18 +579,23 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   .qty-btn {
     width: 64rpx;
     height: 64rpx;
-    line-height: 64rpx;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #fff;
     color: #666;
-    border: none;
+    font-size: 28rpx;
     border-right: 1rpx solid #eee;
-    border-radius: 0;
   }
 
   .qty-btn:last-child {
     border-right: none;
     border-left: 1rpx solid #eee;
+  }
+
+  .qty-btn--disabled {
+    opacity: 0.4;
+    pointer-events: none;
   }
 
   .qty-num {
@@ -605,10 +614,11 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   .sheet-btn {
     flex: 1;
     height: 84rpx;
-    line-height: 84rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 42rpx;
     font-size: 30rpx;
-    border: none;
   }
 
   .sheet-btn--close {
