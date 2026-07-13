@@ -115,7 +115,7 @@
           </view>
           <view class="tool-item" @click="onToolClick('product')">
             <view class="tool-icon">
-              <uni-icons type="bag" size="40" color="#ff6b9d" />
+              <uni-icons type="gift" size="40" color="#ff6b9d" />
             </view>
             <text class="tool-text">商品管理</text>
           </view>

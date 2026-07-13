@@ -18,9 +18,9 @@
 
         <!-- 搜索栏 -->
         <view class="header">
-          <view class="header-back" @click="onBack">
+          <!-- <view class="header-back" @click="onBack">
             <uni-icons type="left" size="20" color="#ffffff" />
-          </view>
+          </view> -->
           <view class="header-search">
             <uni-icons type="search" size="18" color="#c7c7c7" />
             <input
