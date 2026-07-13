@@ -11,7 +11,7 @@
               :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
               @click="onCateClick(c)"
             >
-              <text class="nav-text">{{ c.slug || c.name }}</text>
+              <text class="nav-text">{{ c.name }}</text>
             </view>
           </view>
         </scroll-view>
@@ -124,7 +124,7 @@
   <script setup lang="ts">
   import { computed, ref } from 'vue';
   import { onReachBottom } from '@dcloudio/uni-app';
-  import {  getShopCategories } from '@/api';
+  import {  getCategoryList, getShopCategories } from '@/api';
   import { addProductToMyShop, getMyShopProductPool } from '@/api/myshop';
   import type { MallShopProductsParams } from '@/api';
   import globalTool from '@/utils/globalTool';
@@ -300,7 +300,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   // 页面加载
   onLoad(() => {
     // 先加载商品类型（参考 shop.vue 的处理方式）
-    getShopCategories()
+    getCategoryList({})
       .then((res: any) => {
         categories.value = res?.data || [];
         if (categories.value.length > 0) {
@@ -320,49 +320,55 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   .product-manage-page {
     min-height: 100vh;
     background: #d9dbff;
+    --top-nav-height: 80rpx;
+    --top-header-height: 88rpx;
   }
 
   .top-bar {
     position: fixed;
-    // 避开 uniapp 默认导航栏（原生导航栏高度）
-    // H5 通常为 0；App/小程序端会是导航栏占用高度
     top: var(--window-top);
     left: 0;
     right: 0;
     z-index: 110;
+    background: #ffffff;
   }
   
   .nav-wrap {
+    height: var(--top-nav-height);
     background: #ffffff;
-    //height: 50rpx;
     box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.04);
+    white-space: nowrap;
   }
   
   .nav-inner {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    height: var(--top-nav-height);
     padding: 0 20rpx;
+    box-sizing: border-box;
   }
   
   .nav-item {
-    margin-right: 30rpx;
-    padding-bottom: 6rpx;
+    flex-shrink: 0;
+    margin-right: 36rpx;
+    padding: 20rpx 0 16rpx;
   }
   
   .nav-text {
-    font-size: 26rpx;
+    font-size: 28rpx;
     color: #555;
+    line-height: 1.2;
   }
   
   .nav-item--active .nav-text {
     color: #ff3e6c;
     font-weight: 600;
     border-bottom: 4rpx solid #ff3e6c;
-    padding-bottom: 4rpx;
+    padding-bottom: 8rpx;
   }
   
   .header {
-    height: 88rpx;
+    height: var(--top-header-height);
     background: #ff3e6c;
     display: flex;
     align-items: center;
@@ -408,8 +414,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   }
   
   .product-list {
-    // 仅预留固定 top-bar 高度（分类 tab 50rpx + 搜索栏 88rpx），不再叠加 window-top
-    margin-top: calc(0rpx + 88rpx);
+    margin-top: calc(var(--top-nav-height) + var(--top-header-height));
     padding: 16rpx;
   }
 
