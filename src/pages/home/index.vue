@@ -1,159 +1,262 @@
 <template>
   <view class="home">
-    <!-- 顶部搜索 -->
-    <view class="topbar">
-      <view class="search">
-        <uni-icons type="search" size="18" color="#c7c7c7" />
-        <input class="search-input" :placeholder="placeholderText" confirm-type="search" @confirm="onSearchConfirm" />
+    <!-- 顶部导航：Logo + 搜索 + 购物车 + 我的 -->
+    <view class="topbar" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="topbar-inner">
+        <view class="logo" @click="scrollTop">
+          <view class="logo-bag">
+            <text class="logo-s">S</text>
+          </view>
+        </view>
+        <view class="search">
+          <uni-icons type="search" size="16" color="#bdbdbd" />
+          <input
+            class="search-input"
+            :placeholder="placeholderText"
+            confirm-type="search"
+            @confirm="onSearchConfirm"
+          />
+        </view>
+        <view class="topbar-actions">
+          <view class="action-btn" @click="goCart">
+            <uni-icons type="cart" size="22" color="#ffffff" />
+            <view v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</view>
+          </view>
+          <view class="action-btn" @click="goMine">
+            <uni-icons type="person" size="22" color="#ffffff" />
+          </view>
+        </view>
       </view>
     </view>
 
-    <!-- Banner -->
+    <!-- Banner 轮播 -->
     <view class="banner-wrap">
-      <swiper class="banner" :indicator-dots="true" :autoplay="true" :interval="3500" :duration="300">
-        <swiper-item v-for="(b, idx) in banners" :key="idx">
-          <image class="banner-img" :src="prefixUrl + b.image_url" mode="aspectFill" />
+      <swiper
+        class="banner"
+        :indicator-dots="true"
+        indicator-color="rgba(0,0,0,0.25)"
+        indicator-active-color="#757575"
+        :autoplay="true"
+        :interval="3500"
+        :duration="300"
+        circular
+      >
+        <swiper-item v-for="(b, idx) in displayBanners" :key="idx">
+          <image class="banner-img" :src="bannerSrc(b)" mode="aspectFill" />
         </swiper-item>
       </swiper>
     </view>
 
-    <!-- 宫格入口 -->
+    <!-- 快捷入口 -->
     <view class="quick-wrap">
       <view class="quick-grid">
         <view class="quick-item" @click="onQuickClick('shop')">
           <view class="quick-icon">
-            <image src="/static/images/menu1.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu1.png" mode="aspectFill" class="quick-icon-img" />
           </view>
-          <text class="quick-text">{{ userInfo.user_role == 'merchant' ? '管理店铺' : '申请成为商家' }}</text>
+          <view class="quick-underline quick-underline--red" />
+          <text class="quick-text">{{ userInfo.user_role == 'merchant' ? '管理店铺' : '申请商家' }}</text>
         </view>
         <view class="quick-item" @click="onQuickClick('cs')">
           <view class="quick-icon">
-            <image src="/static/images/menu2.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu2.png" mode="aspectFill" class="quick-icon-img" />
           </view>
+          <view class="quick-underline quick-underline--teal" />
           <text class="quick-text">在线客服</text>
         </view>
         <view class="quick-item" @click="onQuickClick('help')">
           <view class="quick-icon">
-            <image src="/static/images/menu3.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu3.png" mode="aspectFill" class="quick-icon-img" />
           </view>
-          <text class="quick-text">帮助</text>
+          <view class="quick-underline quick-underline--pink" />
+          <text class="quick-text">帮助信息</text>
         </view>
         <view class="quick-item" @click="onQuickClick('about')">
           <view class="quick-icon">
-            <image src="/static/images/menu4.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu4.png" mode="aspectFill" class="quick-icon-img" />
           </view>
+          <view class="quick-underline quick-underline--blue" />
           <text class="quick-text">关于我们</text>
         </view>
       </view>
     </view>
 
-    <!-- 公告 -->
-    <view class="notice-wrap">
-      <view class="notice-bar">
-        <image class="notice-icon" src="/static/images/index8.png" mode="aspectFit" />
-        <view class="notice-content">
-          <uni-notice-bar
-            color="#3a3a3a"
-            background-color="#ffffff"
-            :speed="40"
-            scrollable
-            :show-icon="false"
-            :text="noticePlainText"
-          />
+    <!-- 促销横幅 -->
+    <view class="promo-wrap" @click="onQuickClick('help')">
+      <view class="promo-banner">
+        <view class="promo-left">
+          <view class="promo-tags">
+            <view class="promo-tag">
+              <text class="promo-tag-text">包邮</text>
+            </view>
+            <view class="promo-tag promo-tag--discount">
+              <text class="promo-tag-text">5折起</text>
+            </view>
+          </view>
+          <text class="promo-desc">限时优惠活动进行中，立即领取专属福利</text>
         </view>
-        <image class="notice-icon-right notice-icon-right" src="/static/images/index6.png" mode="aspectFit" />
+        <view class="promo-cta">
+          <text class="promo-cta-text">立即领取 ›</text>
+        </view>
       </view>
     </view>
 
-    <!-- 商品列表 -->
+    <!-- 本周热卖 -->
+    <view class="section-head">
+      <image class="section-icon" src="/static/images/index6.png" mode="aspectFit" />
+      <text class="section-title">本周热卖</text>
+    </view>
+
     <view class="list-wrap">
-      <view class="card" v-for="p in products" :key="p.id" @click="onProductClick(p)">
-        <image class="card-img" :src="productImage(p)" mode="aspectFill" />
+      <view class="card" v-for="(p, idx) in products" :key="p.id" @click="onProductClick(p)">
+        <view class="card-img-wrap">
+          <image class="card-img" :src="productImage(p)" mode="aspectFill" />
+          <view class="top-badge">
+            <text class="top-badge-text">TOP</text>
+          </view>
+        </view>
         <view class="card-body">
-          <text class="card-title breakcss">{{ p.product.name }}</text>
-          <view class="card-row">
-            <text class="price">￥ {{ p.product.sale_price }}</text>
-            <view class="buy-btn">购买</view>
+          <view class="card-title">{{ productName(p) }}</view>
+          <text class="price">￥{{ formatPrice(productPrice(p)) }}</text>
+          <view class="card-meta">
+            <view class="rating">
+              <text class="star">★</text>
+              <text class="rating-num">{{ productRating(p) }}</text>
+            </view>
+            <text class="sold">已售 {{ formatSold(productSold(p, idx)) }}</text>
           </view>
         </view>
       </view>
+    </view>
+
+    <view v-if="!products.length" class="empty">
+      <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
+      <text class="empty-text">暂无商品</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { getPublicAdList, getArticleList, getMallProductList } from '@/api';
-import type { LerpBannerItem, LerpGoodsItem, LerpNewsItem } from '@/api/types';
+import { onLoad, onShow } from '@dcloudio/uni-app';
+import { getPublicAdList, getMallProductList, getMallCart } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 import { getLatestMerchantApplication, type MerchantApplicationInfo } from '@/api/myshop';
+
 const userStore = useUserStore();
 const userInfo = computed(() => userStore.userInfo);
-const placeholderText = '请输入产品名称';
+const placeholderText = '搜索商品';
 const prefixUrl = computed(() => userStore.prefixUrl);
-// banner（接口拉取失败时用项目内资源兜底）
-const banners = ref<any>();
-//监听userInfo的user_role，如果是user，就去请求申请商家的状态
-watch(() => userInfo.value.user_role, (newVal: string) => {
-  if (newVal !== 'user') return;
-  getLatestMerchantApplication().then((res: any) => {
-    const data = res.data as MerchantApplicationInfo;
-    if (!data?.status) return;
-    const cacheKey = 'merchant_apply_toast_status';
-    const lastShown = uni.getStorageSync(cacheKey);
-    if (lastShown === data.status) return;
-    uni.setStorageSync(cacheKey, data.status);
+const statusBarHeight = ref(20);
+const cartCount = ref(0);
 
-    if (data.status === 'pending') {
-      uni.showToast({
-        title: '您的申请正在审核中，请耐心等待',
-        icon: 'none',
-      });
-    } else if (data.status === 'approved') {
-      uni.showToast({
-        title: '您的申请已通过，请重新登录后进入店铺管理',
-        icon: 'none',
-      });
-    } else if (data.status === 'rejected') {
-      uni.showToast({
-        title: '您的申请已拒绝，请重新申请',
-        icon: 'none',
-      });
-    } else if (data.status === 'processing') {
-      uni.showToast({
-        title: '您的申请正在处理中，请耐心等待',
-        icon: 'none',
-      });
-    }
-  }).catch(() => {});
-}, { immediate: true });
-const fallbackNoticeText = '公告：欢迎使用本平台，如有疑问请联系客服。';
-const noticeText = ref(fallbackNoticeText);
-const noticePlainText = computed(() => String(noticeText.value || '').replace(/<[^>]*>/g, '').trim() || fallbackNoticeText);
+const fallbackBanners = [
+  { image_url: '/static/images/index9.png', _local: true },
+  { image_url: '/static/images/index10.png', _local: true },
+  { image_url: '/static/img/invitebg.png', _local: true },
+];
 
+const banners = ref<any[]>([]);
+const displayBanners = computed(() =>
+  banners.value?.length ? banners.value : fallbackBanners
+);
+
+watch(
+  () => userInfo.value.user_role,
+  (newVal: string) => {
+    if (newVal !== 'user') return;
+    getLatestMerchantApplication()
+      .then((res: any) => {
+        const data = res.data as MerchantApplicationInfo;
+        if (!data?.status) return;
+        const cacheKey = 'merchant_apply_toast_status';
+        const lastShown = uni.getStorageSync(cacheKey);
+        if (lastShown === data.status) return;
+        uni.setStorageSync(cacheKey, data.status);
+
+        if (data.status === 'pending') {
+          uni.showToast({ title: '您的申请正在审核中，请耐心等待', icon: 'none' });
+        } else if (data.status === 'approved') {
+          uni.showToast({ title: '您的申请已通过，请重新登录后进入店铺管理', icon: 'none' });
+        } else if (data.status === 'rejected') {
+          uni.showToast({ title: '您的申请已拒绝，请重新申请', icon: 'none' });
+        } else if (data.status === 'processing') {
+          uni.showToast({ title: '您的申请正在处理中，请耐心等待', icon: 'none' });
+        }
+      })
+      .catch(() => {});
+  },
+  { immediate: true }
+);
 
 const products = ref<any[]>([]);
 
+function bannerSrc(b: any) {
+  if (!b?.image_url) return '/static/images/index9.png';
+  if (b._local || String(b.image_url).startsWith('/static') || String(b.image_url).startsWith('http')) {
+    return b.image_url;
+  }
+  return prefixUrl.value + b.image_url;
+}
+
 function productImage(p: any) {
-  const url = p?.product?.images?.[0]?.url ?? p?.product?.cover_image ?? '';
+  const url = p?.product?.images?.[0]?.url ?? p?.product?.cover_image ?? p?.cover_image ?? '';
   if (!url) return '/static/img/empty.svg';
   return String(url).startsWith('http') ? url : prefixUrl.value + url;
 }
 
+function productName(p: any) {
+  return p?.product?.name ?? p?.name ?? '';
+}
+
+function productPrice(p: any) {
+  return p?.product?.sale_price ?? p?.actual_price ?? p?.sale_price ?? 0;
+}
+
+function productSold(p: any, idx: number) {
+  const sold = p?.display_sold_count ?? p?.product?.sold_count ?? p?.sold_count;
+  if (sold != null && sold !== '') return Number(sold);
+  // 无销量数据时用稳定占位，贴近截图效果
+  return [2500, 1800, 980, 3200, 1500, 720][idx % 6];
+}
+
+function productRating(p: any) {
+  const r = p?.rating ?? p?.product?.rating ?? p?.shop?.rating;
+  if (r != null && r !== '') return Number(r).toFixed(1);
+  return '5.0';
+}
+
+function formatPrice(price: any) {
+  const n = Number(price);
+  if (Number.isNaN(n)) return String(price ?? '0');
+  return n.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+}
+
+function formatSold(n: number) {
+  if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '万';
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  return String(n);
+}
+
+function requestCartCount() {
+  getMallCart({ noLoading: true })
+    .then((res: any) => {
+      const data = res?.data || res;
+      cartCount.value = data?.item_count ?? (data?.items || []).length ?? 0;
+    })
+    .catch(() => {
+      cartCount.value = 0;
+    });
+}
+
 async function loadHomeFromApi() {
   getPublicAdList({ position: 'home_carousel' }).then((res: any) => {
-    banners.value = res.data;
-  });
-  getArticleList().then((res: any) => {
-    const articles = res?.data?.list ?? res?.data?.data ?? (Array.isArray(res?.data) ? res.data : []);
-    if (articles[0]?.content) {
-      noticeText.value = articles[0].content;
-    }
+    const list = res?.data ?? [];
+    banners.value = Array.isArray(list) && list.length ? list : [];
   });
   getMallProductList().then((res: any) => {
     products.value = res?.data?.list ?? res?.data?.data?.list ?? res?.data?.data ?? [];
   });
-
 }
 
 function onSearchConfirm(e: any) {
@@ -166,88 +269,183 @@ function onSearchConfirm(e: any) {
 
 function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
   if (key === 'shop') {
-    if(userInfo.value.user_role == 'merchant') {
-      uni.navigateTo({
-        url: '/pages/shop/myShop',
-      });
+    if (userInfo.value.user_role == 'merchant') {
+      uni.navigateTo({ url: '/pages/shop/myShop' });
     } else {
-      uni.navigateTo({
-        url: '/pages/shop/apply',
-      });
+      uni.navigateTo({ url: '/pages/shop/apply' });
     }
-  }else if (key === 'cs') {
+  } else if (key === 'cs') {
     uni.navigateTo({
       url: '/pages/service/index?url=' + 'https://www.baidu.com',
     });
-  }else if (key === 'help') {
-    uni.navigateTo({
-      url: '/pages/help/help',
-    });
-  }else if (key === 'about') {
-    uni.navigateTo({
-      url: '/pages/about/about',
-    });
-  }else if (key === 'order') {
-    uni.navigateTo({
-      url: '/pages/shop/myShopOrder',
-    });
+  } else if (key === 'help') {
+    uni.navigateTo({ url: '/pages/help/help' });
+  } else if (key === 'about') {
+    uni.navigateTo({ url: '/pages/about/about' });
+  } else if (key === 'order') {
+    uni.navigateTo({ url: '/pages/shop/myShopOrder' });
   }
 }
 
 function onProductClick(p: any) {
+  const id = p?.product?.id ?? p?.product_id ?? p?.id;
   uni.navigateTo({
-    url: '/pages/goodsDetail/goodsDetail?id=' + p.product.id
+    url: '/pages/goodsDetail/goodsDetail?id=' + id,
   });
 }
 
-onLoad((options: any) => {
+function goCart() {
+  uni.switchTab({ url: '/pages/cart/cart' });
+}
+
+function goMine() {
+  uni.switchTab({ url: '/pages/mine/mine' });
+}
+
+function scrollTop() {
+  uni.pageScrollTo({ scrollTop: 0, duration: 200 });
+}
+
+onLoad(() => {
+  try {
+    statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight || 20;
+  } catch (_) {
+    statusBarHeight.value = 20;
+  }
   loadHomeFromApi();
+});
+
+onShow(() => {
+  requestCartCount();
 });
 </script>
 
 <style lang="scss" scoped>
 .home {
   min-height: 100vh;
-  background: #d9dbff;
-  /* 接近目标站点淡紫底 */
+  background: #f5f5f5;
+  padding-bottom: 24rpx;
 }
 
+/* ===== 顶部栏 ===== */
 .topbar {
-  padding: 18rpx 20rpx 16rpx;
-  background: linear-gradient(90deg, #ff3e6c, #ff5a7d);
+  background: #ee4d2d;
+  padding-bottom: 16rpx;
+  padding-left: 20rpx;
+  padding-right: 16rpx;
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  gap: 12rpx;
+}
+
+.logo {
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-bag {
+  width: 48rpx;
+  height: 52rpx;
+  background: #ffffff;
+  border-radius: 8rpx 8rpx 10rpx 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22rpx;
+    height: 14rpx;
+    border: 4rpx solid #ffffff;
+    border-bottom: none;
+    border-radius: 12rpx 12rpx 0 0;
+  }
+}
+
+.logo-s {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #ee4d2d;
+  line-height: 1;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .search {
-  height: 72rpx;
-  border-radius: 36rpx;
-  background: #fff;
+  flex: 1;
+  height: 64rpx;
+  border-radius: 32rpx;
+  background: #ffffff;
   display: flex;
   align-items: center;
   padding: 0 22rpx;
-}
-
-.icon {
-  font-size: 32rpx;
-  color: #c7c7c7;
+  min-width: 0;
 }
 
 .search-input {
-  margin-left: 14rpx;
+  margin-left: 10rpx;
   flex: 1;
-  height: 72rpx;
-  font-size: 28rpx;
+  height: 64rpx;
+  font-size: 26rpx;
   color: #333;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4rpx;
+}
+
+.action-btn {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 2rpx;
+  right: 0;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 6rpx;
+  background: #ffc107;
+  color: #333;
+  font-size: 18rpx;
+  font-weight: 700;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+/* ===== Banner ===== */
 .banner-wrap {
-  padding: 18rpx 20rpx 0;
+  background: #ee4d2d;
+  padding: 0 0 12rpx;
 }
 
 .banner {
-  height: 320rpx;
-  border-radius: 18rpx;
-  overflow: hidden;
-  background: #fff;
+  height: 340rpx;
+  background: #ee4d2d;
 }
 
 .banner-img {
@@ -255,17 +453,21 @@ onLoad((options: any) => {
   height: 100%;
 }
 
+/* ===== 快捷入口 ===== */
 .quick-wrap {
-  margin: 16rpx 20rpx 0;
-  background: #eef0ff;
-  border-radius: 18rpx;
-  padding: 18rpx 12rpx;
+  margin: -8rpx 20rpx 0;
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx 12rpx 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10rpx;
+  gap: 8rpx;
 }
 
 .quick-item {
@@ -275,132 +477,283 @@ onLoad((options: any) => {
 }
 
 .quick-icon {
-  width: 76rpx;
-  height: 76rpx;
-  border-radius: 16rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  background: #fff;
+  border: 1rpx solid #eeeeee;
   display: flex;
   align-items: center;
-  //background: #fff;
-  // box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.06);
-  .quick-icon-img {
-    width: 66rpx;
-    height: 66rpx;
-    border-radius: 10rpx;
-  }
+  justify-content: center;
 }
 
-.quick-icon .icon {
-  font-size: 40rpx;
-  color: #ff3e6c;
+.quick-icon-img {
+  width: 100%;
+  height: 100%;
+}
+
+.quick-underline {
+  margin-top: 8rpx;
+  width: 40rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+}
+
+.quick-underline--red {
+  background: #ee4d2d;
+}
+
+.quick-underline--teal {
+  background: #26a69a;
+}
+
+.quick-underline--pink {
+  background: #e91e63;
+}
+
+.quick-underline--blue {
+  background: #1e88e5;
 }
 
 .quick-text {
-  margin-top: 10rpx;
+  margin-top: 8rpx;
   font-size: 22rpx;
-  color: #2c2c2c;
+  color: #555555;
   text-align: center;
+  line-height: 1.3;
 }
 
-.quick-item:nth-child(1) .quick-icon .icon {
-  color: #ff5a5f;
+/* ===== 促销条 ===== */
+.promo-wrap {
+  margin: 16rpx 20rpx 0;
 }
 
-.quick-item:nth-child(2) .quick-icon .icon {
-  color: #ff4aa3;
-}
-
-.quick-item:nth-child(3) .quick-icon .icon {
-  color: #ffb02e;
-}
-
-.quick-item:nth-child(4) .quick-icon .icon {
-  color: #ff7a2f;
-}
-
-.notice-wrap {
-  margin: 14rpx 20rpx 0;
-  border-radius: 12rpx;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.notice-bar {
-  display: flex;
-  align-items: center;
-  padding: 10rpx 12rpx;
-}
-
-.notice-icon {
-  width: 46rpx;
-  height: 46rpx;
-  flex-shrink: 0;
-  margin-right: 8rpx;
-}
-.notice-icon-right {
-  width: 66rpx;
-  height: 66rpx;
-  flex-shrink: 0;
-  margin-right: 8rpx;
-  margin-right: 0;
-  margin-left: 8rpx;
-}
-
-.notice-content {
-  flex: 1;
-  overflow: hidden;
-
-  :deep(.uni-noticebar) {
-    margin-bottom: 0;
-    padding: 0;
-  }
-}
-
-.list-wrap {
-  padding: 18rpx 20rpx 28rpx;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18rpx;
-}
-
-.card {
-  background: #fff;
-  border-radius: 18rpx;
-  overflow: hidden;
-}
-
-.card-img {
-  width: 100%;
-  height: 340rpx;
-  background: #f6f6f6;
-}
-
-.card-body {
-  padding: 14rpx 14rpx 16rpx;
-}
-
-.card-title {
-  font-size: 26rpx;
-  color: #2c2c2c;
-}
-
-.card-row {
-  margin-top: 10rpx;
+.promo-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 18rpx 20rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(90deg, #ff6a3d 0%, #ee4d2d 55%, #d73211 100%);
+  overflow: hidden;
+}
+
+.promo-left {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+}
+
+.promo-tags {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 6rpx;
+}
+
+.promo-tag {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.35);
+}
+
+.promo-tag--discount {
+  background: rgba(255, 235, 59, 0.25);
+}
+
+.promo-tag-text {
+  font-size: 20rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.promo-desc {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.promo-cta {
+  flex-shrink: 0;
+  background: #1a1a1a;
+  padding: 12rpx 22rpx;
+  border-radius: 8rpx;
+}
+
+.promo-cta-text {
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ===== 分区标题 ===== */
+.section-head {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx 12rpx;
+  gap: 10rpx;
+}
+
+.section-icon {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #757575;
+}
+
+/* ===== 商品三列网格 ===== */
+.list-wrap {
+  padding: 0 16rpx 28rpx;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12rpx;
+  overflow: hidden;
+  border: 1rpx solid #eeeeee;
+}
+
+.card-img-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  background: #f6f6f6;
+}
+
+.card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.top-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background: #ee4d2d;
+  padding: 4rpx 10rpx 8rpx;
+  min-width: 52rpx;
+  display: flex;
+  justify-content: center;
+  border-radius: 0 0 8rpx 0;
+}
+
+.top-badge::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8rpx;
+  width: 0;
+  height: 0;
+  border-left: 26rpx solid #ee4d2d;
+  border-right: 26rpx solid #ee4d2d;
+  border-bottom: 8rpx solid transparent;
+}
+
+.top-badge-text {
+  position: relative;
+  z-index: 1;
+  font-size: 16rpx;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1rpx;
+}
+
+.card-body {
+  padding: 10rpx 10rpx 14rpx;
+}
+
+.card-title {
+  font-size: 22rpx;
+  color: #222222;
+  line-height: 1.35;
+  height: 60rpx; // 固定两行高度
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  word-break: break-all;
+  text-overflow: ellipsis;
 }
 
 .price {
-  font-size: 28rpx;
+  display: block;
+  margin-top: 8rpx;
+  font-size: 26rpx;
   font-weight: 700;
-  color: #ff3e6c;
+  color: #ee4d2d;
 }
 
-.buy-btn {
-  background: #ff3e6c;
-  color: #fff;
-  font-size: 24rpx;
-  padding: 10rpx 18rpx;
-  border-radius: 18rpx;
+.card-meta {
+  margin-top: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rpx;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 2rpx;
+  flex-shrink: 0;
+}
+
+.star {
+  font-size: 18rpx;
+  color: #ffc107;
+  line-height: 1;
+}
+
+.rating-num {
+  font-size: 18rpx;
+  color: #757575;
+}
+
+.sold {
+  font-size: 16rpx;
+  color: #9e9e9e;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.empty {
+  padding: 80rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-img {
+  width: 160rpx;
+  height: 160rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: #9e9e9e;
 }
 </style>
