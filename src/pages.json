@@ -222,13 +222,13 @@
                 "pagePath": "pages/home/index",
                 "text": "首页",
                 "iconPath": "static/tab/home.png",
-                "selectedIconPath": "static/tab/homeHL.png"
+                "selectedIconPath": "static/tab/home_a.png"
             },
             {
                 "pagePath": "pages/sort/sort",
                 "text": "类型",
-                "iconPath": "static/tab/fl.png",
-                "selectedIconPath": "static/tab/fl_a.png"
+                "iconPath": "static/tab/index.png",
+                "selectedIconPath": "static/tab/index_a.png"
             },
             {
                 "pagePath": "pages/cart/cart",
@@ -245,8 +245,8 @@
             {
                 "pagePath": "pages/mine/mine",
                 "text": "我的",
-                "iconPath": "static/tab/wd.png",
-                "selectedIconPath": "static/tab/wd_a.png"
+                "iconPath": "static/tab/my.png",
+                "selectedIconPath": "static/tab/my_a.png"
             }
         ]
     }

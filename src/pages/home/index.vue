@@ -22,25 +22,25 @@
       <view class="quick-grid">
         <view class="quick-item" @click="onQuickClick('shop')">
           <view class="quick-icon">
-            <image src="/static/images/index2.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu1.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">{{ userInfo.user_role == 'merchant' ? '管理店铺' : '申请成为商家' }}</text>
         </view>
         <view class="quick-item" @click="onQuickClick('cs')">
           <view class="quick-icon">
-            <image src="/static/images/index3.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu2.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">在线客服</text>
         </view>
         <view class="quick-item" @click="onQuickClick('help')">
           <view class="quick-icon">
-            <image src="/static/images/index10.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu3.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">帮助</text>
         </view>
         <view class="quick-item" @click="onQuickClick('about')">
           <view class="quick-icon">
-            <image src="/static/images/index9.png" mode="aspectFill" class="quick-icon-img"/>
+            <image src="/static/images/menu4.png" mode="aspectFill" class="quick-icon-img"/>
           </view>
           <text class="quick-text">关于我们</text>
         </view>
@@ -280,9 +280,8 @@ onLoad((options: any) => {
   border-radius: 16rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #fff;
-  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.06);
+  //background: #fff;
+  // box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.06);
   .quick-icon-img {
     width: 66rpx;
     height: 66rpx;
