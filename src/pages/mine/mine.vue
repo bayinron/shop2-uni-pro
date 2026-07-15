@@ -412,7 +412,7 @@ onUnmounted(() => {
 
 /* ===== Header ===== */
 .header {
-  background: linear-gradient(105deg, #ff6a2a 0%, #ee4d2d 55%, #e02d1f 100%);
+  background: linear-gradient(105deg, #e02d1f 0%, #ee4d2d 55%, #ff6a2a 100%);
   padding: 12rpx 24rpx 20rpx;
   position: relative;
 }
