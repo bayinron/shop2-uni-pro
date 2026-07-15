@@ -4,9 +4,7 @@
     <view class="topbar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="topbar-inner">
         <view class="logo" @click="scrollTop">
-          <view class="logo-bag">
-            <text class="logo-s">S</text>
-          </view>
+          <image class="logo-img" src="/static/images/logo_bag.png" mode="aspectFit" />
         </view>
         <view class="search">
           <uni-icons type="search" size="16" color="#bdbdbd" />
@@ -19,11 +17,13 @@
         </view>
         <view class="topbar-actions">
           <view class="action-btn" @click="goCart">
-            <uni-icons type="cart" size="22" color="#ffffff" />
+            <uni-icons type="cart-filled" size="22" color="#ffffff" />
             <view v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</view>
           </view>
-          <view class="action-btn" @click="goMine">
-            <uni-icons type="person" size="22" color="#ffffff" />
+          <view class="action-btn action-btn--mine" @click="goMine">
+            <view class="mine-avatar">
+              <uni-icons type="person" size="18" color="#ee4d2d" />
+            </view>
           </view>
         </view>
       </view>
@@ -33,18 +33,25 @@
     <view class="banner-wrap">
       <swiper
         class="banner"
-        :indicator-dots="true"
-        indicator-color="rgba(0,0,0,0.25)"
-        indicator-active-color="#757575"
+        :indicator-dots="false"
         :autoplay="true"
         :interval="3500"
         :duration="300"
         circular
+        @change="onBannerChange"
       >
         <swiper-item v-for="(b, idx) in displayBanners" :key="idx">
           <image class="banner-img" :src="bannerSrc(b)" mode="aspectFill" />
         </swiper-item>
       </swiper>
+      <view class="banner-dots">
+        <view
+          v-for="(_, idx) in displayBanners"
+          :key="idx"
+          class="banner-dot"
+          :class="{ 'banner-dot--active': bannerCurrent === idx }"
+        />
+      </view>
     </view>
 
     <!-- 快捷入口 -->
@@ -83,27 +90,12 @@
 
     <!-- 促销横幅 -->
     <view class="promo-wrap" @click="onQuickClick('help')">
-      <view class="promo-banner">
-        <view class="promo-left">
-          <view class="promo-tags">
-            <view class="promo-tag">
-              <text class="promo-tag-text">包邮</text>
-            </view>
-            <view class="promo-tag promo-tag--discount">
-              <text class="promo-tag-text">5折起</text>
-            </view>
-          </view>
-          <text class="promo-desc">限时优惠活动进行中，立即领取专属福利</text>
-        </view>
-        <view class="promo-cta">
-          <text class="promo-cta-text">立即领取 ›</text>
-        </view>
-      </view>
+      <image class="promo-img" src="/static/images/bar.jpg" mode="widthFix" />
     </view>
 
     <!-- 本周热卖 -->
     <view class="section-head">
-      <image class="section-icon" src="/static/images/index6.png" mode="aspectFit" />
+      <image class="section-icon" src="/static/images/fire.png" mode="aspectFit" />
       <text class="section-title">本周热卖</text>
     </view>
 
@@ -149,6 +141,7 @@ const placeholderText = '搜索商品';
 const prefixUrl = computed(() => userStore.prefixUrl);
 const statusBarHeight = ref(20);
 const cartCount = ref(0);
+const bannerCurrent = ref(0);
 
 const fallbackBanners = [
   { image_url: '/static/images/index9.png', _local: true },
@@ -197,6 +190,10 @@ function bannerSrc(b: any) {
     return b.image_url;
   }
   return prefixUrl.value + b.image_url;
+}
+
+function onBannerChange(e: { detail: { current: number } }) {
+  bannerCurrent.value = e.detail.current;
 }
 
 function productImage(p: any) {
@@ -308,9 +305,9 @@ function scrollTop() {
 
 onLoad(() => {
   try {
-    statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight || 20;
+    statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight || 10;
   } catch (_) {
-    statusBarHeight.value = 20;
+    statusBarHeight.value = 10;
   }
   loadHomeFromApi();
 });
@@ -351,36 +348,9 @@ onShow(() => {
   justify-content: center;
 }
 
-.logo-bag {
+.logo-img {
   width: 48rpx;
   height: 52rpx;
-  background: #ffffff;
-  border-radius: 8rpx 8rpx 10rpx 10rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -10rpx;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 22rpx;
-    height: 14rpx;
-    border: 4rpx solid #ffffff;
-    border-bottom: none;
-    border-radius: 12rpx 12rpx 0 0;
-  }
-}
-
-.logo-s {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: #ee4d2d;
-  line-height: 1;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .search {
@@ -418,6 +388,16 @@ onShow(() => {
   justify-content: center;
 }
 
+.mine-avatar {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .cart-badge {
   position: absolute;
   top: 2rpx;
@@ -439,7 +419,7 @@ onShow(() => {
 
 /* ===== Banner ===== */
 .banner-wrap {
-  background: #ee4d2d;
+  // background: #ee4d2d;
   padding: 0 0 12rpx;
 }
 
@@ -453,9 +433,28 @@ onShow(() => {
   height: 100%;
 }
 
+.banner-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  margin-top: 10px;
+}
+
+.banner-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background:#b2b2b2;
+}
+
+.banner-dot--active {
+  background: #757575;
+}
+
 /* ===== 快捷入口 ===== */
 .quick-wrap {
-  margin: -8rpx 20rpx 0;
+  margin: 8rpx 20rpx 0;
   position: relative;
   z-index: 2;
   background: #ffffff;
@@ -527,69 +526,13 @@ onShow(() => {
 /* ===== 促销条 ===== */
 .promo-wrap {
   margin: 16rpx 20rpx 0;
-}
-
-.promo-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18rpx 20rpx;
   border-radius: 12rpx;
-  background: linear-gradient(90deg, #ff6a3d 0%, #ee4d2d 55%, #d73211 100%);
   overflow: hidden;
 }
 
-.promo-left {
-  flex: 1;
-  min-width: 0;
-  margin-right: 16rpx;
-}
-
-.promo-tags {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-bottom: 6rpx;
-}
-
-.promo-tag {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.22);
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.35);
-}
-
-.promo-tag--discount {
-  background: rgba(255, 235, 59, 0.25);
-}
-
-.promo-tag-text {
-  font-size: 20rpx;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.promo-desc {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.95);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.promo-cta {
-  flex-shrink: 0;
-  background: #1a1a1a;
-  padding: 12rpx 22rpx;
-  border-radius: 8rpx;
-}
-
-.promo-cta-text {
-  font-size: 24rpx;
-  color: #ffffff;
-  font-weight: 600;
+.promo-img {
+  width: 100%;
+  display: block;
 }
 
 /* ===== 分区标题 ===== */
