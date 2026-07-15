@@ -1,48 +1,71 @@
 <template>
   <view class="login">
-    <view class="login-bg" />
+    <!-- 右上角客服 -->
+    <view class="login-cs" @click="onCustomerService">
+      <image class="login-cs-img" src="/static/images/icon_support.png" mode="aspectFit" />
+    </view>
 
     <view class="login-container">
-      <text class="login-title">登录帐户</text>
-
-      <view class="register-hint">
-        <text class="hint-text">还没有账号？</text>
-        <text class="register-link" @click="onRegister">立即注册</text>
+      <!-- Logo -->
+      <view class="brand">
+        <image class="brand-img" src="/static/images/shopee_logo_400.png" mode="aspectFit" />
       </view>
 
+      <text class="login-title">登录</text>
+
       <view class="login-form">
+        <!-- 账号 -->
         <view class="input-group">
+          <view class="input-icon">
+            <image class="input-icon-img" src="/static/images/icon_user.png" mode="aspectFit" />
+          </view>
           <input
             class="input-field"
             type="text"
             v-model="formData.login"
-            placeholder="请输入您的手机号码。"
+            placeholder="手机号码/邮箱/用户名"
+            placeholder-class="input-placeholder"
             maxlength="64"
           />
         </view>
 
+        <!-- 密码 -->
         <view class="input-group">
+          <view class="input-icon">
+            <image class="input-icon-img" src="/static/images/icon_password.png" mode="aspectFit" />
+          </view>
           <input
             class="input-field input-field--password"
             :type="showPassword ? 'text' : 'password'"
             v-model="formData.password"
-            placeholder="请输入密码。"
+            placeholder="密码"
+            placeholder-class="input-placeholder"
             maxlength="20"
           />
           <view class="password-toggle" @click="togglePassword">
-            <uni-icons :type="!showPassword ? 'eye-slash' : 'eye'" size="22" color="#b8b8b8" />
+            <uni-icons :type="showPassword ? 'eye' : 'eye-slash'" size="20" color="#b0b0b0" />
           </view>
         </view>
 
-        <view class="agreement-group">
-          <view class="checkbox-wrap" @click="toggleAgreement">
-            <view class="checkbox" :class="{ 'checkbox--checked': agreed }">
-              <text class="checkbox-icon" v-if="agreed">✓</text>
-            </view>
-            <text class="agreement-text">阅读协议。</text>
+        <!-- 验证码 -->
+        <view class="input-group">
+          <view class="input-icon">
+            <image class="input-icon-img" src="/static/images/icon_captcha.png" mode="aspectFit" />
+          </view>
+          <input
+            class="input-field input-field--captcha"
+            type="text"
+            v-model="formData.verifyCode"
+            placeholder="请输入验证码"
+            placeholder-class="input-placeholder"
+            maxlength="6"
+          />
+          <view class="verify-code-wrap" @click="refreshVerifyCode">
+            <image class="verify-code-img" :src="verifyCodeImg" mode="aspectFit" />
           </view>
         </view>
 
+        <!-- 登录按钮 -->
         <view
           class="login-btn"
           :class="{ 'login-btn--disabled': !canLogin || loggingIn }"
@@ -51,9 +74,38 @@
           <text class="login-btn-text">{{ loggingIn ? '登录中...' : '登录' }}</text>
         </view>
 
-        <view class="forgot-password">
-          <text class="forgot-link" @click="onForgotPassword">忘记密码</text>
+        <!-- 记住登录 / 忘记密码 -->
+        <view class="extra-row">
+          <view class="remember-wrap" @click="toggleRemember">
+            <view class="checkbox" :class="{ 'checkbox--checked': rememberMe }">
+              <text class="checkbox-icon" v-if="rememberMe">✓</text>
+            </view>
+            <text class="remember-text">记住登录</text>
+          </view>
+          <text class="forgot-link" @click="onForgotPassword">忘记密码?</text>
         </view>
+
+        <!-- 分隔线 -->
+        <view class="divider">
+          <view class="divider-line" />
+          <text class="divider-text">或</text>
+          <view class="divider-line" />
+        </view>
+
+        <!-- 注册按钮 -->
+        <view class="register-btn" @click="onRegister">
+          <text class="register-btn-text">注册账号</text>
+        </view>
+      </view>
+
+      <!-- 底部协议 -->
+      <view class="footer">
+        <text class="footer-text">
+          登录即表示我已阅读并同意
+          <text class="footer-link" @click="onTerms">服务条款</text>
+          和
+          <text class="footer-link" @click="onPrivacy">隐私政策</text>
+        </text>
       </view>
     </view>
   </view>
@@ -62,18 +114,21 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { authLogin } from '@/api';
+import { authLogin, getCaptcha } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 
 const userStore = useUserStore();
 const formData = ref({
   login: '',
   password: '',
+  verifyCode: '',
 });
 
 const showPassword = ref(false);
-const agreed = ref(true);
+const rememberMe = ref(true);
 const loggingIn = ref(false);
+const captcha_id = ref('');
+const verifyCodeImg = ref('');
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -87,15 +142,30 @@ function isValidLogin(value: string) {
 
 const canLogin = computed(() => {
   const login = formData.value.login.trim();
-  return isValidLogin(login) && formData.value.password.length >= 6 && agreed.value;
+  return (
+    isValidLogin(login) &&
+    formData.value.password.length >= 6 &&
+    formData.value.verifyCode.trim().length >= 4
+  );
 });
 
 function togglePassword() {
   showPassword.value = !showPassword.value;
 }
 
-function toggleAgreement() {
-  agreed.value = !agreed.value;
+function toggleRemember() {
+  rememberMe.value = !rememberMe.value;
+}
+
+function loadCaptcha() {
+  return getCaptcha().then((res: any) => {
+    verifyCodeImg.value = res.data.image;
+    captcha_id.value = res.data.captcha_id;
+  });
+}
+
+function refreshVerifyCode() {
+  loadCaptcha();
 }
 
 function onRegister() {
@@ -104,11 +174,27 @@ function onRegister() {
   });
 }
 
+function onCustomerService() {
+  uni.showToast({ title: '请联系客服', icon: 'none' });
+}
+
+function onTerms() {
+  uni.showToast({ title: '服务条款', icon: 'none' });
+}
+
+function onPrivacy() {
+  uni.showToast({ title: '隐私政策', icon: 'none' });
+}
+
 onLoad(() => {
   const loginInfo = uni.getStorageSync('loginInfo');
   if (loginInfo?.login) {
     formData.value.login = loginInfo.login;
   }
+  if (loginInfo?.rememberMe === false) {
+    rememberMe.value = false;
+  }
+  loadCaptcha();
 });
 
 async function onLogin() {
@@ -118,21 +204,26 @@ async function onLogin() {
   const password = formData.value.password;
 
   if (!isValidLogin(login)) {
-    uni.showToast({ title: '请输入正确的手机号码', icon: 'none' });
+    uni.showToast({ title: '请输入正确的手机号码或邮箱', icon: 'none' });
     return;
   }
   if (password.length < 6) {
     uni.showToast({ title: '密码至少6位', icon: 'none' });
     return;
   }
-  if (!agreed.value) {
-    uni.showToast({ title: '请先阅读并同意协议', icon: 'none' });
+  if (formData.value.verifyCode.trim().length < 4) {
+    uni.showToast({ title: '请输入验证码', icon: 'none' });
     return;
   }
 
   loggingIn.value = true;
   try {
-    const res: any = await authLogin({ login, password });
+    const res: any = await authLogin({
+      login,
+      password,
+      captcha_id: captcha_id.value,
+      captcha_code: formData.value.verifyCode.trim(),
+    });
     const payload = res.data;
 
     if (payload?.totp_required) {
@@ -145,7 +236,11 @@ async function onLogin() {
     }
 
     uni.setStorageSync('token', payload.token);
-    uni.setStorageSync('loginInfo', { login });
+    if (rememberMe.value) {
+      uni.setStorageSync('loginInfo', { login, rememberMe: true });
+    } else {
+      uni.removeStorageSync('loginInfo');
+    }
 
     if (payload.user) {
       userStore.setUserInfo(payload.user as any);
@@ -154,6 +249,9 @@ async function onLogin() {
     uni.switchTab({ url: '/pages/home/index' });
   } catch {
     // 错误提示由 request 拦截器统一处理
+    setTimeout(() => {
+      refreshVerifyCode();
+    }, 1000);
   } finally {
     loggingIn.value = false;
   }
@@ -167,56 +265,58 @@ function onForgotPassword() {
 <style lang="scss" scoped>
 .login {
   min-height: 100vh;
-  background: #f7f7f7;
+  background: #ffffff;
   position: relative;
-  overflow: hidden;
+  box-sizing: border-box;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
-.login-bg {
+.login-cs {
   position: absolute;
-  top: -120rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120%;
-  height: 360rpx;
-  background:
-    radial-gradient(circle at 20% 40%, rgba(255, 182, 193, 0.55) 0%, transparent 55%),
-    radial-gradient(circle at 55% 20%, rgba(173, 216, 230, 0.45) 0%, transparent 50%),
-    radial-gradient(circle at 85% 35%, rgba(221, 160, 221, 0.4) 0%, transparent 55%);
-  filter: blur(40rpx);
-  pointer-events: none;
+  top: calc(24rpx + var(--status-bar-height, 44px));
+  right: 32rpx;
+  z-index: 2;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-cs-img {
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .login-container {
   position: relative;
   z-index: 1;
-  padding: 120rpx 48rpx 60rpx;
+  padding: calc(120rpx + var(--status-bar-height, 44px)) 56rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+}
+
+.brand-img {
+  width: 280rpx;
+  height: 90rpx;
 }
 
 .login-title {
   display: block;
-  font-size: 56rpx;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 16rpx;
-}
-
-.register-hint {
-  display: flex;
-  align-items: center;
-  gap: 4rpx;
-  margin-bottom: 72rpx;
-}
-
-.hint-text {
-  font-size: 28rpx;
-  color: #666;
-}
-
-.register-link {
-  font-size: 28rpx;
-  color: #f06292;
-  font-weight: 500;
+  text-align: center;
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #ee4d2d;
+  margin-bottom: 64rpx;
 }
 
 .login-form {
@@ -225,21 +325,47 @@ function onForgotPassword() {
 
 .input-group {
   position: relative;
+  display: flex;
+  align-items: center;
   margin-bottom: 8rpx;
-  border-bottom: 2rpx solid #e8e8e8;
+  border-bottom: 2rpx solid #e5e5e5;
+  min-height: 96rpx;
+}
+
+.input-icon {
+  width: 48rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12rpx;
+}
+
+.input-icon-img {
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .input-field {
-  width: 100%;
+  flex: 1;
   height: 96rpx;
-  padding: 0 0 8rpx;
+  padding: 0;
   font-size: 30rpx;
   color: #333;
   background: transparent;
 }
 
+.input-placeholder {
+  color: #c0c0c0;
+  font-size: 28rpx;
+}
+
 .input-field--password {
-  padding-right: 72rpx;
+  padding-right: 56rpx;
+}
+
+.input-field--captcha {
+  padding-right: 8rpx;
 }
 
 .password-toggle {
@@ -254,87 +380,154 @@ function onForgotPassword() {
   justify-content: center;
 }
 
-.agreement-group {
-  margin: 36rpx 0 48rpx;
-}
-
-.checkbox-wrap {
+.verify-code-wrap {
+  flex-shrink: 0;
+  width: 180rpx;
+  height: 64rpx;
+  margin-left: 12rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
-  gap: 14rpx;
+  justify-content: center;
+}
+
+.verify-code-img {
+  width: 100%;
+  height: 100%;
+}
+
+.login-btn {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 48rpx;
+  border-radius: 8rpx;
+  background: #ed4d2f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active:not(.login-btn--disabled) {
+    opacity: 0.9;
+  }
+}
+
+.login-btn--disabled {
+  background: #f5a898;
+  pointer-events: none;
+}
+
+.login-btn-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+
+.extra-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28rpx;
+}
+
+.remember-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
 }
 
 .checkbox {
-  width: 36rpx;
-  height: 36rpx;
+  width: 34rpx;
+  height: 34rpx;
   border-radius: 50%;
-  border: 2rpx solid #ddd;
+  border: 2rpx solid #ccc;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .checkbox--checked {
-  background: #e53e41;
-  border-color: #e53e41;
+  background: #ee4d2d;
+  border-color: #ee4d2d;
 }
 
 .checkbox-icon {
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
 }
 
-.agreement-text {
-  font-size: 28rpx;
-  color: #333;
-}
-
-.login-btn {
-  width: 100%;
-  height: 96rpx;
-  border-radius: 48rpx;
-  background: #e53e41;
-  box-shadow: 0 8rpx 24rpx rgba(229, 62, 65, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s, transform 0.2s;
-
-  &:active:not(.login-btn--disabled) {
-    opacity: 0.9;
-    transform: scale(0.98);
-  }
-}
-
-.login-btn--disabled {
-  background: #e0e0e0;
-  box-shadow: none;
-  pointer-events: none;
-}
-
-.login-btn-text {
-  font-size: 34rpx;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1;
-}
-
-.login-btn--disabled .login-btn-text {
-  color: #aaa;
-}
-
-.forgot-password {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 28rpx;
+.remember-text {
+  font-size: 26rpx;
+  color: #555;
 }
 
 .forgot-link {
   font-size: 26rpx;
+  color: #5a7a9a;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 48rpx 0 36rpx;
+  gap: 24rpx;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #e0e0e0;
+}
+
+.divider-text {
+  font-size: 26rpx;
   color: #999;
+  flex-shrink: 0;
+}
+
+.register-btn {
+  width: 100%;
+  height: 88rpx;
+  border-radius: 8rpx;
+  background: #efefef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.register-btn-text {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #888;
+  line-height: 1;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 80rpx;
+  padding-bottom: 20rpx;
+}
+
+.footer-text {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  color: #777;
+  line-height: 1.7;
+}
+
+.footer-link {
+  color: #4a6fa5;
 }
 </style>

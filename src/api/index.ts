@@ -337,6 +337,8 @@ export function authCheckEmail(data: { email: string }) {
 export interface AuthLoginPayload {
     login: string;
     password: string;
+    captcha_id?: string;
+    captcha_code?: string;
 }
 
 export interface AuthLoginUser {
