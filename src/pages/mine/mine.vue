@@ -25,14 +25,14 @@
 
         <view class="header-actions">
           <view class="action-btn" @click="onSettings">
-            <image class="action-icon" src="/static/images/about_me/icon_settings.png" mode="aspectFit" />
+            <image class="action-icon" src="/static/images/about_me/icon_support_header.png" mode="aspectFit" />
           </view>
           <view class="action-btn" @click="goCart">
-            <image class="action-icon" src="/static/images/about_me/icon_cart_header.png" mode="aspectFit" />
-            <view v-if="cartCount > 0" class="action-badge">{{ cartCount > 99 ? '99+' : cartCount }}</view>
+            <image class="action-icon" src="/static/images/about_me/icon_settings.png" mode="aspectFit" />
+            <!-- <view v-if="cartCount > 0" class="action-badge">{{ cartCount > 99 ? '99+' : cartCount }}</view> -->
           </view>
           <view class="action-btn" @click="onServiceClick">
-            <image class="action-icon" src="/static/images/about_me/icon_support_header.png" mode="aspectFit" />
+            <image class="action-icon" src="/static/images/about_me/icon_cart_header.png" mode="aspectFit" />
           </view>
         </view>
       </view>
@@ -94,7 +94,7 @@
         :class="{ 'order-row--last': idx === orderMenus.length - 1 }" @click="onOrderStatusClick(item.status)">
         <image class="order-icon" :src="item.icon" mode="aspectFit" />
         <text class="order-label">{{ item.label }}</text>
-        <view v-if="item.badge" class="order-badge">{{ item.badge }}</view>
+        <!-- <view v-if="item.badge" class="order-badge">{{ item.badge }}</view> -->
         <text class="order-row-arrow">›</text>
       </view>
     </view>
