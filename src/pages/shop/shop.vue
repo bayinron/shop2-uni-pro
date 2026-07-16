@@ -35,24 +35,24 @@
             <view class="featured-name-pill">
               <text class="featured-name">{{ featured.name }}</text>
             </view>
+            <view class="featured-stats">
+              <view class="stats-left">
+                <view class="stats-num-row">
+                  <text class="stats-num">{{ featured.orders }}</text>
+                  <text class="stats-unit">订单</text>
+                </view>
+                <text class="stats-desc">成功发货的销售总额</text>
+              </view>
+              <view class="stats-right">
+                <image class="stats-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
+                <view class="stats-rating">
+                  <text class="stats-star">★</text>
+                  <text class="stats-score">{{ featured.rating }}</text>
+                </view>
+              </view>
+            </view>
           </view>
 
-          <view class="featured-stats">
-            <view class="stats-left">
-              <view class="stats-num-row">
-                <text class="stats-num">{{ featured.orders }}</text>
-                <text class="stats-unit">订单</text>
-              </view>
-              <text class="stats-desc">成功发货的销售总额</text>
-            </view>
-            <view class="stats-right">
-              <image class="stats-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
-              <view class="stats-rating">
-                <text class="stats-star">★</text>
-                <text class="stats-score">{{ featured.rating }}</text>
-              </view>
-            </view>
-          </view>
         </view>
       </view>
 
@@ -374,7 +374,8 @@ $orange-deep: #d73211;
 .featured {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  // aspect-ratio: 1 / 1;
+  height: 650rpx;
   overflow: hidden;
   background: $orange;
 }
@@ -469,11 +470,12 @@ $orange-deep: #d73211;
 }
 
 .featured-name-pill {
-  margin-top: -20rpx;
+  margin-top: -40rpx;
   padding: 10rpx 36rpx;
   border-radius: 999rpx;
   background: #26aa99;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.12);
+  z-index:2;
 }
 
 .featured-name {
@@ -483,12 +485,13 @@ $orange-deep: #d73211;
 }
 
 .featured-stats {
-  margin-top: 20rpx;
+  margin-top: 0rpx;
   background: #fff;
   border-radius: 16rpx;
-  padding: 22rpx 28rpx;
+  padding: 0rpx 28rpx;
   display: flex;
   align-items: center;
+  gap: 20rpx;
   justify-content: space-between;
 }
 
@@ -533,7 +536,7 @@ $orange-deep: #d73211;
 }
 
 .stats-rating {
-  margin-top: 4rpx;
+  margin-top: 0rpx;
   display: flex;
   align-items: center;
   gap: 4rpx;
