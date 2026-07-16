@@ -23,7 +23,15 @@
           </view>
 
           <view class="featured-avatar-wrap">
-            <image class="featured-avatar" :src="featured.avatar" mode="aspectFill" />
+            <view class="featured-avatar-box">
+              <!-- 庆祝插画：紧贴头像圆顶，约为头像宽度的一半 -->
+              <image
+                class="featured-celeb"
+                src="/static/images/store/deco_celebration.png"
+                mode="aspectFit"
+              />
+              <image class="featured-avatar" :src="featured.avatar" mode="aspectFill" />
+            </view>
             <view class="featured-name-pill">
               <text class="featured-name">{{ featured.name }}</text>
             </view>
@@ -431,6 +439,24 @@ $orange-deep: #d73211;
   margin-top: 8rpx;
 }
 
+.featured-avatar-box {
+  position: relative;
+  width: 220rpx;
+  height: 220rpx;
+}
+
+/* PDF 中庆祝图约头像宽度的 47%，紧贴圆顶 */
+.featured-celeb {
+  position: absolute;
+  left: 50%;
+  top: -82rpx;
+  width: 104rpx;
+  height: 84rpx;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
 .featured-avatar {
   width: 220rpx;
   height: 220rpx;
@@ -438,6 +464,8 @@ $orange-deep: #d73211;
   border: 8rpx solid #fff;
   background: #fff;
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.18);
+  position: relative;
+  z-index: 1;
 }
 
 .featured-name-pill {
