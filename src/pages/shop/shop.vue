@@ -1,83 +1,158 @@
 <template>
-  <view class="shop-list-page">
-    <!-- 顶部类目导航（仿目标站顶部分类条） -->
-    <scroll-view class="nav-wrap" scroll-x>
-      <view class="nav-inner">
+  <view class="shop-page">
+    <!-- 顶部标题栏 -->
+    <view class="topbar" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="topbar-inner">
+        <text class="topbar-title">全部店铺</text>
+        <view class="topbar-action" @click="onSupport">
+          <image class="topbar-icon" src="/static/images/store/icon_support_header.png" mode="aspectFit" />
+        </view>
+      </view>
+    </view>
+
+      <!-- 本月精选：整图 + 头像 + 昵称 -->
+      <view class="featured" @click="onFeaturedClick">
+        <image class="featured-bg" src="/static/images/store/hero_square_clean.png" mode="aspectFill" />
+        <view class="featured-mask">
+          <view class="featured-brand">
+            <image class="featured-logo" src="/static/images/store/logo_shopee_header.png" mode="aspectFit" />
+            <view class="featured-titles">
+              <text class="featured-title">本月精选店铺</text>
+              <text class="featured-sub">达成销售目标 · 准时发货</text>
+            </view>
+          </view>
+
+          <view class="featured-avatar-wrap">
+            <image class="featured-avatar" :src="featured.avatar" mode="aspectFill" />
+            <view class="featured-name-pill">
+              <text class="featured-name">{{ featured.name }}</text>
+            </view>
+          </view>
+
+          <view class="featured-stats">
+            <view class="stats-left">
+              <view class="stats-num-row">
+                <text class="stats-num">{{ featured.orders }}</text>
+                <text class="stats-unit">订单</text>
+              </view>
+              <text class="stats-desc">成功发货的销售总额</text>
+            </view>
+            <view class="stats-right">
+              <image class="stats-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
+              <view class="stats-rating">
+                <text class="stats-star">★</text>
+                <text class="stats-score">{{ featured.rating }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 精选店铺排行 -->
+      <view class="rank-section">
+        <view class="section-head">
+          <view class="section-bar" />
+          <text class="section-title">精选店铺排行</text>
+        </view>
+
         <view
-          v-for="c in categories"
-          :key="c.id"
-          :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
-          @click="onCateClick(c)"
+          v-for="(item, idx) in rankList"
+          :key="item.id || idx"
+          class="rank-row"
+          @click="onShopClick(item)"
         >
-          <text class="nav-text">{{ c.slug }}</text>
-        </view>
-      </view>
-    </scroll-view>
-
-    <!-- 顶部搜索框 -->
-    <view class="search-wrap">
-      <view class="search-box">
-        <uni-icons type="search" size="18" color="#c7c7c7" />
-        <input
-          class="search-input"
-          :placeholder="placeholderText"
-          confirm-type="search"
-          v-model="keyword"
-          @confirm="onSearchConfirm"
-        />
-      </view>
-      <button class="search-btn" @click="onSearchClick">搜索</button>
-    </view>
-
-    <!-- 店铺列表 -->
-    <view class="list-scroll">
-      <view
-        v-for="s in shops"
-        :key="s.id"
-        class="shop-card"
-        @click="onShopClick(s)"
-      >
-        <view class="shop-card-inner">
-          <image class="shop-logo" :src="s.logo || '/static/img/empty.svg'" mode="aspectFill" />
-          <view class="shop-main">
-            <text class="shop-name">{{ s.name }}</text>
-            <text class="shop-sub">{{ s.description || s.tagline || '' }}</text>
+          <view :class="['rank-badge', `rank-badge--${idx + 1}`]">
+            <text class="rank-num">{{ idx + 1 }}</text>
           </view>
-          <view class="shop-enter">
-            <text class="enter-text">进入店铺</text>
-            <text class="enter-arrow">›</text>
+          <image class="rank-avatar" :src="item.logo || fallbackAvatars[idx] || '/static/img/empty.svg'" mode="aspectFill" />
+          <view class="rank-main">
+            <text class="rank-name">{{ item.name }}</text>
+            <text class="rank-sub">{{ item.description || item.tagline || '优质店铺' }}</text>
+          </view>
+          <view class="rank-meta">
+            <text class="rank-orders">{{ formatOrders(item) }} 订单</text>
+            <view class="rank-rating">
+              <image class="rank-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
+              <text class="rank-score">{{ item.rating || '5.0' }}</text>
+            </view>
           </view>
         </view>
       </view>
 
-      <!-- 加载更多提示 -->
-      <view v-if="loading" class="loading-more">
-        <text class="loading-text">加载中...</text>
+      <!-- 全部店铺 -->
+      <view class="all-section">
+        <view class="section-head">
+          <view class="section-bar" />
+          <text class="section-title">全部店铺</text>
+        </view>
+
+        <view class="search-wrap">
+          <view class="search-box">
+            <image class="search-icon" src="/static/images/store/icon_search.png" mode="aspectFit" />
+            <input
+              class="search-input"
+              :placeholder="placeholderText"
+              confirm-type="search"
+              v-model="keyword"
+              @confirm="onSearchConfirm"
+            />
+          </view>
+        </view>
+
+        <!-- 分类条（保留原有能力） -->
+        <scroll-view v-if="categories.length" class="nav-wrap" scroll-x>
+          <view class="nav-inner">
+            <view
+              v-for="c in categories"
+              :key="c.id"
+              :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
+              @click="onCateClick(c)"
+            >
+              <text class="nav-text">{{ c.name || c.slug }}</text>
+            </view>
+          </view>
+        </scroll-view>
+
+        <view class="shop-grid">
+          <view
+            v-for="(s, idx) in shops"
+            :key="s.id"
+            class="shop-tile"
+            @click="onShopClick(s)"
+          >
+            <view class="tile-img-wrap">
+              <image class="tile-img" :src="s.logo || brandFallbacks[idx % brandFallbacks.length]" mode="aspectFill" />
+              <image v-if="idx < 3" class="tile-badge" src="/static/images/store/badge_top.png" mode="widthFix" />
+            </view>
+            <text class="tile-name">{{ s.name }}</text>
+          </view>
+        </view>
+
+        <view v-if="loading" class="loading-more">
+          <text class="loading-text">加载中...</text>
+        </view>
+        <view v-if="!hasMore && shops.length > 0" class="no-more">
+          <text class="no-more-text">没有更多了</text>
+        </view>
+        <view v-if="!shops.length && !loading" class="empty">
+          <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
+          <text class="empty-text">暂无符合条件的店铺</text>
+        </view>
       </view>
 
-      <!-- 没有更多数据提示 -->
-      <view v-if="!hasMore && shops.length > 0" class="no-more">
-        <text class="no-more-text">没有更多了</text>
-      </view>
-
-      <!-- 空状态 -->
-      <view v-if="!shops.length && !loading" class="empty">
-        <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-        <text class="empty-text">暂无符合条件的店铺</text>
-      </view>
-    </view>
+      <view class="bottom-space" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getShopCategories, getShopCategoryShops } from '@/api';
-
 
 type Category = {
   id: number;
-  name: string;
+  name?: string;
+  slug?: string;
 };
 
 type ShopItem = {
@@ -87,26 +162,68 @@ type ShopItem = {
   tagline?: string;
   description?: string | null;
   categoryId?: number;
+  rating?: string | number;
+  order_count?: number;
+  orders?: number;
 };
 
-const placeholderText = '请输入店铺名称';
+const placeholderText = '搜索店铺';
+const statusBarHeight = ref(20);
+const scrollHeight = ref('100vh');
 
-const categories = ref<any[]>([
-]);
-
+const categories = ref<Category[]>([]);
 const shops = ref<ShopItem[]>([]);
-
 const activeCateId = ref<number>(1);
-const keyword = ref<string>('');
+const keyword = ref('');
 
-// 分页相关
-const page = ref<number>(1);
-const limit = ref<number>(15);
-const hasMore = ref<boolean>(true);
-const loading = ref<boolean>(false);
+const page = ref(1);
+const limit = ref(15);
+const hasMore = ref(true);
+const loading = ref(false);
 
-// 加载店铺列表
-async function loadShops(reset: boolean = false) {
+const fallbackAvatars = [
+  '/static/images/store/avatar_win.png',
+  '/static/images/store/avatar_pimrypie.png',
+  '/static/images/store/avatar_jenny.png',
+];
+
+const brandFallbacks = [
+  '/static/images/store/brand_xiaomi.png',
+  '/static/images/store/brand_hitachi.png',
+  '/static/images/store/brand_toshiba.png',
+];
+
+const featured = computed(() => {
+  const s = shops.value[0];
+  return {
+    id: s?.id,
+    name: s?.name || 'Win William',
+    avatar: s?.logo || '/static/images/store/avatar_win.png',
+    orders: formatOrders(s) || '4,969',
+    rating: s?.rating || '5.0',
+  };
+});
+
+const rankList = computed(() => {
+  const list = shops.value.slice(0, 3);
+  if (list.length >= 3) return list;
+  // 不足时用占位补齐展示结构
+  const placeholders: ShopItem[] = [
+    { id: -1, name: 'Win William', logo: fallbackAvatars[0], description: '本月精选店主', rating: '5.0', order_count: 4969 },
+    { id: -2, name: 'Pimrypie', logo: fallbackAvatars[1], description: '人气店铺', rating: '5.0', order_count: 3200 },
+    { id: -3, name: 'Jenny Ratchanok', logo: fallbackAvatars[2], description: '优质商家', rating: '5.0', order_count: 2100 },
+  ];
+  return [...list, ...placeholders.slice(list.length)].slice(0, 3);
+});
+
+function formatOrders(s?: ShopItem | null) {
+  if (!s) return '';
+  const n = s.order_count ?? s.orders;
+  if (n == null) return '';
+  return Number(n).toLocaleString();
+}
+
+async function loadShops(reset = false) {
   if (loading.value) return;
   if (!hasMore.value && !reset) return;
 
@@ -125,20 +242,12 @@ async function loadShops(reset: boolean = false) {
       limit: limit.value,
     });
 
-    const data = res?.data.data || [];
+    const data = res?.data?.data ?? res?.data ?? [];
     const newShops = Array.isArray(data) ? data : (data.list || data.items || []);
 
-    if (reset) {
-      shops.value = newShops;
-    } else {
-      shops.value = [...shops.value, ...newShops];
-    }
-
-    // 判断是否还有更多数据
+    shops.value = reset ? newShops : [...shops.value, ...newShops];
     hasMore.value = newShops.length >= limit.value;
-    if (hasMore.value) {
-      page.value += 1;
-    }
+    if (hasMore.value) page.value += 1;
   } catch (e) {
     console.error('加载店铺列表失败', e);
     uni.showToast({ title: '加载失败', icon: 'none' });
@@ -147,197 +256,516 @@ async function loadShops(reset: boolean = false) {
   }
 }
 
-// 分类切换
 function onCateClick(c: Category) {
   activeCateId.value = c.id;
-  keyword.value = ''; // 切换分类时清空搜索关键词
+  keyword.value = '';
   loadShops(true);
 }
 
-// 搜索确认（回车）
 function onSearchConfirm(e: any) {
-  const value = (e?.detail?.value ?? '').trim();
-  keyword.value = value;
+  keyword.value = (e?.detail?.value ?? keyword.value ?? '').trim();
   loadShops(true);
 }
 
-// 搜索按钮点击
-function onSearchClick() {
-  const value = keyword.value.trim();
-  // if (!value) {
-  //   uni.showToast({ title: '请输入搜索关键词', icon: 'none' });
-  //   return;
-  // }
-  loadShops(true);
+function onReachBottomLoad() {
+  if (!loading.value && hasMore.value) loadShops(false);
 }
-
-// 上拉加载更多（使用页面生命周期 onReachBottom）
-onReachBottom(() => {
-  if (!loading.value && hasMore.value) {
-    loadShops(false);
-}
-});
 
 function onShopClick(s: ShopItem) {
+  if (!s?.id || s.id < 0) return;
   uni.navigateTo({ url: `/pages/shop/home?id=${s.id}` });
 }
 
+function onFeaturedClick() {
+  if (featured.value.id) onShopClick({ id: featured.value.id, name: featured.value.name });
+}
+
+function onSupport() {
+  uni.showToast({ title: '客服功能开发中', icon: 'none' });
+}
+
+onReachBottom(() => onReachBottomLoad());
+
 onLoad(async () => {
+  try {
+    const sys = uni.getSystemInfoSync();
+    statusBarHeight.value = sys.statusBarHeight || 20;
+    const winH = sys.windowHeight || 667;
+    scrollHeight.value = `${winH - statusBarHeight.value - 44}px`;
+  } catch (_) {
+    statusBarHeight.value = 20;
+  }
+
   try {
     const res: any = await getShopCategories();
     categories.value = res?.data || res || [];
     if (categories.value.length > 0) {
       activeCateId.value = categories.value[0].id;
     }
-    // 加载初始店铺列表
-    loadShops(true);
+    await loadShops(true);
   } catch (e) {
     console.error('加载分类失败', e);
   }
-}); 
+});
 </script>
 
 <style scoped lang="scss">
-.shop-list-page {
+$orange: #ee4d2d;
+$orange-deep: #d73211;
+
+.shop-page {
   min-height: 100vh;
-  background: #d9dbff; // 与首页保持一致的淡紫背景
+  background: #f5f5f5;
   display: flex;
   flex-direction: column;
 }
 
-.nav-wrap {
-  background: #ffffff;
-  // height: 50rpx;
-  box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.04);
+.topbar {
+  background: $orange;
+  flex-shrink: 0;
 }
 
-.nav-inner {
+.topbar-inner {
+  height: 88rpx;
   display: flex;
   align-items: center;
-  padding: 0 20rpx;
+  justify-content: center;
+  position: relative;
+  padding: 0 24rpx;
 }
 
-.nav-item {
-  margin-right: 30rpx;
-  padding-bottom: 6rpx;
-}
-
-.nav-text {
-  font-size: 26rpx;
-  color: #555;
-}
-
-.nav-item--active .nav-text {
-  color: #4e4bff;
+.topbar-title {
+  font-size: 34rpx;
   font-weight: 600;
-  border-bottom: 4rpx solid #4e4bff;
-  padding-bottom: 4rpx;
+  color: #fff;
 }
 
-.search-wrap {
-  padding: 14rpx 20rpx 10rpx;
+.topbar-action {
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56rpx;
+  height: 56rpx;
   display: flex;
   align-items: center;
-  background: #d9dbff;
+  justify-content: center;
+}
+
+.topbar-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.page-scroll {
+  flex: 1;
+  background: #f5f5f5;
+}
+
+/* ===== 本月精选 ===== */
+.featured {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: $orange;
+}
+
+.featured-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.featured-mask {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx 28rpx 36rpx;
+  box-sizing: border-box;
+}
+
+.featured-brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.featured-logo {
+  width: 200rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+}
+
+.featured-titles {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4rpx;
+}
+
+.featured-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.featured-sub {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.3;
+}
+
+.featured-avatar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8rpx;
+}
+
+.featured-avatar {
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 50%;
+  border: 8rpx solid #fff;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.18);
+}
+
+.featured-name-pill {
+  margin-top: -20rpx;
+  padding: 10rpx 36rpx;
+  border-radius: 999rpx;
+  background: #26aa99;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.12);
+}
+
+.featured-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.featured-stats {
+  margin-top: 20rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 22rpx 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stats-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-num-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+}
+
+.stats-num {
+  font-size: 48rpx;
+  font-weight: 800;
+  color: $orange;
+  line-height: 1;
+}
+
+.stats-unit {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.stats-desc {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.stats-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-flame {
+  width: 72rpx;
+  height: 72rpx;
+}
+
+.stats-rating {
+  margin-top: 4rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.stats-star {
+  font-size: 22rpx;
+  color: #f5a623;
+}
+
+.stats-score {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+/* ===== 排行 ===== */
+.rank-section,
+.all-section {
+  margin-top: 20rpx;
+  background: #fff;
+  padding: 24rpx 24rpx 8rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-bar {
+  width: 8rpx;
+  height: 32rpx;
+  border-radius: 4rpx;
+  background: $orange;
+  margin-right: 12rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #222;
+}
+
+.rank-row {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.rank-badge {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+  background: #c0c0c0;
+}
+
+.rank-badge--1 {
+  background: linear-gradient(135deg, #f6d365, #e8a838);
+}
+
+.rank-badge--2 {
+  background: linear-gradient(135deg, #f5d76e, #d4a017);
+}
+
+.rank-badge--3 {
+  background: #b0b0b0;
+}
+
+.rank-num {
+  font-size: 24rpx;
+  font-weight: 800;
+  color: #fff;
+}
+
+.rank-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: #f5f5f5;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.rank-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rank-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-sub {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 12rpx;
+}
+
+.rank-orders {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.rank-rating {
+  margin-top: 6rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.rank-flame {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.rank-score {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ===== 搜索 + 网格 ===== */
+.search-wrap {
+  margin-bottom: 16rpx;
 }
 
 .search-box {
-  flex: 1;
   height: 72rpx;
   border-radius: 36rpx;
-  background: #ffffff;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
-  padding: 0 20rpx;
+  padding: 0 24rpx;
+}
+
+.search-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
 }
 
 .search-input {
-  margin-left: 10rpx;
+  margin-left: 12rpx;
   flex: 1;
   height: 72rpx;
   font-size: 26rpx;
   color: #333;
 }
 
-.search-btn {
-  margin-left: 12rpx;
-  padding: 0 28rpx;
-  height: 64rpx;
-  line-height: 64rpx;
-  border-radius: 32rpx;
-  background: #ff3e6c;
-  color: #fff;
-  font-size: 26rpx;
-  border: none;
+.nav-wrap {
+  margin-bottom: 12rpx;
+  white-space: nowrap;
 }
 
-.list-scroll {
-  flex: 1;
-  padding: 4rpx 16rpx 20rpx;
-}
-
-.shop-card {
-  margin-top: 12rpx;
-  background: #f0e9ff;
-  border-radius: 18rpx;
-  padding: 8rpx;
-}
-
-.shop-card-inner {
-  background: #ffffff;
-  border-radius: 14rpx;
-  padding: 16rpx 16rpx 18rpx;
-  display: flex;
+.nav-inner {
+  display: inline-flex;
   align-items: center;
+  padding-bottom: 4rpx;
 }
 
-.shop-logo {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 12rpx;
-  background: #f5f5f5;
+.nav-item {
+  margin-right: 28rpx;
+  padding-bottom: 8rpx;
 }
 
-.shop-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-left: 16rpx;
-}
-
-.shop-name {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #4e4bff;
-}
-
-.shop-sub {
-  margin-top: 6rpx;
-  font-size: 24rpx;
+.nav-text {
+  font-size: 26rpx;
   color: #666;
 }
 
-.shop-enter {
-  flex-shrink: 0;
+.nav-item--active .nav-text {
+  color: $orange;
+  font-weight: 700;
+  border-bottom: 4rpx solid $orange;
+  padding-bottom: 4rpx;
+}
+
+.shop-grid {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 0 -8rpx;
+}
+
+.shop-tile {
+  width: 33.333%;
+  padding: 8rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.enter-text {
-  font-size: 26rpx;
-  color: #ff3e6c;
+.tile-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #f7f7f7;
+  border: 1rpx solid #eee;
 }
 
-.enter-arrow {
-  margin-left: 4rpx;
-  font-size: 34rpx;
-  color: #ff3e6c;
+.tile-img {
+  width: 100%;
+  height: 100%;
+}
+
+.tile-badge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56rpx;
+  z-index: 1;
+}
+
+.tile-name {
+  margin-top: 10rpx;
+  margin-bottom: 8rpx;
+  font-size: 24rpx;
+  color: #333;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4rpx;
+  box-sizing: border-box;
 }
 
 .empty {
-  margin-top: 80rpx;
+  margin-top: 60rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -354,24 +782,19 @@ onLoad(async () => {
   font-size: 26rpx;
 }
 
-.loading-more {
-  padding: 30rpx 0;
-  text-align: center;
-}
-
-.loading-text {
-  font-size: 26rpx;
-  color: #999;
-}
-
+.loading-more,
 .no-more {
-  padding: 30rpx 0;
+  padding: 28rpx 0;
   text-align: center;
 }
 
+.loading-text,
 .no-more-text {
   font-size: 24rpx;
   color: #ccc;
 }
-</style>
 
+.bottom-space {
+  height: 40rpx;
+}
+</style>
