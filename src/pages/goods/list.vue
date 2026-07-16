@@ -47,6 +47,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
 type ProductListItem = any;
 
 const keyword = ref('');
+const categoryId = ref<number | undefined>(undefined);
 const products = ref<ProductListItem[]>([]);
 const page = ref(0);
 const limit = 20;
@@ -73,8 +74,6 @@ function resetAndLoad() {
 }
 
 function onSearchConfirm() {
-  const v = keyword.value.trim();
-  if (!v) return;
   resetAndLoad();
 }
 
@@ -82,7 +81,10 @@ function loadMore() {
   if (loading.value || !hasMore.value) return;
   loading.value = true;
   const nextPage = page.value + 1;
-  getMallProductList({ keyword: keyword.value.trim(), page: nextPage, limit })
+  const params: any = { page: nextPage, limit };
+  if (keyword.value.trim()) params.keyword = keyword.value.trim();
+  if (categoryId.value) params.category_id = categoryId.value;
+  getMallProductList(params)
     .then((res: any) => {
       const { list, limit: resLimit } = parseList(res);
       products.value = products.value.concat(list || []);
@@ -122,7 +124,12 @@ function onProductClick(p: any) {
 
 onLoad((options: any) => {
   keyword.value = decodeURIComponent(options?.keyword || options?.q || '') || '';
-  if (keyword.value.trim()) {
+  const cid = Number(options?.category_id);
+  if (cid && !Number.isNaN(cid)) categoryId.value = cid;
+  if (options?.title) {
+    uni.setNavigationBarTitle({ title: decodeURIComponent(options.title) });
+  }
+  if (keyword.value.trim() || categoryId.value) {
     resetAndLoad();
   }
 });
