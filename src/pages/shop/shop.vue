@@ -66,22 +66,34 @@
         <view
           v-for="(item, idx) in rankList"
           :key="item.id || idx"
-          class="rank-row"
+          :class="['rank-card', `rank-card--${idx + 1}`]"
           @click="onShopClick(item)"
         >
-          <view :class="['rank-badge', `rank-badge--${idx + 1}`]">
+          <view :class="['rank-side', `rank-side--${idx + 1}`]">
             <text class="rank-num">{{ idx + 1 }}</text>
           </view>
-          <image class="rank-avatar" :src="item.logo || fallbackAvatars[idx] || '/static/img/empty.svg'" mode="aspectFill" />
-          <view class="rank-main">
-            <text class="rank-name">{{ item.name }}</text>
-            <text class="rank-sub">{{ item.description || item.tagline || '优质店铺' }}</text>
-          </view>
-          <view class="rank-meta">
-            <text class="rank-orders">{{ formatOrders(item) }} 订单</text>
-            <view class="rank-rating">
-              <image class="rank-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
-              <text class="rank-score">{{ item.rating || '5.0' }}</text>
+          <view class="rank-body">
+            <image
+              class="rank-avatar"
+              :src="item.logo || fallbackAvatars[idx] || '/static/img/empty.svg'"
+              mode="aspectFill"
+            />
+            <view class="rank-main">
+              <text class="rank-name">{{ item.name }}</text>
+              <text class="rank-sub">{{ item.description || item.tagline || '成功发货的销售总额' }}</text>
+            </view>
+            <view class="rank-meta">
+              <view class="rank-orders-block">
+                <text class="rank-orders-num">{{ formatOrders(item) || '0' }}</text>
+                <text class="rank-orders-unit">订单</text>
+              </view>
+              <view class="rank-rating">
+                <image class="rank-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
+                <view class="rank-score-pill">
+                  <text class="rank-star">★</text>
+                  <text class="rank-score">{{ item.rating || '5.0' }}</text>
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -554,9 +566,14 @@ $orange-deep: #d73211;
 }
 
 /* ===== 排行 ===== */
-.rank-section,
-.all-section {
+.rank-section {
   margin-top: 20rpx;
+  background: #f5f5f5;
+  padding: 24rpx 24rpx 8rpx;
+}
+
+.all-section {
+  margin-top: 8rpx;
   background: #fff;
   padding: 24rpx 24rpx 8rpx;
 }
@@ -581,45 +598,69 @@ $orange-deep: #d73211;
   color: #222;
 }
 
-.rank-row {
+.rank-card {
   display: flex;
-  align-items: center;
-  padding: 18rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  align-items: stretch;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 
   &:last-child {
-    border-bottom: none;
+    margin-bottom: 12rpx;
   }
 }
 
-.rank-badge {
-  width: 44rpx;
-  height: 44rpx;
-  border-radius: 8rpx;
+.rank-side {
+  width: 88rpx;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16rpx;
-  flex-shrink: 0;
-  background: #c0c0c0;
 }
 
-.rank-badge--1 {
-  background: linear-gradient(135deg, #f6d365, #e8a838);
+.rank-side--1 {
+  background: linear-gradient(180deg, #f6d365 0%, #e8a017 100%);
 }
 
-.rank-badge--2 {
-  background: linear-gradient(135deg, #f5d76e, #d4a017);
+.rank-side--2 {
+  background: linear-gradient(180deg, #ffe566 0%, #f0b429 100%);
 }
 
-.rank-badge--3 {
-  background: #b0b0b0;
+.rank-side--3 {
+  background: linear-gradient(180deg, #8a8a8a 0%, #5c5c5c 100%);
 }
 
 .rank-num {
-  font-size: 24rpx;
+  font-size: 48rpx;
   font-weight: 800;
   color: #fff;
+  line-height: 1;
+}
+
+.rank-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 20rpx 18rpx 20rpx 16rpx;
+  background: #fff;
+  border-style: solid;
+  border-width: 2rpx 2rpx 2rpx 0;
+  border-radius: 0 16rpx 16rpx 0;
+}
+
+.rank-card--1 .rank-body {
+  border-color: #e8a017;
+}
+
+.rank-card--2 .rank-body {
+  border-color: #f0b429;
+}
+
+.rank-card--3 .rank-body {
+  border-color: #6a6a6a;
 }
 
 .rank-avatar {
@@ -627,7 +668,7 @@ $orange-deep: #d73211;
   height: 88rpx;
   border-radius: 50%;
   background: #f5f5f5;
-  margin-right: 16rpx;
+  margin-right: 14rpx;
   flex-shrink: 0;
 }
 
@@ -636,11 +677,12 @@ $orange-deep: #d73211;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .rank-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: #222;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -648,42 +690,72 @@ $orange-deep: #d73211;
 }
 
 .rank-sub {
-  margin-top: 6rpx;
-  font-size: 22rpx;
+  margin-top: 8rpx;
+  font-size: 20rpx;
   color: #999;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .rank-meta {
   flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin-left: 12rpx;
+  align-items: flex-start;
+  margin-left: 8rpx;
+  gap: 10rpx;
 }
 
-.rank-orders {
-  font-size: 22rpx;
-  color: #666;
+.rank-orders-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.rank-orders-num {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: $orange;
+  line-height: 1.1;
+}
+
+.rank-orders-unit {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: #333;
 }
 
 .rank-rating {
-  margin-top: 6rpx;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 4rpx;
 }
 
 .rank-flame {
-  width: 36rpx;
-  height: 36rpx;
+  width: 52rpx;
+  height: 52rpx;
+}
+
+.rank-score-pill {
+  margin-top: 2rpx;
+  display: flex;
+  align-items: center;
+  gap: 2rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 999rpx;
+  background: #fff3c4;
+}
+
+.rank-star {
+  font-size: 16rpx;
+  color: #f5a623;
 }
 
 .rank-score {
-  font-size: 22rpx;
-  font-weight: 600;
+  font-size: 18rpx;
+  font-weight: 700;
   color: #333;
 }
 
