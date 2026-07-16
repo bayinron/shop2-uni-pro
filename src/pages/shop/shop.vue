@@ -1,7 +1,7 @@
 <template>
   <view class="shop-page">
     <!-- 顶部标题栏 -->
-    <view class="topbar" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view class="topbar">
       <view class="topbar-inner">
         <text class="topbar-title">全部店铺</text>
         <view class="topbar-action" @click="onSupport">
@@ -63,6 +63,13 @@
           <text class="section-title">精选店铺排行</text>
         </view>
 
+        <view v-if="rankLoading && !rankList.length" class="rank-tip">
+          <text class="rank-tip-text">排行加载中...</text>
+        </view>
+        <view v-else-if="!rankList.length" class="rank-tip">
+          <text class="rank-tip-text">暂无排行数据</text>
+        </view>
+
         <view
           v-for="(item, idx) in rankList"
           :key="item.id || idx"
@@ -91,7 +98,7 @@
                 <image class="rank-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
                 <view class="rank-score-pill">
                   <text class="rank-star">★</text>
-                  <text class="rank-score">{{ item.rating || '5.0' }}</text>
+                  <text class="rank-score">{{ formatRating(item) }}</text>
                 </view>
               </view>
             </view>
@@ -167,7 +174,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
-import { getShopCategories, getShopCategoryShops } from '@/api';
+import { getShopCategories, getMallShopList, type MallShop } from '@/api';
 
 type Category = {
   id: number;
@@ -175,14 +182,8 @@ type Category = {
   slug?: string;
 };
 
-type ShopItem = {
-  id: number;
-  name: string;
-  logo?: string | null;
+type ShopItem = MallShop & {
   tagline?: string;
-  description?: string | null;
-  categoryId?: number;
-  rating?: string | number;
   order_count?: number;
   orders?: number;
 };
@@ -192,9 +193,13 @@ const statusBarHeight = ref(20);
 const scrollHeight = ref('100vh');
 
 const categories = ref<Category[]>([]);
-const shops = ref<ShopItem[]>([]);
-const activeCateId = ref<number>(1);
+/** 0 表示全部分类 */
+const activeCateId = ref<number>(0);
 const keyword = ref('');
+
+const shops = ref<ShopItem[]>([]);
+const rankList = ref<ShopItem[]>([]);
+const rankLoading = ref(false);
 
 const page = ref(1);
 const limit = ref(15);
@@ -214,35 +219,54 @@ const brandFallbacks = [
 ];
 
 const featured = computed(() => {
-  const s = shops.value[0];
+  const s = rankList.value[0] || shops.value[0];
   return {
     id: s?.id,
-    name: s?.name || 'Win William',
+    name: s?.name || '精选店铺',
     avatar: s?.logo || '/static/images/store/avatar_win.png',
-    orders: formatOrders(s) || '4,969',
-    rating: s?.rating || '5.0',
+    orders: formatOrders(s) || '0',
+    rating: formatRating(s),
   };
 });
 
-const rankList = computed(() => {
-  const list = shops.value.slice(0, 3);
-  if (list.length >= 3) return list;
-  // 不足时用占位补齐展示结构
-  const placeholders: ShopItem[] = [
-    { id: -1, name: 'Win William', logo: fallbackAvatars[0], description: '本月精选店主', rating: '5.0', order_count: 4969 },
-    { id: -2, name: 'Pimrypie', logo: fallbackAvatars[1], description: '人气店铺', rating: '5.0', order_count: 3200 },
-    { id: -3, name: 'Jenny Ratchanok', logo: fallbackAvatars[2], description: '优质商家', rating: '5.0', order_count: 2100 },
-  ];
-  return [...list, ...placeholders.slice(list.length)].slice(0, 3);
-});
+function normalizeList(res: any): ShopItem[] {
+  const data = res?.data?.data ?? res?.data ?? res?.result ?? res ?? [];
+  if (Array.isArray(data)) return data;
+  return data.list || data.items || [];
+}
 
 function formatOrders(s?: ShopItem | null) {
   if (!s) return '';
-  const n = s.order_count ?? s.orders;
+  const n = s.total_orders ?? s.order_count ?? s.orders;
   if (n == null) return '';
   return Number(n).toLocaleString();
 }
 
+function formatRating(s?: ShopItem | null) {
+  if (s?.rating == null) return '5.0';
+  const n = Number(s.rating);
+  return Number.isFinite(n) ? n.toFixed(1) : String(s.rating);
+}
+
+/** 排行榜：按订单数取 Top3 */
+async function loadRankList() {
+  if (rankLoading.value) return;
+  rankLoading.value = true;
+  try {
+    const res: any = await getMallShopList({
+      page: 1,
+      limit: 3,
+      sort: 'orders',
+    });
+    rankList.value = normalizeList(res).slice(0, 3);
+  } catch (e) {
+    console.error('加载店铺排行失败', e);
+  } finally {
+    rankLoading.value = false;
+  }
+}
+
+/** 全部店铺列表（搜索 / 分类 / 分页） */
 async function loadShops(reset = false) {
   if (loading.value) return;
   if (!hasMore.value && !reset) return;
@@ -255,15 +279,18 @@ async function loadShops(reset = false) {
 
   loading.value = true;
   try {
-    const res: any = await getShopCategoryShops({
-      category_id: activeCateId.value,
-      keyword: keyword.value.trim(),
+    const params: Parameters<typeof getMallShopList>[0] = {
       page: page.value,
       limit: limit.value,
-    });
+      keyword: keyword.value.trim() || undefined,
+      sort: 'latest',
+    };
+    if (activeCateId.value > 0) {
+      params.category_id = activeCateId.value;
+    }
 
-    const data = res?.data?.data ?? res?.data ?? [];
-    const newShops = Array.isArray(data) ? data : (data.list || data.items || []);
+    const res: any = await getMallShopList(params);
+    const newShops = normalizeList(res);
 
     shops.value = reset ? newShops : [...shops.value, ...newShops];
     hasMore.value = newShops.length >= limit.value;
@@ -297,7 +324,7 @@ function onShopClick(s: ShopItem) {
 }
 
 function onFeaturedClick() {
-  if (featured.value.id) onShopClick({ id: featured.value.id, name: featured.value.name });
+  if (featured.value.id) onShopClick({ id: featured.value.id, name: featured.value.name } as ShopItem);
 }
 
 function onSupport() {
@@ -318,14 +345,14 @@ onLoad(async () => {
 
   try {
     const res: any = await getShopCategories();
-    categories.value = res?.data || res || [];
-    if (categories.value.length > 0) {
-      activeCateId.value = categories.value[0].id;
-    }
-    await loadShops(true);
+    const list = res?.data || res || [];
+    categories.value = [{ id: 0, name: '全部' }, ...(Array.isArray(list) ? list : [])];
+    activeCateId.value = 0;
   } catch (e) {
     console.error('加载分类失败', e);
   }
+
+  await Promise.all([loadRankList(), loadShops(true)]);
 });
 </script>
 
@@ -596,6 +623,16 @@ $orange-deep: #d73211;
   font-size: 30rpx;
   font-weight: 700;
   color: #222;
+}
+
+.rank-tip {
+  padding: 24rpx 0 32rpx;
+  text-align: center;
+}
+
+.rank-tip-text {
+  font-size: 24rpx;
+  color: #999;
 }
 
 .rank-card {

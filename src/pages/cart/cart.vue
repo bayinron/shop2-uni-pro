@@ -1,7 +1,7 @@
 <template>
   <view class="cart-page">
     <!-- 顶部栏 -->
-    <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view class="header">
       <view class="header-inner">
         <view class="header-side" />
         <text class="header-title">购物车 ({{ totalItemCount }})</text>

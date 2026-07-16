@@ -85,7 +85,9 @@ export interface MallShop {
   description?: string;
   logo?: string;
   rating?: number;
+  /** 銷售額累計（買家確認收貨結算時維護） */
   total_sales?: number;
+  /** 訂單數累計（買家確認收貨結算時維護） */
   total_orders?: number;
   [key: string]: any;
 }
@@ -103,12 +105,31 @@ export function getShopCategoryShops(params: {
   });
 }
 
+/**
+ * 店鋪列表排序方式 - GET /api/mall/shops?sort=
+ * - sales：銷售額排行（高到低）
+ * - orders：訂單數排行
+ * - rating：評分排行
+ * - latest：最新開店
+ * - 未傳或其他值：店鋪 ID 遞減
+ */
+export type MallShopSort = 'sales' | 'orders' | 'rating' | 'latest';
+
 // 3. 獲取所有店鋪清單 - GET /api/mall/shops
 export interface MallShopListParams {
+  /** 標準分頁頁碼，預設 1 */
   page?: number;
+  /** 每頁筆數 */
   limit?: number;
+  /** 店鋪名稱關鍵字搜尋 */
   keyword?: string;
+  /** 歸屬商鋪分類的目標 ID 篩選 */
   category_id?: number;
+  /**
+   * 排序方式：
+   * sales / orders / rating / latest；未傳則以店鋪 ID 遞減
+   */
+  sort?: MallShopSort | string;
 }
 
 export function getMallShopList(params: MallShopListParams = {}) {

@@ -1,7 +1,7 @@
 <template>
   <view class="sort-page">
     <!-- 顶部：Logo + 搜索 + 购物车 + 我的 -->
-    <view class="topbar" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view class="topbar">
       <view class="topbar-inner">
         <view class="logo" @click="goHome">
           <image class="logo-img" src="/static/images/logo_bag.png" mode="aspectFit" />
@@ -337,6 +337,7 @@ onShow(() => {
   padding-bottom: 16rpx;
   padding-left: 20rpx;
   padding-right: 16rpx;
+  padding-top: 20rpx;
   flex-shrink: 0;
 }
 
