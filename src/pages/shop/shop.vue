@@ -82,12 +82,12 @@
           <view class="rank-body">
             <image
               class="rank-avatar"
-              :src="item.logo || fallbackAvatars[idx] || '/static/img/empty.svg'"
+              :src="item.logo  || '/static/img/empty.svg'"
               mode="aspectFill"
             />
             <view class="rank-main">
               <text class="rank-name">{{ item.name }}</text>
-              <text class="rank-sub">{{ item.description || item.tagline || '成功发货的销售总额' }}</text>
+              <text class="rank-sub">{{ item.description || item.tagline || '' }}</text>
             </view>
             <view class="rank-meta">
               <view class="rank-orders-block">
@@ -148,7 +148,7 @@
             @click="onShopClick(s)"
           >
             <view class="tile-img-wrap">
-              <image class="tile-img" :src="s.logo || brandFallbacks[idx % brandFallbacks.length]" mode="aspectFill" />
+              <image class="tile-img" :src="s.logo || '/static/img/empty.svg'" mode="aspectFill" />
               <image v-if="idx < 3" class="tile-badge" src="/static/images/store/badge_top.png" mode="widthFix" />
             </view>
             <text class="tile-name">{{ s.name }}</text>
@@ -223,7 +223,7 @@ const featured = computed(() => {
   return {
     id: s?.id,
     name: s?.name || '精选店铺',
-    avatar: s?.logo || '/static/images/store/avatar_win.png',
+    avatar: s?.logo || '/static/img/empty.svg',
     orders: formatOrders(s) || '0',
     rating: formatRating(s),
   };
