@@ -1,47 +1,48 @@
 import { onMounted } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { useI18n } from './i18n';
-import { setPageTitle, PAGE_TITLE_MAP } from './pageTitle';
+import { setPageTitle, PAGE_TITLE_BY_PATH, applyNavigationBarTitle } from './pageTitle';
 
 /**
- * 页面标题 composable
- * @param titleKey 翻译键名
+ * 页面标题 composable：进入页面时设置导航栏标题
+ * @param titleKey 翻译键名（中文 key）
  */
 export function usePageTitle(titleKey: string) {
     const { t } = useI18n();
-    
-    onMounted(() => {
-        setPageTitle(titleKey);
+
+    const apply = () => setPageTitle(titleKey);
+
+    onShow(() => {
+        apply();
     });
-    
+
+    onMounted(() => {
+        apply();
+    });
+
     return {
         setTitle: (key: string) => setPageTitle(key),
-        t
+        t,
     };
 }
 
 /**
- * 根据页面路径自动设置标题的 composable
- * @param pagePath 页面路径
+ * 根据页面路径自动设置标题
  */
 export function useAutoPageTitle(pagePath?: string) {
     const { t } = useI18n();
-    
-    onMounted(() => {
-        if (pagePath) {
-            // 从页面路径中提取页面名称
-            const pathParts = pagePath.split('/');
-            const pageName = pathParts[pathParts.length - 1];
-            
-            // 根据页面名称设置对应的标题
-            const titleKey = PAGE_TITLE_MAP[pageName];
-            if (titleKey) {
-                setPageTitle(titleKey);
-            }
-        }
+
+    onShow(() => {
+        applyNavigationBarTitle(pagePath);
     });
-    
+
+    onMounted(() => {
+        applyNavigationBarTitle(pagePath);
+    });
+
     return {
         setTitle: (key: string) => setPageTitle(key),
-        t
+        t,
+        PAGE_TITLE_BY_PATH,
     };
 }
