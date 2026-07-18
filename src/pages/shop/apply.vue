@@ -3,11 +3,11 @@
     <scroll-view class="content" scroll-y>
       <!-- 基本信息卡片 -->
       <view class="card">
-        <text class="section-title">基本信息</text>
+        <text class="section-title">{{ t('基本信息') }}</text>
 
         <!-- 店铺头像 -->
         <view class="form-item">
-          <text class="form-label">店铺头像</text>
+          <text class="form-label">{{ t('店铺头像') }}</text>
           <view class="avatar-upload" @click="onUploadAvatar">
             <image v-if="form.avatar" class="avatar-img" :src="resolveMediaUrl(form.avatar)" mode="aspectFill" />
             <view v-else class="avatar-placeholder">
@@ -18,17 +18,17 @@
 
         <!-- 店铺名称 -->
         <view class="form-item form-item-border">
-          <text class="form-label">店铺名称</text>
-          <input class="form-input" type="text" v-model="form.name" placeholder="请输入店铺名称"
+          <text class="form-label">{{ t('店铺名称') }}</text>
+          <input class="form-input" type="text" v-model="form.name" :placeholder="t('请输入店铺名称')"
             placeholder-class="input-placeholder" />
         </view>
 
         <!-- 商品类型 -->
         <view class="form-item form-item-border" @click="onSelectCategory">
-          <text class="form-label">商品类型</text>
+          <text class="form-label">{{ t('商品类型') }}</text>
           <view class="form-select">
             <text :class="['select-text', !form.category_id ? 'select-placeholder' : '']">
-              {{ selectedCategoryName || '请选择商品类型' }}
+              {{ selectedCategoryName || t('请选择商品类型') }}
             </text>
             <uni-icons type="bottom" size="16" color="#999" />
           </view>
@@ -36,14 +36,14 @@
 
         <!-- 账户所有者姓名 -->
         <view class="form-item form-item-border">
-          <text class="form-label">账户所有者姓名</text>
-          <input class="form-input" type="text" v-model="form.owner_name" placeholder="请输入账户所有者姓名"
+          <text class="form-label">{{ t('账户所有者姓名') }}</text>
+          <input class="form-input" type="text" v-model="form.owner_name" :placeholder="t('请输入账户所有者姓名')"
             placeholder-class="input-placeholder" />
         </view>
 
         <!-- 身份证照片 -->
         <view class="form-item">
-          <text class="form-label">身份证照片</text>
+          <text class="form-label">{{ t('身份证照片') }}</text>
           <view class="id-photos">
             <view class="id-photo-item" @click="onUploadIdPhotoFront">
               <image v-if="form.id_photo_front" class="id-photo-img" :src="resolveMediaUrl(form.id_photo_front)" mode="aspectFill" />
@@ -51,7 +51,7 @@
                 <view class="id-photo-icon">
                   <view class="icon-person"></view>
                 </view>
-                <text class="id-photo-text">正面</text>
+                <text class="id-photo-text">{{ t('正面') }}</text>
               </view>
             </view>
             <view class="id-photo-item" @click="onUploadIdPhotoBack">
@@ -60,31 +60,31 @@
                 <view class="id-photo-icon">
                   <view class="icon-doc"></view>
                 </view>
-                <text class="id-photo-text">背面</text>
+                <text class="id-photo-text">{{ t('背面') }}</text>
               </view>
             </view>
           </view>
-          <text class="upload-tip">图片文件最大上传 3 MB</text>
+          <text class="upload-tip">{{ t('图片文件最大上传 3 MB') }}</text>
         </view>
 
         <!-- 存折封面 -->
         <view class="form-item">
-          <text class="form-label">存折封面</text>
+          <text class="form-label">{{ t('存折封面') }}</text>
           <view class="passbook-upload" @click="onUploadBankPassbook">
             <image v-if="form.bank_passbook" class="passbook-img" :src="resolveMediaUrl(form.bank_passbook)" mode="aspectFill" />
             <view v-else class="passbook-placeholder">
               <uni-icons type="camera" size="32" color="#4fc3f7" />
-              <text class="passbook-text">点击上传存折封面</text>
+              <text class="passbook-text">{{ t('点击上传存折封面') }}</text>
             </view>
           </view>
-          <text class="upload-tip">图片文件最大上传 3 MB</text>
+          <text class="upload-tip">{{ t('图片文件最大上传 3 MB') }}</text>
         </view>
       </view>
     </scroll-view>
 
     <!-- 底部提交按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSubmit">提交申请</button>
+      <button class="submit-btn" @click="onSubmit">{{ t('提交申请') }}</button>
     </view>
   </view>
 </template>
@@ -97,6 +97,9 @@ import type { MerchantApplicationPayload } from '@/api/myshop';
 import globalTool from '@/utils/globalTool';
 import { getShopCategories } from '@/api';
 
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const form = ref({
   name: '',
   category_id: 0,
@@ -144,7 +147,7 @@ function onUploadBankPassbook() {
 // 选择商品类型
 function onSelectCategory() {
   if (!categories.value.length) {
-    globalTool.showToast('加载分类中...', false, 'none');
+    globalTool.showToast(t('加载分类中...'), false, 'none');
     return;
   }
 
@@ -163,31 +166,31 @@ function onSelectCategory() {
 // 表单验证
 function validate(): boolean {
   if (!form.value.name.trim()) {
-    globalTool.showToast('请输入店铺名称', false, 'none');
+    globalTool.showToast(t('请输入店铺名称'), false, 'none');
     return false;
   }
   if (!form.value.category_id) {
-    globalTool.showToast('请选择商品类型', false, 'none');
+    globalTool.showToast(t('请选择商品类型'), false, 'none');
     return false;
   }
   if (!form.value.owner_name.trim()) {
-    globalTool.showToast('请输入账户所有者姓名', false, 'none');
+    globalTool.showToast(t('请输入账户所有者姓名'), false, 'none');
     return false;
   }
   if (!globalTool.isUploadedMediaUrl(form.value.avatar)) {
-    globalTool.showToast('请上传店铺头像', false, 'none');
+    globalTool.showToast(t('请上传店铺头像'), false, 'none');
     return false;
   }
   if (!globalTool.isUploadedMediaUrl(form.value.id_photo_front)) {
-    globalTool.showToast('请上传身份证正面照片', false, 'none');
+    globalTool.showToast(t('请上传身份证正面照片'), false, 'none');
     return false;
   }
   if (!globalTool.isUploadedMediaUrl(form.value.id_photo_back)) {
-    globalTool.showToast('请上传身份证背面照片', false, 'none');
+    globalTool.showToast(t('请上传身份证背面照片'), false, 'none');
     return false;
   }
   if (!globalTool.isUploadedMediaUrl(form.value.bank_passbook)) {
-    globalTool.showToast('请上传存折封面', false, 'none');
+    globalTool.showToast(t('请上传存折封面'), false, 'none');
     return false;
   }
   return true;
@@ -197,7 +200,7 @@ function validate(): boolean {
 async function onSubmit() {
   if (!validate()) return;
 
-  uni.showLoading({ title: '提交中...' });
+  uni.showLoading({ title: t('提交中...') });
 
   try {
     const payload: MerchantApplicationPayload = {
@@ -211,9 +214,9 @@ async function onSubmit() {
       shop_logo_url: globalTool.stripMediaUrl(form.value.avatar),
     };
     await submitMerchantApplication(payload);
-    globalTool.showToast('申请提交成功', true, 'success');
+    globalTool.showToast(t('申请提交成功'), true, 'success');
   } catch (e) {
-    console.error('提交申请失败', e);
+    console.error(t('提交申请失败'), e);
   } finally {
     uni.hideLoading();
   }
@@ -225,7 +228,7 @@ onLoad(async () => {
     const res: any = await getShopCategories();
     categories.value = res?.data || res || [];
   } catch (e) {
-    console.error('加载分类失败', e);
+    console.error(t('加载分类失败'), e);
   }
 });
 </script>

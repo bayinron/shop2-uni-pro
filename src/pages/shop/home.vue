@@ -10,9 +10,9 @@
           mode="aspectFill"
         />
         <view class="shop-header-info">
-          <text class="shop-title">{{ shopInfo.name || '店铺名称' }}</text>
+          <text class="shop-title">{{ shopInfo.name || t('店铺名称') }}</text>
           <view class="shop-tag-wrap" v-if="shopInfo.rating">
-            <text class="shop-tag">评分 {{ shopInfo.rating }}</text>
+            <text class="shop-tag">{{ t('评分') }} {{ shopInfo.rating }}</text>
           </view>
         </view>
       </view>
@@ -23,7 +23,7 @@
       <!-- 空状态 -->
       <view v-if="!goodsList.length && !loading" class="empty-goods">
         <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-        <text class="empty-text">暂无商品</text>
+        <text class="empty-text">{{ t('暂无商品') }}</text>
       </view>
 
       <!-- 商品列表 -->
@@ -45,7 +45,7 @@
             </text>
             <view class="goods-price-row">
               <text class="goods-price">￥{{ item.product.sale_price }}</text>
-              <text class="goods-sold">已售{{ item.product.sold_count }}</text>
+              <text class="goods-sold">{{ t('已售') }}{{ item.product.sold_count }}</text>
             </view>
           </view>
         </view>
@@ -53,12 +53,12 @@
 
       <!-- 加载更多提示 -->
       <view v-if="loading" class="loading-more">
-        <text class="loading-text">加载中...</text>
+        <text class="loading-text">{{ t('加载中...') }}</text>
       </view>
 
       <!-- 没有更多数据提示 -->
       <view v-if="!hasMore && goodsList.length > 0" class="no-more">
-        <text class="no-more-text">没有更多了</text>
+        <text class="no-more-text">{{ t('没有更多了') }}</text>
       </view>
     </view>
   </view>
@@ -66,10 +66,14 @@
 
 <script setup lang="ts">
 import { getMallShopDetail, getMallShopProducts } from '@/api';
-import { ref } from 'vue';
-import { onReachBottom } from '@dcloudio/uni-app';
+import { ref, computed } from 'vue';
+import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 
 import { useUserStore } from '@/stores/modules/userStore';
+
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
   const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
 
@@ -124,8 +128,8 @@ async function loadProducts(reset: boolean = false) {
       page.value += 1;
     }
   } catch (e) {
-    console.error('加载商品列表失败', e);
-    uni.showToast({ title: '加载失败', icon: 'none' });
+    console.error(t('加载商品列表失败'), e);
+    uni.showToast({ title: t('加载失败'), icon: 'none' });
   } finally {
     loading.value = false;
   }
@@ -150,8 +154,8 @@ onLoad(async (options: any) => {
     // 加载商品列表
     loadProducts(true);
   } catch (e) {
-    console.error('加载店铺数据失败', e);
-    uni.showToast({ title: '加载失败', icon: 'none' });
+    console.error(t('加载店铺数据失败'), e);
+    uni.showToast({ title: t('加载失败'), icon: 'none' });
     goodsList.value = [];
   }
 });

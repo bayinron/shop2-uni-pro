@@ -18,7 +18,7 @@
       </view>
       <view class="price-center">
         <view class="points-btn">
-          <text class="points-text">赠送 {{ goodsData.coupon_applicable || 0 }} 积分</text>
+          <text class="points-text">{{ t('赠送') }} {{ goodsData.coupon_applicable || 0 }} {{ t('积分') }}</text>
         </view>
       </view>
       <view class="price-right">
@@ -36,27 +36,27 @@
     <!-- 销售和浏览统计 -->
     <view class="stats-section">
       <view class="stat-item">
-        <text class="stat-label">销量：</text>
+        <text class="stat-label">{{ t('销量：') }}</text>
         <text class="stat-value">{{ goodsData.sold_count }}</text>
       </view>
       <view class="stat-item">
-        <text class="stat-label">浏览量：</text>
+        <text class="stat-label">{{ t('浏览量：') }}</text>
         <text class="stat-value">{{ goodsData.view_count }}</text>
       </view>
     </view>
 
     <!-- 优惠券 -->
     <view class="coupon-section" @click="onCouponClick">
-      <text class="coupon-label">优惠券</text>
+      <text class="coupon-label">{{ t('优惠券') }}</text>
       <view class="coupon-right">
-        <text class="coupon-text">暂无优惠券</text>
+        <text class="coupon-text">{{ t('暂无优惠券') }}</text>
         <uni-icons type="right" size="16" color="#999" />
       </view>
     </view>
 
     <!-- 购买类型选择 -->
     <view class="purchase-type-section" @click="onPurchaseTypeClick">
-      <text class="purchase-type-label">购买类型</text>
+      <text class="purchase-type-label">{{ t('购买类型') }}</text>
       <view class="purchase-type-right">
         <text class="purchase-type-text">{{ selectedPurchaseType }}</text>
         <uni-icons type="right" size="16" color="#999" />
@@ -65,7 +65,7 @@
 
     <!-- 商品详情 -->
     <view class="detail-section">
-      <text class="detail-title">商品详情</text>
+      <text class="detail-title">{{ t('商品详情') }}</text>
       <view class="detail-content">
         <image v-for="(img, idx) in goodsData.images" :key="idx" class="detail-img" :src="prefixUrl + img.url" mode="widthFix" />
         <text class="detail-text">{{ goodsData.description }}</text>
@@ -77,30 +77,33 @@
       <view class="bottom-left">
         <view class="bottom-icon-item" @click="onCustomerService">
           <uni-icons type="chatbubble" size="24" color="#666" />
-          <text class="bottom-icon-text">客服</text>
+          <text class="bottom-icon-text">{{ t('客服') }}</text>
         </view>
         <view class="bottom-icon-item" @click="onCartClick">
           <uni-icons type="cart" size="24" color="#666" />
-          <text class="bottom-icon-text">购物车</text>
+          <text class="bottom-icon-text">{{ t('购物车') }}</text>
           <text class="bottom-badge" v-if="cartCount > 0">{{ cartCount }}</text>
         </view>
       </view>
       <view class="bottom-right">
-        <button class="add-cart-btn" @click="onAddToCart">加入购物车</button>
-        <button class="buy-now-btn" @click="onBuyNow">立即购买</button>
+        <button class="add-cart-btn" @click="onAddToCart">{{ t('加入购物车') }}</button>
+        <button class="buy-now-btn" @click="onBuyNow">{{ t('立即购买') }}</button>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { addMallCartItem, createMallOrder, getMallCart, getMallProductDetail, getUserAddresses, payMallOrder } from '@/api';
 import type { MallOrder, UserAddress } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
-const prefixUrl = computed(() => userStore.prefixUrl);
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
 type GoodsData = {
   id: string;
   shop_id: string;
@@ -194,13 +197,13 @@ const goodsData = ref<GoodsData>({
 
 const isFavorite = ref(false);
 const cartCount = ref(0);
-const selectedPurchaseType = ref('普通购买');
+const selectedPurchaseType = ref(t('普通购买'));
 
 onLoad((options: any) => {
   // 可以从 options 中获取商品ID等参数
   if (options.id) {
     // 这里可以根据ID加载商品数据（测试数据）
-    console.log('商品ID:', options.id);
+    console.log(t('商品ID'), options.id);
     getMallProductDetail(options.id).then((res: any) => {
       console.log(res);
       goodsData.value = res?.data || res;
@@ -212,7 +215,7 @@ onLoad((options: any) => {
 function toggleFavorite() {
   isFavorite.value = !isFavorite.value;
   uni.showToast({
-    title: isFavorite.value ? '已收藏' : '已取消收藏',
+    title: isFavorite.value ? t('已收藏') : t('已取消收藏'),
     icon: 'none',
   });
 }
@@ -224,30 +227,30 @@ function onCartClick() {
 }
 
 function onPointsClick() {
-  uni.showToast({ title: '查看积分详情（测试功能）', icon: 'none' });
+  uni.showToast({ title: t('查看积分详情（测试功能）'), icon: 'none' });
 }
 
 function onCouponClick() {
-  uni.showToast({ title: '查看优惠券（测试功能）', icon: 'none' });
+  uni.showToast({ title: t('查看优惠券（测试功能）'), icon: 'none' });
 }
 
 function onPurchaseTypeClick() {
   uni.showActionSheet({
-    itemList: ['普通购买', '团购', '秒杀'],
+    itemList: [t('普通购买'), t('团购'), t('秒杀')],
     success: (res) => {
-      const types = ['普通购买', '团购', '秒杀'];
+      const types = [t('普通购买'), t('团购'), t('秒杀')];
       selectedPurchaseType.value = types[res.tapIndex];
     },
   });
 }
 
 function onCustomerService() {
-  uni.showToast({ title: '联系客服（测试功能）', icon: 'none' });
+  uni.showToast({ title: t('联系客服（测试功能）'), icon: 'none' });
 }
 
 function onAddToCart() {
   if (!goodsData.value?.id || !goodsData.value?.shop_id) {
-    uni.showToast({ title: '商品加载中，请稍后', icon: 'none' });
+    uni.showToast({ title: t('商品加载中，请稍后'), icon: 'none' });
     return;
   }
   addMallCartItem({
@@ -256,7 +259,7 @@ function onAddToCart() {
     selected_sku: goodsData.value.sku || '1',
     shop_id: parseInt(goodsData.value.shop_id),
   }).then(() => {
-    uni.showToast({ title: '已加入购物车', icon: 'success' });
+    uni.showToast({ title: t('已加入购物车'), icon: 'success' });
     requestCartCount();
   }).catch(() => {
     // 错误提示由 request 拦截器统一处理
@@ -283,17 +286,17 @@ function pickCreatedOrder(res: any): MallOrder | null {
 
 async function onBuyNow() {
   if (!goodsData.value?.id || !goodsData.value?.shop_id) {
-    uni.showToast({ title: '商品数据异常', icon: 'none' });
+    uni.showToast({ title: t('商品数据异常'), icon: 'none' });
     return;
   }
 
-  uni.showLoading({ title: '下单中...' });
+  uni.showLoading({ title: t('下单中...') });
   try {
     const addrRes: any = await getUserAddresses();
     const addresses: UserAddress[] = addrRes?.data || addrRes || [];
     const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
     if (!defaultAddr?.id) {
-      uni.showToast({ title: '请先添加收货地址', icon: 'none' });
+      uni.showToast({ title: t('请先添加收货地址'), icon: 'none' });
       setTimeout(() => {
         uni.navigateTo({ url: '/pages/address/add' });
       }, 800);
@@ -317,7 +320,7 @@ async function onBuyNow() {
     const orderAmount = createdOrder?.total_amount || goodsData.value.sale_price;
 
     if (!orderId) {
-      uni.showToast({ title: '下单成功，请到订单页付款', icon: 'none' });
+      uni.showToast({ title: t('下单成功，请到订单页付款'), icon: 'none' });
       setTimeout(() => {
         uni.navigateTo({ url: '/pages/order/order?status=pending' });
       }, 500);
@@ -325,22 +328,22 @@ async function onBuyNow() {
     }
 
     uni.showModal({
-      title: '确认付款',
-      content: `确认使用钱包支付订单？\n金额：￥${orderAmount}`,
-      confirmText: '付款',
-      cancelText: '取消',
+      title: t('确认付款'),
+      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}￥${orderAmount}`,
+      confirmText: t('付款'),
+      cancelText: t('取消'),
       success: async (r) => {
         if (!r.confirm) {
-          uni.showToast({ title: '已创建订单', icon: 'none' });
+          uni.showToast({ title: t('已创建订单'), icon: 'none' });
           setTimeout(() => {
             uni.navigateTo({ url: '/pages/order/order?status=pending' });
           }, 300);
           return;
         }
         try {
-          uni.showLoading({ title: '支付中...' });
+          uni.showLoading({ title: t('支付中...') });
           await payMallOrder(orderId, { payment_method: 'wallet' });
-          uni.showToast({ title: '支付成功', icon: 'none' });
+          uni.showToast({ title: t('支付成功'), icon: 'none' });
           setTimeout(() => {
             uni.navigateTo({ url: '/pages/order/order?status=paid' });
           }, 300);

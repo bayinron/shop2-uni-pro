@@ -62,28 +62,28 @@
             <image src="/static/images/menu1.png" mode="aspectFill" class="quick-icon-img" />
           </view>
           <view class="quick-underline quick-underline--red" />
-          <text class="quick-text">{{ userInfo.user_role == 'merchant' ? '管理店铺' : '申请商家' }}</text>
+          <text class="quick-text">{{ userInfo.user_role == 'merchant' ? t('管理店铺') : t('申请商家') }}</text>
         </view>
         <view class="quick-item" @click="onQuickClick('cs')">
           <view class="quick-icon">
             <image src="/static/images/menu2.png" mode="aspectFill" class="quick-icon-img" />
           </view>
           <view class="quick-underline quick-underline--teal" />
-          <text class="quick-text">在线客服</text>
+          <text class="quick-text">{{ t('在线客服') }}</text>
         </view>
         <view class="quick-item" @click="onQuickClick('help')">
           <view class="quick-icon">
             <image src="/static/images/menu3.png" mode="aspectFill" class="quick-icon-img" />
           </view>
           <view class="quick-underline quick-underline--pink" />
-          <text class="quick-text">帮助信息</text>
+          <text class="quick-text">{{ t('帮助信息') }}</text>
         </view>
         <view class="quick-item" @click="onQuickClick('about')">
           <view class="quick-icon">
             <image src="/static/images/menu4.png" mode="aspectFill" class="quick-icon-img" />
           </view>
           <view class="quick-underline quick-underline--blue" />
-          <text class="quick-text">关于我们</text>
+          <text class="quick-text">{{ t('关于我们') }}</text>
         </view>
       </view>
     </view>
@@ -96,7 +96,7 @@
     <!-- 本周热卖 -->
     <view class="section-head">
       <image class="section-icon" src="/static/images/fire.png" mode="aspectFit" />
-      <text class="section-title">本周热卖</text>
+      <text class="section-title">{{ t('本周热卖') }}</text>
     </view>
 
     <view class="list-wrap">
@@ -115,7 +115,7 @@
               <text class="star">★</text>
               <text class="rating-num">{{ productRating(p) }}</text>
             </view>
-            <text class="sold">已售 {{ formatSold(productSold(p, idx)) }}</text>
+            <text class="sold">{{ t('已售') }} {{ formatSold(productSold(p, idx)) }}</text>
           </view>
         </view>
       </view>
@@ -123,7 +123,7 @@
 
     <view v-if="!products.length" class="empty">
       <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-      <text class="empty-text">暂无商品</text>
+      <text class="empty-text">{{ t('暂无商品') }}</text>
     </view>
   </view>
 </template>
@@ -134,10 +134,12 @@ import { onLoad, onShow } from '@dcloudio/uni-app';
 import { getPublicAdList, getMallProductList, getMallCart } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
 import { getLatestMerchantApplication, type MerchantApplicationInfo } from '@/api/myshop';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStore();
 const userInfo = computed(() => userStore.userInfo);
-const placeholderText = '搜索商品';
+const placeholderText = computed(() => t('搜索商品'));
 const prefixUrl = computed(() => userStore.prefixUrl);
 const statusBarHeight = ref(20);
 const cartCount = ref(0);
@@ -168,13 +170,13 @@ watch(
         uni.setStorageSync(cacheKey, data.status);
 
         if (data.status === 'pending') {
-          uni.showToast({ title: '您的申请正在审核中，请耐心等待', icon: 'none' });
+          uni.showToast({ title: t('您的申请正在审核中，请耐心等待'), icon: 'none' });
         } else if (data.status === 'approved') {
-          uni.showToast({ title: '您的申请已通过，请重新登录后进入店铺管理', icon: 'none' });
+          uni.showToast({ title: t('您的申请已通过，请重新登录后进入店铺管理'), icon: 'none' });
         } else if (data.status === 'rejected') {
-          uni.showToast({ title: '您的申请已拒绝，请重新申请', icon: 'none' });
+          uni.showToast({ title: t('您的申请已拒绝，请重新申请'), icon: 'none' });
         } else if (data.status === 'processing') {
-          uni.showToast({ title: '您的申请正在处理中，请耐心等待', icon: 'none' });
+          uni.showToast({ title: t('您的申请正在处理中，请耐心等待'), icon: 'none' });
         }
       })
       .catch(() => {});
@@ -230,7 +232,7 @@ function formatPrice(price: any) {
 }
 
 function formatSold(n: number) {
-  if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '万';
+  if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + t('万');
   if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
   return String(n);
 }

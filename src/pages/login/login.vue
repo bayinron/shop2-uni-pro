@@ -11,7 +11,7 @@
         <image class="brand-img" src="/static/images/shopee_logo_400.png" mode="aspectFit" />
       </view>
 
-      <text class="login-title">登录</text>
+      <text class="login-title">{{ t('登录') }}</text>
 
       <view class="login-form">
         <!-- 账号 -->
@@ -23,7 +23,7 @@
             class="input-field"
             type="text"
             v-model="formData.login"
-            placeholder="手机号码/邮箱/用户名"
+            :placeholder="t('手机号码/邮箱/用户名')"
             placeholder-class="input-placeholder"
             maxlength="64"
           />
@@ -38,7 +38,7 @@
             class="input-field input-field--password"
             :type="showPassword ? 'text' : 'password'"
             v-model="formData.password"
-            placeholder="密码"
+            :placeholder="t('密码')"
             placeholder-class="input-placeholder"
             maxlength="20"
           />
@@ -56,7 +56,7 @@
             class="input-field input-field--captcha"
             type="text"
             v-model="formData.verifyCode"
-            placeholder="请输入验证码"
+            :placeholder="t('请输入验证码')"
             placeholder-class="input-placeholder"
             maxlength="6"
           />
@@ -71,7 +71,7 @@
           :class="{ 'login-btn--disabled': !canLogin || loggingIn }"
           @click="onLogin"
         >
-          <text class="login-btn-text">{{ loggingIn ? '登录中...' : '登录' }}</text>
+          <text class="login-btn-text">{{ loggingIn ? t('登录中...') : t('登录') }}</text>
         </view>
 
         <!-- 记住登录 / 忘记密码 -->
@@ -80,31 +80,31 @@
             <view class="checkbox" :class="{ 'checkbox--checked': rememberMe }">
               <text class="checkbox-icon" v-if="rememberMe">✓</text>
             </view>
-            <text class="remember-text">记住登录</text>
+            <text class="remember-text">{{ t('记住登录') }}</text>
           </view>
-          <text class="forgot-link" @click="onForgotPassword">忘记密码?</text>
+          <text class="forgot-link" @click="onForgotPassword">{{ t('忘记密码?') }}</text>
         </view>
 
         <!-- 分隔线 -->
         <view class="divider">
           <view class="divider-line" />
-          <text class="divider-text">或</text>
+          <text class="divider-text">{{ t('或') }}</text>
           <view class="divider-line" />
         </view>
 
         <!-- 注册按钮 -->
         <view class="register-btn" @click="onRegister">
-          <text class="register-btn-text">注册账号</text>
+          <text class="register-btn-text">{{ t('注册账号') }}</text>
         </view>
       </view>
 
       <!-- 底部协议 -->
       <view class="footer">
         <text class="footer-text">
-          登录即表示我已阅读并同意
-          <text class="footer-link" @click="onTerms">服务条款</text>
-          和
-          <text class="footer-link" @click="onPrivacy">隐私政策</text>
+          {{ t('登录即表示我已阅读并同意') }}
+          <text class="footer-link" @click="onTerms">{{ t('服务条款') }}</text>
+          {{ t('和') }}
+          <text class="footer-link" @click="onPrivacy">{{ t('隐私政策') }}</text>
         </text>
       </view>
     </view>
@@ -116,7 +116,9 @@ import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { authLogin, getCaptcha } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStore();
 const formData = ref({
   login: '',
@@ -175,15 +177,15 @@ function onRegister() {
 }
 
 function onCustomerService() {
-  uni.showToast({ title: '请联系客服', icon: 'none' });
+  uni.showToast({ title: t('请联系客服'), icon: 'none' });
 }
 
 function onTerms() {
-  uni.showToast({ title: '服务条款', icon: 'none' });
+  uni.showToast({ title: t('服务条款'), icon: 'none' });
 }
 
 function onPrivacy() {
-  uni.showToast({ title: '隐私政策', icon: 'none' });
+  uni.showToast({ title: t('隐私政策'), icon: 'none' });
 }
 
 onLoad(() => {
@@ -204,15 +206,15 @@ async function onLogin() {
   const password = formData.value.password;
 
   if (!isValidLogin(login)) {
-    uni.showToast({ title: '请输入正确的手机号码或邮箱', icon: 'none' });
+    uni.showToast({ title: t('请输入正确的手机号码或邮箱'), icon: 'none' });
     return;
   }
   if (password.length < 6) {
-    uni.showToast({ title: '密码至少6位', icon: 'none' });
+    uni.showToast({ title: t('密码至少6位'), icon: 'none' });
     return;
   }
   if (formData.value.verifyCode.trim().length < 4) {
-    uni.showToast({ title: '请输入验证码', icon: 'none' });
+    uni.showToast({ title: t('请输入验证码'), icon: 'none' });
     return;
   }
 
@@ -227,11 +229,11 @@ async function onLogin() {
     const payload = res.data;
 
     if (payload?.totp_required) {
-      uni.showToast({ title: '需要二次验证，请完成 TOTP 验证', icon: 'none' });
+      uni.showToast({ title: t('需要二次验证，请完成 TOTP 验证'), icon: 'none' });
       return;
     }
     if (!payload?.token) {
-      uni.showToast({ title: '登录失败，请重试', icon: 'none' });
+      uni.showToast({ title: t('登录失败，请重试'), icon: 'none' });
       return;
     }
 
@@ -258,7 +260,7 @@ async function onLogin() {
 }
 
 function onForgotPassword() {
-  uni.showToast({ title: '请联系客服重置密码', icon: 'none' });
+  uni.showToast({ title: t('请联系客服重置密码'), icon: 'none' });
 }
 </script>
 

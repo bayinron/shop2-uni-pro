@@ -15,7 +15,7 @@
         <image class="brand-img" src="/static/images/shopee_logo_400.png" mode="aspectFit" />
       </view>
 
-      <text class="register-title">注册</text>
+      <text class="register-title">{{ t('注册') }}</text>
 
       <!-- Tabs -->
       <view class="register-tabs">
@@ -24,14 +24,14 @@
           :class="{ 'tab-item--active': registerType === 'phone' }"
           @click="registerType = 'phone'"
         >
-          <text class="tab-text">电话号码</text>
+          <text class="tab-text">{{ t('电话号码') }}</text>
         </view>
         <view
           class="tab-item"
           :class="{ 'tab-item--active': registerType === 'email' }"
           @click="registerType = 'email'"
         >
-          <text class="tab-text">电子邮件</text>
+          <text class="tab-text">{{ t('电子邮件') }}</text>
         </view>
       </view>
 
@@ -46,7 +46,7 @@
               class="input-field"
               type="text"
               v-model="formData.phone"
-              placeholder="请输入手机号码"
+              :placeholder="t('请输入手机号码')"
               placeholder-class="input-placeholder"
               maxlength="32"
               @blur="onFieldBlur('phone')"
@@ -65,7 +65,7 @@
               class="input-field"
               type="text"
               v-model="formData.email"
-              placeholder="请输入邮箱地址"
+              :placeholder="t('请输入邮箱地址')"
               placeholder-class="input-placeholder"
               maxlength="64"
               @blur="onFieldBlur('email')"
@@ -85,7 +85,7 @@
               class="input-field input-field--password"
               :type="showPassword ? 'text' : 'password'"
               v-model="formData.password"
-              placeholder="密码 8 - 12 位"
+              :placeholder="t('密码 8 - 12 位')"
               placeholder-class="input-placeholder"
               maxlength="12"
               @blur="onFieldBlur('password')"
@@ -108,7 +108,7 @@
               class="input-field input-field--password"
               :type="showConfirmPassword ? 'text' : 'password'"
               v-model="formData.confirmPassword"
-              placeholder="请再次输入密码"
+              :placeholder="t('请再次输入密码')"
               placeholder-class="input-placeholder"
               maxlength="12"
               @blur="onFieldBlur('confirmPassword')"
@@ -135,7 +135,7 @@
               class="input-field input-field--captcha"
               type="text"
               v-model="formData.verifyCode"
-              placeholder="请输入验证码"
+              :placeholder="t('请输入验证码')"
               placeholder-class="input-placeholder"
               maxlength="6"
               @blur="onFieldBlur('verifyCode')"
@@ -154,29 +154,29 @@
           :class="{ 'submit-btn--disabled': !canRegister || registering }"
           @click="onRegister"
         >
-          <text class="submit-btn-text">{{ registering ? '注册中...' : '注册' }}</text>
+          <text class="submit-btn-text">{{ registering ? t('注册中...') : t('注册') }}</text>
         </view>
 
         <!-- 分隔线 -->
         <view class="divider">
           <view class="divider-line" />
-          <text class="divider-text">或</text>
+          <text class="divider-text">{{ t('或') }}</text>
           <view class="divider-line" />
         </view>
 
         <!-- 登录按钮 -->
         <view class="login-btn" @click="onGoToLogin">
-          <text class="login-btn-text">登录</text>
+          <text class="login-btn-text">{{ t('登录') }}</text>
         </view>
       </view>
 
       <!-- 底部协议 -->
       <view class="footer">
         <text class="footer-text">
-          注册即表示我已阅读并同意
-          <text class="footer-link" @click="onTerms">服务条款</text>
-          和
-          <text class="footer-link" @click="onPrivacy">隐私政策</text>
+          {{ t('注册即表示我已阅读并同意') }}
+          <text class="footer-link" @click="onTerms">{{ t('服务条款') }}</text>
+          {{ t('和') }}
+          <text class="footer-link" @click="onPrivacy">{{ t('隐私政策') }}</text>
         </text>
       </view>
     </view>
@@ -188,6 +188,9 @@ import { computed, ref, reactive, watch } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { authRegister, getCaptcha } from '@/api';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 
 type FieldKey = 'phone' | 'email' | 'verifyCode' | 'password' | 'confirmPassword';
 
@@ -226,25 +229,25 @@ function getFieldError(field: FieldKey): string {
   switch (field) {
     case 'phone':
       if (registerType.value !== 'phone') return '';
-      if (!formData.phone.trim()) return '请输入手机号码';
-      if (!isValidPhone(formData.phone)) return '手机号码至少6位';
+      if (!formData.phone.trim()) return t('请输入手机号码');
+      if (!isValidPhone(formData.phone)) return t('手机号码至少6位');
       return '';
     case 'email':
       if (registerType.value !== 'email') return '';
-      if (!formData.email.trim()) return '请输入邮箱地址';
-      if (!isEmail(formData.email.trim())) return '请输入正确的邮箱地址';
+      if (!formData.email.trim()) return t('请输入邮箱地址');
+      if (!isEmail(formData.email.trim())) return t('请输入正确的邮箱地址');
       return '';
     case 'verifyCode':
-      if (!formData.verifyCode.trim()) return '请输入验证码';
-      if (formData.verifyCode.trim().length < 4) return '验证码至少4位';
+      if (!formData.verifyCode.trim()) return t('请输入验证码');
+      if (formData.verifyCode.trim().length < 4) return t('验证码至少4位');
       return '';
     case 'password':
-      if (!formData.password) return '请输入密码';
-      if (formData.password.length < 8 || formData.password.length > 12) return '密码需为 8 - 12 位';
+      if (!formData.password) return t('请输入密码');
+      if (formData.password.length < 8 || formData.password.length > 12) return t('密码需为 8 - 12 位');
       return '';
     case 'confirmPassword':
-      if (!formData.confirmPassword) return '请再次输入密码';
-      if (formData.confirmPassword !== formData.password) return '两次密码输入不一致';
+      if (!formData.confirmPassword) return t('请再次输入密码');
+      if (formData.confirmPassword !== formData.password) return t('两次密码输入不一致');
       return '';
   }
 }
@@ -340,7 +343,7 @@ async function onRegister() {
   registering.value = true;
   try {
     await authRegister(params);
-    globalTool.showToast('注册成功', () => {
+    globalTool.showToast(t('注册成功'), () => {
       uni.navigateTo({ url: '/pages/login/login' });
     });
   } catch {
@@ -363,15 +366,15 @@ function onGoToLogin() {
 }
 
 function onCustomerService() {
-  uni.showToast({ title: '请联系客服', icon: 'none' });
+  uni.showToast({ title: t('请联系客服'), icon: 'none' });
 }
 
 function onTerms() {
-  uni.showToast({ title: '服务条款', icon: 'none' });
+  uni.showToast({ title: t('服务条款'), icon: 'none' });
 }
 
 function onPrivacy() {
-  uni.showToast({ title: '隐私政策', icon: 'none' });
+  uni.showToast({ title: t('隐私政策'), icon: 'none' });
 }
 
 onLoad(() => {

@@ -20,7 +20,7 @@
           class="form-right"
         >
           <text class="form-value">
-            {{ form[field.key] || '请选择' }}
+            {{ form[field.key] || t('请选择') }}
           </text>
           <uni-icons type="bottom" size="18" color="#c7c7c7" />
         </view>
@@ -31,7 +31,7 @@
           class="form-input"
           :type="field.type === 'number' ? 'number' : 'text'"
           v-model="form[field.key]"
-          :placeholder="field.placeholder || `请输入${field.label}`"
+          :placeholder="field.placeholder || (t('请输入') + field.label)"
           placeholder-class="form-input-placeholder"
         />
       </view>
@@ -39,17 +39,19 @@
 
     <!-- 底部保存按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSave">保存</button>
+      <button class="submit-btn" @click="onSave">{{ t('保存') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { getBankTemplates, bindUserPaymentMethod,getUserPaymentMethods } from '@/api/pay';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const tpl = ref<any>(null);
 const fieldConfigs = ref<any[]>([]);
 const form = ref<Record<string, any>>({});
@@ -59,7 +61,7 @@ onLoad(() => {
   getBankTemplates().then((res: any) => {
     tpl.value = res.data.find((t: any) => t.currency === 'USDT');
     if (!tpl.value?.id) {
-      globalTool.showToast('未找到 USDT 模板', false, 'none');
+      globalTool.showToast(t('未找到 USDT 模板'), false, 'none');
       return;
     }
 
@@ -105,7 +107,7 @@ function onSave() {
     const val = typeof rawVal === 'string' ? rawVal.trim() : rawVal;
     if (val === undefined || val === null || val === '') {
       uni.showToast({
-        title: field.placeholder || `请输入${field.label}`,
+        title: field.placeholder || (t('请输入') + field.label),
         icon: 'none',
       });
       return;
@@ -113,7 +115,7 @@ function onSave() {
   }
 
   if (!tpl.value?.id) {
-    uni.showToast({ title: 'USDT模板未加载完成', icon: 'none' });
+    uni.showToast({ title: t('USDT模板未加载完成'), icon: 'none' });
     return;
   }
 
@@ -128,7 +130,7 @@ function onSave() {
     details: accountInfo,
   }).then((res: any) => {
     console.log(res);
-    globalTool.showToast('保存成功', true, 'success');
+    globalTool.showToast(t('保存成功'), true, 'success');
   });
 }
 </script>

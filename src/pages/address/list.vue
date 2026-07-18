@@ -3,7 +3,7 @@
     <scroll-view class="scroll" scroll-y>
       <!-- 空状态 -->
       <view v-if="!loading && addresses.length === 0" class="empty">
-        <text class="empty-text">暂无收货地址，请点击下方按钮添加</text>
+        <text class="empty-text">{{ t('暂无收货地址，请点击下方按钮添加') }}</text>
       </view>
 
       <!-- 地址列表 -->
@@ -19,7 +19,7 @@
               <text class="name">{{ item.receiver_name }}</text>
               <text class="phone">{{ item.receiver_phone }}</text>
             </view>
-            <view v-if="item.is_default" class="default-tag">默认</view>
+            <view v-if="item.is_default" class="default-tag">{{ t('默认') }}</view>
           </view>
           <view class="address-body">
             <text class="address-text">
@@ -32,7 +32,7 @@
 
     <!-- 底部添加按钮 -->
     <view class="bottom-bar">
-      <button class="add-btn" @click="onAddAddress">添加新地址</button>
+      <button class="add-btn" @click="onAddAddress">{{ t('添加新地址') }}</button>
     </view>
   </view>
 </template>
@@ -41,7 +41,9 @@
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getUserAddresses, type UserAddress } from '@/api';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const addresses = ref<any[]>([]);
 const loading = ref(false);
 

@@ -2,7 +2,7 @@
   <view class="wallet-page">
     <!-- 顶部余额区域 -->
     <view class="wallet-header">
-      <text class="wallet-label">余额（￥）</text>
+      <text class="wallet-label">{{ t('余额（￥）') }}</text>
       <text class="wallet-amount">{{ balance }}</text>
     </view>
 
@@ -11,7 +11,7 @@
       <view class="wallet-item" @click="goRecharge">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">￥</text>
-          <text class="wallet-text">充值</text>
+          <text class="wallet-text">{{ t('充值') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -19,7 +19,7 @@
       <view class="wallet-item" @click="withdrawClick">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">⤓</text>
-          <text class="wallet-text">提现</text>
+          <text class="wallet-text">{{ t('提现') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -27,7 +27,7 @@
       <view class="wallet-item" @click="bankClick">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">🏦</text>
-          <text class="wallet-text">银行账户</text>
+          <text class="wallet-text">{{ t('银行账户') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -43,7 +43,7 @@
       <view class="wallet-item" @click="todo('withdrawLog')">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">📝</text>
-          <text class="wallet-text">提现日志</text>
+          <text class="wallet-text">{{ t('提现日志') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -51,7 +51,7 @@
       <view class="wallet-item" @click="todo('rechargeLog')">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">🧾</text>
-          <text class="wallet-text">充值日志</text>
+          <text class="wallet-text">{{ t('充值日志') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -59,7 +59,7 @@
       <view class="wallet-item" @click="todo('bindUsdt')">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">₮</text>
-          <text class="wallet-text">绑定USDT</text>
+          <text class="wallet-text">{{ t('绑定USDT') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -70,7 +70,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useUserStoreHook } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
 const balance = computed(() => userInfo.value.wallet.balance_wallet.balance_formatted ?? '0');

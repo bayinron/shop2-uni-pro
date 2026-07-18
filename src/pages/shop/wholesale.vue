@@ -25,12 +25,12 @@
             <uni-icons type="search" size="18" color="#c7c7c7" />
             <input
               class="search-input"
-              placeholder="请输入商品名"
+              :placeholder="t('请输入商品名')"
               v-model="keyword"
               @confirm="onSearch"
             />
           </view>
-          <button class="header-search-btn" @click="onSearch">搜索</button>
+          <button class="header-search-btn" @click="onSearch">{{ t('搜索') }}</button>
         </view>
       </view>
   
@@ -46,7 +46,7 @@
               <image class="card-img" :src="prefixUrl + product.cover_image" mode="aspectFill" />
               <view class="card-body">
                 <text class="card-title breakcss">{{ product.name }}</text>
-                <text class="card-stock">库存：{{ product.stock }}</text>
+                <text class="card-stock">{{ t('库存：') }}{{ product.stock }}</text>
                 <view class="card-bottom">
                   <text class="card-price">￥{{ formatPrice(product.displayPrice) }}</text>
                   <button
@@ -54,14 +54,14 @@
                     class="card-btn card-btn--listed"
                     disabled
                   >
-                    已上架
+                    {{ t('已上架') }}
                   </button>
                   <button
                     v-else
                     class="card-btn card-btn--ship"
                     @click="openShipSheet(product)"
                   >
-                    一键铺货
+                    {{ t('一键铺货') }}
                   </button>
                 </view>
               </view>
@@ -71,22 +71,22 @@
   
         <!-- 加载更多提示 -->
         <view v-if="loading" class="loading-more">
-          <text class="loading-text">加载中...</text>
+          <text class="loading-text">{{ t('加载中...') }}</text>
         </view>
   
         <!-- 没有更多数据提示 -->
         <view v-if="!hasMore && products.length > 0" class="no-more">
-          <text class="no-more-text">没有更多了</text>
+          <text class="no-more-text">{{ t('没有更多了') }}</text>
         </view>
   
         <!-- 空状态 -->
         <view v-if="!products.length && !loading" class="empty">
           <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-          <text class="empty-text">暂无商品</text>
+          <text class="empty-text">{{ t('暂无商品') }}</text>
         </view>
       </view>
 
-      <!-- 底部弹窗：一键铺货 -->
+      <!-- 底部弹窗：{{ t('一键铺货') }} -->
       <view v-if="shipSheetVisible" class="sheet-mask" @click="closeShipSheet" />
       <view v-if="shipSheetVisible" class="sheet" @click.stop>
         <view class="sheet-content">
@@ -96,12 +96,12 @@
             <text class="sheet-price">￥{{ formatPrice(currentProduct?.displayPrice) }}</text>
           </view>
           <view class="sheet-stock">
-            <text class="sheet-stock-text">库存：{{ currentProduct?.stock ?? 0 }}</text>
+            <text class="sheet-stock-text">{{ t('库存：') }}{{ currentProduct?.stock ?? 0 }}</text>
           </view>
         </view>
 
         <view class="sheet-row">
-          <text class="sheet-row-label">数量</text>
+          <text class="sheet-row-label">{{ t('数量') }}</text>
           <view class="qty">
             <view
               class="qty-btn"
@@ -114,8 +114,8 @@
         </view>
 
         <view class="sheet-actions">
-          <view class="sheet-btn sheet-btn--close" @click="closeShipSheet">关闭</view>
-          <view class="sheet-btn sheet-btn--ok" @click="confirmShip">确认</view>
+          <view class="sheet-btn sheet-btn--close" @click="closeShipSheet">{{ t('关闭') }}</view>
+          <view class="sheet-btn sheet-btn--ok" @click="confirmShip">{{ t('确认') }}</view>
         </view>
       </view>
     </view>
@@ -129,6 +129,9 @@
   import type { MallShopProductsParams } from '@/api';
   import globalTool from '@/utils/globalTool';
   import { useUserStore } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
   const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
   type Product = {
@@ -193,7 +196,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
       // 映射服务器返回的数据到前端需要的格式
       const newProducts = productList.map((item: any) => ({
         id: item.id || 0,
-        name: item.name || item.title || '商品',
+        name: item.name || item.title || t('商品'),
         cover_image: item.cover_image || item.images?.[0]?.url || item.image_url || item.image || '/static/img/empty.svg',
         stock: item.stock || item.stock_count || item.quantity || 0,
         // 优先展示平台售价/销售价，其次回退到批发价/price
@@ -214,8 +217,8 @@ const prefixUrl = computed(() => userStore.prefixUrl);
         page.value += 1;
       }
     } catch (e) {
-      console.error('加载商品列表失败', e);
-      globalTool.showToast('加载失败', false, 'none');
+      console.error(t('加载商品列表失败'), e);
+      globalTool.showToast(t('加载失败'), false, 'none');
     } finally {
       loading.value = false;
     }
@@ -238,7 +241,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
     loadProducts(true);
   }
   
-  // ====== 一键铺货：底部弹窗 ======
+  // ====== {{ t('一键铺货') }}：底部弹窗 ======
   const shipSheetVisible = ref(false);
   const currentProduct = ref<Product | null>(null);
   const shipQty = ref(1);
@@ -273,11 +276,11 @@ const prefixUrl = computed(() => userStore.prefixUrl);
       await addProductToMyShop({ product_id: Number(currentProduct.value.id) });
       // 本地乐观更新
       currentProduct.value.in_my_shop = true;
-      globalTool.showToast('铺货成功', false, 'success');
+      globalTool.showToast(t('铺货成功'), false, 'success');
       closeShipSheet();
     } catch (e: any) {
-      console.error('铺货失败', e);
-      globalTool.showToast(e?.message || '铺货失败，请稍后重试', false, 'none');
+      console.error(t('铺货失败'), e);
+      globalTool.showToast(e?.message || t('铺货失败，请稍后重试'), false, 'none');
     } finally {
       shipSubmitting.value = false;
     }
@@ -308,7 +311,7 @@ const prefixUrl = computed(() => userStore.prefixUrl);
         }
       })
       .catch((e) => {
-        console.error('加载商品类型失败', e);
+        console.error(t('加载商品类型失败'), e);
       })
       .finally(() => {
         loadProducts(true);

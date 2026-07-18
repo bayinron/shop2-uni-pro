@@ -4,7 +4,7 @@
     <view class="header">
       <view class="header-inner">
         <view class="header-side" />
-        <text class="header-title">购物车 ({{ totalItemCount }})</text>
+        <text class="header-title">{{ t('购物车') }} ({{ totalItemCount }})</text>
         <view class="header-side header-side--right" @click="onDeleteSelected">
           <uni-icons type="trash" size="22" color="#ffffff" />
         </view>
@@ -18,13 +18,13 @@
           :class="['tab', activeTab === 'cart' ? 'tab--active' : '']"
           @click="activeTab = 'cart'"
         >
-          <text class="tab-text">待付款</text>
+          <text class="tab-text">{{ t('待付款') }}</text>
         </view>
         <view
           :class="['tab', activeTab === 'ship' ? 'tab--active' : '']"
           @click="onShipTab"
         >
-          <text class="tab-text">待发货</text>
+          <text class="tab-text">{{ t('待发货') }}</text>
         </view>
       </view>
     </view>
@@ -33,14 +33,14 @@
       <!-- 空状态 -->
       <view v-if="!allItems.length" class="empty-cart">
         <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-        <text class="empty-text">购物车是空的</text>
-        <view class="empty-btn" @click="goHome">去逛逛</view>
+        <text class="empty-text">{{ t('购物车是空的') }}</text>
+        <view class="empty-btn" @click="goHome">{{ t('去逛逛') }}</view>
       </view>
 
       <template v-else>
         <view class="section-head">
           <view class="section-bar" />
-          <text class="section-title">购物车商品</text>
+          <text class="section-title">{{ t('购物车商品') }}</text>
         </view>
 
         <view
@@ -84,19 +84,19 @@
           <view :class="['check', allChecked ? 'check--on' : '']">
             <text v-if="allChecked" class="check-mark">✓</text>
           </view>
-          <text class="select-text">全选 {{ checkedCount }}/{{ totalItemCount }}</text>
+          <text class="select-text">{{ t('全选') }} {{ checkedCount }}/{{ totalItemCount }}</text>
         </view>
-        <text class="discount-link" @click="onDiscountTip">领取更多优惠</text>
+        <text class="discount-link" @click="onDiscountTip">{{ t('领取更多优惠') }}</text>
       </view>
 
       <view class="footer-total">
-        <text class="total-label">合计金额</text>
+        <text class="total-label">{{ t('合计金额') }}</text>
         <text class="total-amount">￥{{ formatPrice(totalPrice) }}</text>
       </view>
 
       <view class="checkout-btn" @click="onCheckout">
         <uni-icons type="cart-filled" size="18" color="#ffffff" />
-        <text class="checkout-text">去结算</text>
+        <text class="checkout-text">{{ t('去结算') }}</text>
       </view>
     </view>
   </view>
@@ -117,7 +117,9 @@ import {
   updateMallCartItem,
 } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
 const statusBarHeight = ref(20);
@@ -211,7 +213,7 @@ function loadCart() {
           if (!item) return;
           cartItems.push({
             id: item.id,
-            title: item.product?.name ?? '商品',
+            title: item.product?.name ?? t('商品'),
             price: Number(item.product?.sale_price ?? 0),
             qty: Number(item.quantity ?? 1),
             img: item.product?.images?.[0]?.url ?? '/static/img/empty.svg',
@@ -222,7 +224,7 @@ function loadCart() {
         if (cartItems.length > 0) {
           shopMap[shopId] = {
             id: shopId,
-            name: shopInfo.name ?? '店铺',
+            name: shopInfo.name ?? t('店铺'),
             checked: false,
             items: cartItems,
           };
@@ -233,11 +235,11 @@ function loadCart() {
       if (!Object.keys(shopMap).length && items.length) {
         shopMap[0] = {
           id: 0,
-          name: '购物车',
+          name: t('购物车'),
           checked: false,
           items: items.map((item: any) => ({
             id: item.id,
-            title: item.product?.name ?? '商品',
+            title: item.product?.name ?? t('商品'),
             price: Number(item.product?.sale_price ?? 0),
             qty: Number(item.quantity ?? 1),
             img: item.product?.images?.[0]?.url ?? '/static/img/empty.svg',
@@ -249,7 +251,7 @@ function loadCart() {
       shops.value = Object.values(shopMap);
     })
     .catch((e) => {
-      console.error('加载购物车失败', e);
+      console.error(t('加载购物车失败'), e);
       shops.value = [];
     });
 }
@@ -282,10 +284,10 @@ function toggleSelectAll() {
 function decreaseQty(shop: CartShop, item: CartItem) {
   if (item.qty <= 1) {
     uni.showModal({
-      title: '提示',
-      content: '是否删除该商品？',
-      confirmText: '删除',
-      cancelText: '取消',
+      title: t('提示'),
+      content: t('是否删除该商品？'),
+      confirmText: t('删除'),
+      cancelText: t('取消'),
       success: (res) => {
         if (!res.confirm) return;
         deleteMallCartItem(item.id)
@@ -300,7 +302,7 @@ function decreaseQty(shop: CartShop, item: CartItem) {
             }
           })
           .catch(() => {
-            uni.showToast({ title: '删除失败', icon: 'none' });
+            uni.showToast({ title: t('删除失败'), icon: 'none' });
           });
       },
     });
@@ -312,7 +314,7 @@ function decreaseQty(shop: CartShop, item: CartItem) {
       item.qty = next;
     })
     .catch(() => {
-      uni.showToast({ title: '更新数量失败', icon: 'none' });
+      uni.showToast({ title: t('更新数量失败'), icon: 'none' });
     });
 }
 
@@ -323,37 +325,37 @@ function increaseQty(_shop: CartShop, item: CartItem) {
       item.qty = next;
     })
     .catch(() => {
-      uni.showToast({ title: '更新数量失败', icon: 'none' });
+      uni.showToast({ title: t('更新数量失败'), icon: 'none' });
     });
 }
 
 function onDeleteSelected() {
   const ids = allItems.value.filter((i) => i.checked).map((i) => i.id);
   if (!ids.length) {
-    uni.showToast({ title: '请先选择要删除的商品', icon: 'none' });
+    uni.showToast({ title: t('请先选择要删除的商品'), icon: 'none' });
     return;
   }
   uni.showModal({
-    title: '提示',
-    content: `确定删除已选 ${ids.length} 件商品？`,
-    confirmText: '删除',
-    cancelText: '取消',
+    title: t('提示'),
+    content: `${t('确定删除已选')} ${ids.length} ${t('件商品？')}`,
+    confirmText: t('删除'),
+    cancelText: t('取消'),
     success: (res) => {
       if (!res.confirm) return;
       deleteMallCartItems(ids)
         .then(() => {
-          uni.showToast({ title: '已删除', icon: 'none' });
+          uni.showToast({ title: t('已删除'), icon: 'none' });
           loadCart();
         })
         .catch(() => {
-          uni.showToast({ title: '删除失败', icon: 'none' });
+          uni.showToast({ title: t('删除失败'), icon: 'none' });
         });
     },
   });
 }
 
 function onDiscountTip() {
-  uni.showToast({ title: '优惠活动即将上线', icon: 'none' });
+  uni.showToast({ title: t('优惠活动即将上线'), icon: 'none' });
 }
 
 function goHome() {
@@ -372,7 +374,7 @@ function pickCreatedOrder(res: any): MallOrder | null {
 
 async function onCheckout() {
   if (!totalPrice.value) {
-    uni.showToast({ title: '请先选择要结算的商品', icon: 'none' });
+    uni.showToast({ title: t('请先选择要结算的商品'), icon: 'none' });
     return;
   }
 
@@ -385,7 +387,7 @@ async function onCheckout() {
       if (item.checked) {
         if (currentShopId === null) currentShopId = shop.id;
         if (currentShopId !== shop.id) {
-          uni.showToast({ title: '请选择同一店铺的商品', icon: 'none' });
+          uni.showToast({ title: t('请选择同一店铺的商品'), icon: 'none' });
           return;
         }
         selectedItems.push(item);
@@ -395,19 +397,19 @@ async function onCheckout() {
   }
 
   if (!selectedItems.length || currentShopId === null) {
-    uni.showToast({ title: '请先选择要结算的商品', icon: 'none' });
+    uni.showToast({ title: t('请先选择要结算的商品'), icon: 'none' });
     return;
   }
 
   try {
-    uni.showLoading({ title: '下单中...' });
+    uni.showLoading({ title: t('下单中...') });
 
     const addrRes: any = await getUserAddresses();
     const addresses: UserAddress[] = addrRes?.data || addrRes || [];
     const defaultAddr = addresses.find((a) => a.is_default) || addresses[0];
     if (!defaultAddr?.id) {
       uni.hideLoading();
-      uni.showToast({ title: '请先添加收货地址', icon: 'none' });
+      uni.showToast({ title: t('请先添加收货地址'), icon: 'none' });
       setTimeout(() => {
         uni.navigateTo({ url: '/pages/address/add' });
       }, 800);
@@ -425,7 +427,7 @@ async function onCheckout() {
     const orderAmount = createdOrder?.total_amount || String(totalPrice.value);
 
     if (!orderId) {
-      uni.showToast({ title: '下单成功，请到订单页付款', icon: 'none' });
+      uni.showToast({ title: t('下单成功，请到订单页付款'), icon: 'none' });
       setTimeout(() => {
         uni.navigateTo({ url: '/pages/order/order?status=pending' });
       }, 500);
@@ -433,23 +435,23 @@ async function onCheckout() {
     }
 
     uni.showModal({
-      title: '确认付款',
-      content: `确认使用钱包支付订单？\n金额：￥${orderAmount}`,
-      confirmText: '付款',
-      cancelText: '取消',
+      title: t('确认付款'),
+      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}￥${orderAmount}`,
+      confirmText: t('付款'),
+      cancelText: t('取消'),
       success: async (r) => {
         if (!r.confirm) {
-          uni.showToast({ title: '已创建订单', icon: 'none' });
+          uni.showToast({ title: t('已创建订单'), icon: 'none' });
           setTimeout(() => {
             uni.navigateTo({ url: '/pages/order/order?status=pending' });
           }, 300);
           return;
         }
         try {
-          uni.showLoading({ title: '支付中...' });
+          uni.showLoading({ title: t('支付中...') });
           await payMallOrder(orderId, { payment_method: 'wallet' });
           uni.hideLoading();
-          uni.showToast({ title: '支付成功', icon: 'none' });
+          uni.showToast({ title: t('支付成功'), icon: 'none' });
           setTimeout(() => {
             uni.navigateTo({ url: '/pages/order/order?status=paid' });
           }, 300);
@@ -460,7 +462,7 @@ async function onCheckout() {
     });
   } catch (e) {
     uni.hideLoading();
-    console.error('结算下单失败', e);
+    console.error(t('结算下单失败'), e);
   }
 }
 </script>

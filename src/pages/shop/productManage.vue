@@ -9,12 +9,12 @@
         <uni-icons type="search" size="18" color="#c7c7c7" />
         <input
           class="search-input"
-          placeholder="请输入商品名"
+          :placeholder="t('请输入商品名')"
           v-model="keyword"
           @confirm="onSearch"
         />
       </view>
-      <button class="header-search-btn" @click="onSearch">搜索</button>
+      <button class="header-search-btn" @click="onSearch">{{ t('搜索') }}</button>
     </view>
 
     <!-- 商品列表 -->
@@ -27,12 +27,12 @@
         <image class="product-img" :src="prefixUrl + product.product.images?.[0]?.url" mode="aspectFill" />
         <view class="product-info">
           <text class="product-name breakcss">{{ product.product.name }}</text>
-          <text class="product-stock">库存: {{ product.product.display_stock }}</text>
+          <text class="product-stock">{{ t('库存:') }}{{ product.product.display_stock }}</text>
           <view class="product-bottom">
-            <text class="product-price">批发价: ￥ {{ product.product.original_price }}</text>
+            <text class="product-price">{{ t('批发价: ￥') }}{{ product.product.original_price }}</text>
             <view class="product-actions">
               <button class="btn-listed" :class="{ 'btn-listed--active': product.product.status === 'published' }">
-                {{ product.product.status === 'published' ? '已上架' : '未上架' }}
+                {{ product.product.status === 'published' ? t('已上架') : t('未上架') }}
               </button>
               <button class="btn-add" @click="onAddClick(product)">add</button>
             </view>
@@ -42,18 +42,18 @@
 
       <!-- 加载更多提示 -->
       <view v-if="loading" class="loading-more">
-        <text class="loading-text">加载中...</text>
+        <text class="loading-text">{{ t('加载中...') }}</text>
       </view>
 
       <!-- 没有更多数据提示 -->
       <view v-if="!hasMore && products.length > 0" class="no-more">
-        <text class="no-more-text">没有更多了</text>
+        <text class="no-more-text">{{ t('没有更多了') }}</text>
       </view>
 
       <!-- 空状态 -->
       <view v-if="!products.length && !loading" class="empty">
         <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-        <text class="empty-text">暂无商品</text>
+        <text class="empty-text">{{ t('暂无商品') }}</text>
       </view>
     </view>
 
@@ -71,12 +71,12 @@
           <text class="sheet-price">￥{{ formatPrice(currentProduct?.product?.sale_price ?? currentProduct?.product?.original_price) }}</text>
         </view>
         <view class="sheet-stock">
-          <text class="sheet-stock-text">库存：{{ currentProduct?.product?.stock ?? 0 }}</text>
+          <text class="sheet-stock-text">{{ t('库存：') }}{{ currentProduct?.product?.stock ?? 0 }}</text>
         </view>
       </view>
 
       <view class="sheet-row">
-        <text class="sheet-row-label">数量</text>
+        <text class="sheet-row-label">{{ t('数量') }}</text>
         <view class="qty">
           <button class="qty-btn" @click="decQty" :disabled="configQty <= 1">－</button>
           <view class="qty-num">{{ configQty }}</view>
@@ -85,8 +85,8 @@
       </view>
 
       <view class="sheet-actions">
-        <button class="sheet-btn sheet-btn--close" @click="closeConfigSheet" :disabled="submitting">关闭</button>
-        <button class="sheet-btn sheet-btn--ok" @click="confirmConfig" :disabled="submitting">确认</button>
+        <button class="sheet-btn sheet-btn--close" @click="closeConfigSheet" :disabled="submitting">{{ t('关闭') }}</button>
+        <button class="sheet-btn sheet-btn--ok" @click="confirmConfig" :disabled="submitting">{{ t('确认') }}</button>
       </view>
     </view>
   </view>
@@ -103,6 +103,9 @@ import {
 } from '@/api/myshop';
 import globalTool from '@/utils/globalTool';
 import { useUserStore } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
   const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
 const products = ref<MyShopProduct[]>([]);
@@ -149,8 +152,8 @@ async function loadProducts(reset: boolean = false) {
       page.value += 1;
     }
   } catch (e) {
-    console.error('加载商品列表失败', e);
-    uni.showToast({ title: '加载失败', icon: 'none' });
+    console.error(t('加载商品列表失败'), e);
+    uni.showToast({ title: t('加载失败'), icon: 'none' });
   } finally {
     loading.value = false;
   }
@@ -219,11 +222,11 @@ async function confirmConfig() {
     await updateMyShopProductDisplayConfig(Number(currentProduct.value.product.id), {
       custom_stock: Number(configQty.value),
     });
-    globalTool.showToast('已保存', false, 'success');
+    globalTool.showToast(t('已保存'), false, 'success');
     closeConfigSheet();
   } catch (e) {
-    console.error('保存失败', e);
-    globalTool.showToast('保存失败，请稍后重试', false, 'none');
+    console.error(t('保存失败'), e);
+    globalTool.showToast(t('保存失败，请稍后重试'), false, 'none');
   }
 }
 

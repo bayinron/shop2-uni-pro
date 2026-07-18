@@ -1,3 +1,4 @@
+import { storeToRefs } from 'pinia';
 import { useI18nStoreHook, type SupportedLanguage } from '@/stores/modules/i18nStore';
 
 /**
@@ -68,25 +69,26 @@ export class I18nUtils {
  */
 export function useI18n() {
     const i18nStore = useI18nStoreHook();
+    const { currentLanguage, currentLanguageInfo, supportedLanguages } = storeToRefs(i18nStore);
 
     return {
         // 翻译函数
         t: i18nStore.t,
-        
-        // 当前语言
-        currentLanguage: i18nStore.currentLanguage,
-        
+
+        // 当前语言（保持响应式）
+        currentLanguage,
+
         // 当前语言信息
-        currentLanguageInfo: i18nStore.currentLanguageInfo,
-        
+        currentLanguageInfo,
+
         // 支持的语言列表
-        supportedLanguages: i18nStore.supportedLanguages,
-        
+        supportedLanguages,
+
         // 切换语言
         setLanguage: i18nStore.setLanguage,
-        
+
         // 检查语言支持
-        isLanguageSupported: i18nStore.isLanguageSupported
+        isLanguageSupported: i18nStore.isLanguageSupported,
     };
 }
 
@@ -105,5 +107,4 @@ export const $setLang = I18nUtils.setLanguage;
  * 获取当前语言函数
  */
 export const $getLang = I18nUtils.getCurrentLanguage;
-export  {type SupportedLanguage };
-
+export { type SupportedLanguage };

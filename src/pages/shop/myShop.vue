@@ -9,7 +9,7 @@
         </view>
         <view class="my-shop-user-info">
           <view class="my-shop-id-row">
-            <text class="my-shop-id-label">ID：</text>
+            <text class="my-shop-id-label">{{ t('ID：') }}</text>
             <text class="my-shop-id-value">{{ userInfo.id }}</text>
           </view>
           <view class="my-shop-name-row">
@@ -28,28 +28,28 @@
       <!-- 我的订单 -->
       <view class="my-shop-card my-shop-card--order">
         <view class="card-header">
-          <text class="card-title">我的订单</text>
+          <text class="card-title">{{ t('我的订单') }}</text>
           <view class="card-link" @click="goAllOrders">
-            <text class="card-link-text">全部订单</text>
+            <text class="card-link-text">{{ t('全部订单') }}</text>
             <uni-icons type="right" size="18" color="#999" />
           </view>
         </view>
         <view class="order-icons">
           <view class="order-icon-item" @click="goOrderByStatus('pending')">
             <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
-            <text class="order-icon-text">待付款</text>
+            <text class="order-icon-text">{{ t('待付款') }}</text>
           </view>
           <view class="order-icon-item" @click="goOrderByStatus('paid')">
             <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
-            <text class="order-icon-text">待发货</text>
+            <text class="order-icon-text">{{ t('待发货') }}</text>
           </view>
           <view class="order-icon-item" @click="goOrderByStatus('processing')">
             <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
-            <text class="order-icon-text">待收货</text>
+            <text class="order-icon-text">{{ t('待收货') }}</text>
           </view>
           <view class="order-icon-item" @click="goOrderByStatus('completed')">
             <image class="order-icon-img" src="/static/img/my_8.png" mode="aspectFill" />
-            <text class="order-icon-text">已完成</text>
+            <text class="order-icon-text">{{ t('已完成') }}</text>
           </view>
         </view>
       </view>
@@ -57,15 +57,15 @@
       <!-- 我的钱包 -->
       <view class="my-shop-card my-shop-card--wallet">
         <view class="card-header">
-          <text class="card-title">我的钱包</text>
+          <text class="card-title">{{ t('我的钱包') }}</text>
           <view class="card-link" @click="goWallet">
-            <text class="card-link-text">进入钱包</text>
+            <text class="card-link-text">{{ t('进入钱包') }}</text>
             <uni-icons type="right" size="18" color="#999" />
           </view>
         </view>
         <view class="wallet-body">
           <view class="wallet-labels">
-            <text class="wallet-label">余额</text>
+            <text class="wallet-label">{{ t('余额') }}</text>
           </view>
           <view class="wallet-amount">
             <text class="wallet-currency">￥</text>
@@ -81,55 +81,55 @@
 
       <!-- 必备工具 -->
       <view class="tools-card">
-        <text class="tools-title">必备工具</text>
+        <text class="tools-title">{{ t('必备工具') }}</text>
         <view class="tools-grid">
           <view class="tool-item" @click="onToolClick('invite')">
             <view class="tool-icon">
               <uni-icons type="email" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">邀请好友</text>
+            <text class="tool-text">{{ t('邀请好友') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('address')">
             <view class="tool-icon">
               <uni-icons type="location" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">收货地址</text>
+            <text class="tool-text">{{ t('收货地址') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('order')">
             <view class="tool-icon">
               <uni-icons type="list" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">订单管理</text>
+            <text class="tool-text">{{ t('订单管理') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('service')">
             <view class="tool-icon">
               <uni-icons type="chatbubble" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">联系客服</text>
+            <text class="tool-text">{{ t('联系客服') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('wholesale')">
             <view class="tool-icon">
               <uni-icons type="shop" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">批发中心</text>
+            <text class="tool-text">{{ t('批发中心') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('product')">
             <view class="tool-icon">
               <uni-icons type="gift" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">商品管理</text>
+            <text class="tool-text">{{ t('商品管理') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('password')">
             <view class="tool-icon">
               <uni-icons type="locked" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">{{ userInfo.has_withdraw_password ? '修改支付密码' : '设置支付密码' }}</text>
+            <text class="tool-text">{{ userInfo.has_withdraw_password ? t('修改支付密码') : t('设置支付密码') }}</text>
           </view>
           <view class="tool-item" @click="onToolClick('logout')">
             <view class="tool-icon">
               <uni-icons type="loop" size="40" color="#ff6b9d" />
             </view>
-            <text class="tool-text">退出登录</text>
+            <text class="tool-text">{{ t('退出登录') }}</text>
           </view>
         </view>
       </view>
@@ -141,6 +141,9 @@
 import { computed } from 'vue';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
 const userBalance = computed(() =>
@@ -170,7 +173,7 @@ function goWallet() {
 
 function onToolClick(type: string) {
   if (type === 'invite') {
-    uni.showToast({ title: '邀请好友功能开发中', icon: 'none' });
+    uni.showToast({ title: t('邀请好友功能开发中'), icon: 'none' });
   } else if (type === 'address') {
     uni.navigateTo({
       url: '/pages/address/list',

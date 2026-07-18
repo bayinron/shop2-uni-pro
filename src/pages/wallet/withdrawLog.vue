@@ -20,7 +20,7 @@
       <!-- 已加载完毕 -->
       <view class="list-footer">
         <view class="line" />
-        <text class="footer-text">已加载完毕</text>
+        <text class="footer-text">{{ t('已加载完毕') }}</text>
         <view class="line" />
       </view>
     </view>
@@ -32,6 +32,9 @@ import { ref } from 'vue';
 import { getWalletWithdrawals, type WalletWithdrawalListItem } from '@/api/pay';
 import { onLoad } from '@dcloudio/uni-app';
 
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const logs = ref<WalletWithdrawalListItem[]>([]);
 
 async function loadLogs() {
@@ -44,8 +47,8 @@ async function loadLogs() {
     const list = res?.list || res?.data?.list || res?.data || res || [];
     logs.value = list as WalletWithdrawalListItem[];
   } catch (e) {
-    console.error('加载提现日志失败', e);
-    uni.showToast({ title: '加载失败', icon: 'none' });
+    console.error(t('加载提现日志失败'), e);
+    uni.showToast({ title: t('加载失败'), icon: 'none' });
   }
 }
 

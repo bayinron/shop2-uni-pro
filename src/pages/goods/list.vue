@@ -7,7 +7,7 @@
         <input
           class="search-input"
           v-model="keyword"
-          placeholder="请输入产品名称"
+          :placeholder="t('请输入产品名称')"
           confirm-type="search"
           @confirm="onSearchConfirm"
         />
@@ -22,15 +22,15 @@
           <text class="card-title breakcss">{{ productName(p) }}</text>
           <view class="card-row">
             <text class="price">￥ {{ productPrice(p) }}</text>
-            <view class="buy-btn">购买</view>
+            <view class="buy-btn">{{ t('购买') }}</view>
           </view>
         </view>
       </view>
     </view>
 
     <view class="footer">
-      <text v-if="loading">加载中...</text>
-      <text v-else-if="!hasMore">没有更多了</text>
+      <text v-if="loading">{{ t('加载中...') }}</text>
+      <text v-else-if="!hasMore">{{ t('没有更多了') }}</text>
     </view>
   </view>
 </template>
@@ -40,7 +40,9 @@ import { ref, computed } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getMallProductList } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
 
@@ -98,7 +100,7 @@ function loadMore() {
 }
 
 function productName(p: any) {
-  return p?.product?.name ?? p?.name ?? '商品';
+  return p?.product?.name ?? p?.name ?? t('商品');
 }
 
 function productCover(p: any) {

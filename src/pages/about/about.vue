@@ -1,30 +1,34 @@
 <template>
   <view class="about-page">
     <view class="card">
-      <text class="title">关于我们</text>
+      <text class="title">{{ t('关于我们') }}</text>
       <text class="desc">
-        我们是一个专注于日常购物体验的平台，提供商品浏览、下单、支付、订单管理等基础服务。
+        {{ t('我们是一个专注于日常购物体验的平台，提供商品浏览、下单、支付、订单管理等基础服务。') }}
       </text>
     </view>
 
     <view class="card">
-      <text class="section-title">我们的服务</text>
-      <text class="line">- 商品搜索与分类浏览</text>
-      <text class="line">- 购物车与快速下单</text>
-      <text class="line">- 在线支付与订单跟踪</text>
-      <text class="line">- 商家入驻与店铺管理</text>
+      <text class="section-title">{{ t('我们的服务') }}</text>
+      <text class="line">- {{ t('商品搜索与分类浏览') }}</text>
+      <text class="line">- {{ t('购物车与快速下单') }}</text>
+      <text class="line">- {{ t('在线支付与订单跟踪') }}</text>
+      <text class="line">- {{ t('商家入驻与店铺管理') }}</text>
     </view>
 
     <view class="card">
-      <text class="section-title">联系方式</text>
-      <text class="line">客服邮箱：support@example.com</text>
-      <text class="line">客服时间：09:00 - 21:00</text>
-      <button class="btn" @click="goService">联系客服</button>
+      <text class="section-title">{{ t('联系方式') }}</text>
+      <text class="line">{{ t('客服邮箱：support@example.com') }}</text>
+      <text class="line">{{ t('客服时间：09:00 - 21:00') }}</text>
+      <button class="btn" @click="goService">{{ t('联系客服') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
+
 function goService() {
   uni.navigateTo({
     url: '/pages/service/index?url=' + encodeURIComponent('https://www.baidu.com'),

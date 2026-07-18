@@ -9,7 +9,8 @@ declare module '*.vue' {
 
 interface ImportMetaEnv {
   readonly VITE_APP_BASE_URL: string
-  // Add other env variables here as needed
+  /** 默认语言：th / 泰语 / zh / 中文 */
+  readonly VITE_APP_LANG: string
 }
 
 interface ImportMeta {

@@ -6,34 +6,34 @@
     <!-- 表单区域 -->
     <view class="form-card">
       <view class="form-item" v-if="!first">
-        <text class="form-label">原密码</text>
+        <text class="form-label">{{ t('原密码') }}</text>
         <input
           class="form-input"
           type="password"
           v-model="form.oldPwd"
-          placeholder="请输入原密码"
+          :placeholder="t('请输入原密码')"
           placeholder-class="form-input-placeholder"
         />
       </view>
 
       <view class="form-item">
-        <text class="form-label">新密码</text>
+        <text class="form-label">{{ t('新密码') }}</text>
         <input
           class="form-input"
           type="password"
           v-model="form.newPwd"
-          placeholder="请输入新密码"
+          :placeholder="t('请输入新密码')"
           placeholder-class="form-input-placeholder"
         />
       </view>
 
       <view class="form-item no-border">
-        <text class="form-label">确认密码</text>
+        <text class="form-label">{{ t('确认密码') }}</text>
         <input
           class="form-input"
           type="password"
           v-model="form.confirmPwd"
-          placeholder="请确认新密码"
+          :placeholder="t('请确认新密码')"
           placeholder-class="form-input-placeholder"
         />
       </view>
@@ -41,15 +41,20 @@
 
     <!-- 底部确认按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSubmit">确认</button>
+      <button class="submit-btn" @click="onSubmit">{{ t('确认') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { updateWithdrawPassword, type UpdateWithdrawPasswordPayload } from '@/api/auth';
 import globalTool from '@/utils/globalTool';
+
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const first = ref(false);
 const form = ref({
   oldPwd: '',
@@ -63,19 +68,19 @@ onLoad((options :any) => {
 });
 async function onSubmit() {
   if (!first.value && !form.value.oldPwd.trim()) {
-    uni.showToast({ title: '请输入原密码', icon: 'none' });
+    uni.showToast({ title: t('请输入原密码'), icon: 'none' });
     return;
   }
   if (!form.value.newPwd.trim()) {
-    uni.showToast({ title: '请输入新密码', icon: 'none' });
+    uni.showToast({ title: t('请输入新密码'), icon: 'none' });
     return;
   }
   if (form.value.newPwd.length < 6) {
-    uni.showToast({ title: '新密码至少6位', icon: 'none' });
+    uni.showToast({ title: t('新密码至少6位'), icon: 'none' });
     return;
   }
   if (form.value.newPwd !== form.value.confirmPwd) {
-    uni.showToast({ title: '两次输入的新密码不一致', icon: 'none' });
+    uni.showToast({ title: t('两次输入的新密码不一致'), icon: 'none' });
     return;
   }
 
@@ -92,10 +97,10 @@ async function onSubmit() {
 
   try {
     await updateWithdrawPassword(payload);
-    globalTool.showToast('修改成功', true, 'success');
+    globalTool.showToast(t('修改成功'), true, 'success');
   } catch (e) {
     // 具体错误提示已在全局 http 拦截器中处理，这里只做兜底
-    console.error('修改提现密码失败', e);
+    console.error(t('修改提现密码失败'), e);
   }
 }
 </script>

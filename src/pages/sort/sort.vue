@@ -46,7 +46,7 @@
           class="cate-item cate-item--more"
           @click="toggleExpand"
         >
-          <text class="cate-text">{{ sidebarExpanded ? '收起' : '更多...' }}</text>
+          <text class="cate-text">{{ sidebarExpanded ? t('收起') : t('更多...') }}</text>
           <text class="cate-more-arrow">{{ sidebarExpanded ? '˄' : '˅' }}</text>
         </view>
       </scroll-view>
@@ -54,7 +54,7 @@
       <!-- 右侧内容 -->
       <scroll-view class="cate-right" scroll-y>
         <view class="right-header">
-          <text class="right-title">商品类型：{{ activeCateName }}</text>
+          <text class="right-title">{{ t('商品类型：') }}{{ activeCateName }}</text>
         </view>
 
         <!-- 子分类网格 -->
@@ -67,11 +67,11 @@
           >
             <image class="subcate-img" :src="cateImage(s)" mode="aspectFill" />
             <text class="subcate-name">{{ s.name }}</text>
-            <text class="subcate-count">商品数量：{{ formatCount(s.product_count ?? s.productCount) }} 件</text>
+            <text class="subcate-count">{{ t('商品数量：') }}{{ formatCount(s.product_count ?? s.productCount) }} {{ t('件') }}</text>
           </view>
           <view class="subcate-card subcate-card--more" @click="onViewAll">
             <uni-icons type="bottom" size="28" color="#9e9e9e" />
-            <text class="subcate-more-text">点击查看全部</text>
+            <text class="subcate-more-text">{{ t('点击查看全部') }}</text>
           </view>
         </view>
 
@@ -96,7 +96,7 @@
                   <text class="star">★</text>
                   <text class="rating-num">{{ productRating(p) }}</text>
                 </view>
-                <text class="product-sales">已售 {{ formatSold(productSold(p, idx)) }} 件</text>
+                <text class="product-sales">{{ t('已售') }} {{ formatSold(productSold(p, idx)) }} {{ t('件') }}</text>
               </view>
             </view>
           </view>
@@ -104,7 +104,7 @@
 
         <view class="empty" v-else>
           <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-          <text class="empty-text">该分类下暂无商品</text>
+          <text class="empty-text">{{ t('该分类下暂无商品') }}</text>
         </view>
       </scroll-view>
     </view>
@@ -116,10 +116,12 @@ import { computed, ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { getCategoryTree, getMallCart, getMallProductList } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
-const placeholderText = '搜索商品';
+const placeholderText = computed(() => t('搜索商品'));
 const statusBarHeight = ref(20);
 const cartCount = ref(0);
 
@@ -205,7 +207,7 @@ function formatPrice(price: any) {
 }
 
 function formatSold(n: number) {
-  if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '万';
+  if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + t('万');
   if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
   return String(n);
 }

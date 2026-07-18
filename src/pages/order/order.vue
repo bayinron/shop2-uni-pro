@@ -31,7 +31,7 @@
         >
           <!-- 订单头部 -->
           <view class="order-card-header">
-            <text class="order-no">订单号：{{ order.no }}</text>
+            <text class="order-no">{{ t('订单号：') }}{{ order.no }}</text>
             <text class="order-status" :class="`order-status--${order.status}`">
               {{ order.statusText }}
             </text>
@@ -67,7 +67,7 @@
           <view class="order-card-footer">
             <text class="order-time">{{ order.time }}</text>
             <view class="order-total">
-              <text class="total-label">合计：</text>
+              <text class="total-label">{{ t('合计：') }}</text>
               <text class="total-price">￥{{ order.total }}</text>
             </view>
           </view>
@@ -92,7 +92,7 @@
         <view class="empty-icon">
           <text class="icon iconfont icon-gouwuche"></text>
         </view>
-        <text class="empty-text">暂无订单</text>
+        <text class="empty-text">{{ t('暂无订单') }}</text>
       </view>
     </view>
   </view>
@@ -110,8 +110,11 @@ import {
   type MallOrderListResponse,
 } from '@/api/mall';
 import { useUserStore } from '@/stores/modules/userStore';
-const prefixUrl = computed(() => userStore.prefixUrl);
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
 // 本页面展示用的订单状态子集
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed';
 
@@ -154,11 +157,11 @@ type StatusState = {
 
 type StatusStateMap = Record<OrderStatus, StatusState>;
 
-const orderTabs = ref<Array<{ key: OrderStatus; text: string }>>([
-  { key: 'pending', text: '待付款' },
-  { key: 'paid', text: '待发货' },
-  { key: 'processing', text: '待收货' },
-  { key: 'completed', text: '已完成' },
+const orderTabs = computed(() => [
+  { key: 'pending' as OrderStatus, text: t('待付款') },
+  { key: 'paid' as OrderStatus, text: t('待发货') },
+  { key: 'processing' as OrderStatus, text: t('待收货') },
+  { key: 'completed' as OrderStatus, text: t('已完成') },
 ]);
 
 const activeTab = ref<OrderStatus>('pending');
@@ -175,15 +178,18 @@ const currentOrders = computed(() => {
   return statusState.value[activeTab.value].list;
 });
 
-const statusTextMap: Record<string, string> = {
-  pending: '待付款',
-  paid: '待发货',
-  processing: '备货中',
-  shipped: '已发货',
-  delivered: '待确认',
-  completed: '已完成',
-  cancelled: '已取消',
-};
+function getStatusText(status: string) {
+  const map: Record<string, string> = {
+    pending: t('待付款'),
+    paid: t('待发货'),
+    processing: t('备货中'),
+    shipped: t('已发货'),
+    delivered: t('待确认'),
+    completed: t('已完成'),
+    cancelled: t('已取消'),
+  };
+  return map[status] || status || '';
+}
 
 function removeOrderFromState(status: OrderStatus, orderId: number) {
   const state = statusState.value[status];
@@ -195,18 +201,18 @@ function buildActions(order: MallOrder): OrderAction[] {
   const actions: OrderAction[] = [];
   if (order.status === 'pending') {
     actions.push(
-      { key: 'cancel', text: '取消订单', type: 'default' },
-      { key: 'pay', text: '立即付款', type: 'primary' },
+      { key: 'cancel', text: t('取消订单'), type: 'default' },
+      { key: 'pay', text: t('立即付款'), type: 'primary' },
     );
   } else if (order.status === 'paid' || order.status === 'processing') {
-    actions.push({ key: 'contact', text: '联系客服', type: 'default' });
+    actions.push({ key: 'contact', text: t('联系客服'), type: 'default' });
   } else if (order.status === 'shipped' || order.status === 'delivered') {
     actions.push(
-      { key: 'track', text: '查看物流', type: 'default' },
-      { key: 'confirm', text: '确认收货', type: 'primary' },
+      { key: 'track', text: t('查看物流'), type: 'default' },
+      { key: 'confirm', text: t('确认收货'), type: 'primary' },
     );
   } else if (order.status === 'completed') {
-    actions.push({ key: 'track', text: '查看物流', type: 'default' });
+    actions.push({ key: 'track', text: t('查看物流'), type: 'default' });
   }
   return actions;
 }
@@ -228,14 +234,14 @@ function orderItemImg(img?: string | null) {
 
 function normalizeOrder(order: MallOrder): ViewOrder {
   const items: OrderItem[] = (order.items || []).map((it) => ({
-    name: it.product_name || '商品',
+    name: it.product_name || t('商品'),
     img: it.product_image_url || it.product_image || '',
     price: it.total_price || it.unit_price || '0',
     quantity: it.quantity ?? 1,
     spec: it.sku || undefined,
   }));
 
-  const statusText = statusTextMap[order.status as string] || order.status || '';
+  const statusText = getStatusText(order.status as string);
   const shippingAddress = order.shipping_address || {};
   const receiverName = order.receiver_name || shippingAddress?.receiver_name || '';
   const receiverPhone = order.receiver_phone || shippingAddress?.receiver_phone || '';
@@ -310,7 +316,7 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
       };
     })
     .catch((err) => {
-      console.error('加载订单失败', err);
+      console.error(t('加载订单失败'), err);
     })
     .finally(() => {
       statusState.value = {
@@ -346,31 +352,31 @@ function onOrderClick(order: ViewOrder) {
 
 function onActionClick(order: ViewOrder, action: OrderAction) {
   const actionMap: Record<OrderAction['key'], string> = {
-    cancel: '取消订单',
-    pay: '立即付款',
-    contact: '联系客服',
-    track: '查看物流',
-    confirm: '确认收货',
+    cancel: t('取消订单'),
+    pay: t('立即付款'),
+    contact: t('联系客服'),
+    track: t('查看物流'),
+    confirm: t('确认收货'),
   };
 
   if (action.key === 'cancel') {
     uni.showModal({
-      title: '提示',
-      content: '确定要取消该订单吗？',
-      confirmText: '确定',
-      cancelText: '再想想',
+      title: t('提示'),
+      content: t('确定要取消该订单吗？'),
+      confirmText: t('确定'),
+      cancelText: t('再想想'),
       success: async (r) => {
         if (!r.confirm) return;
         try {
-          uni.showLoading({ title: '取消中...' });
+          uni.showLoading({ title: t('取消中...') });
           await cancelMallOrder(order.id);
           uni.hideLoading();
-          uni.showToast({ title: '已取消', icon: 'none' });
+          uni.showToast({ title: t('已取消'), icon: 'none' });
           // 本地直接移除，避免整页刷新
           removeOrderFromState(activeTab.value, order.id);
         } catch (e) {
           uni.hideLoading();
-          uni.showToast({ title: '取消失败', icon: 'none' });
+          uni.showToast({ title: t('取消失败'), icon: 'none' });
         }
       },
     });
@@ -379,17 +385,17 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
 
   if (action.key === 'pay') {
     uni.showModal({
-      title: '确认付款',
-      content: `确认使用钱包支付订单？\n金额：￥${order.total}`,
-      confirmText: '付款',
-      cancelText: '取消',
+      title: t('确认付款'),
+      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}￥${order.total}`,
+      confirmText: t('付款'),
+      cancelText: t('取消'),
       success: async (r) => {
         if (!r.confirm) return;
         try {
-          uni.showLoading({ title: '支付中...' });
+          uni.showLoading({ title: t('支付中...') });
           await payMallOrder(order.id, { payment_method: 'wallet' });
           uni.hideLoading();
-          uni.showToast({ title: '支付成功', icon: 'none' });
+          uni.showToast({ title: t('支付成功'), icon: 'none' });
           // 先从待付款列表移除，避免切回看到旧数据
           removeOrderFromState('pending', order.id);
           // 自动跳到「待发货/已付款」并刷新
@@ -397,14 +403,14 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
           loadOrders('paid', false);
         } catch (e) {
           uni.hideLoading();
-          uni.showToast({ title: '支付失败', icon: 'none' });
+          uni.showToast({ title: t('支付失败'), icon: 'none' });
         }
       },
     });
     return;
   }
 
-  uni.showToast({ title: `${actionMap[action.key]}（测试功能）`, icon: 'none' });
+  uni.showToast({ title: `${actionMap[action.key]}${t('（测试功能）')}`, icon: 'none' });
 }
 </script>
 

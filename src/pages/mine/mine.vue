@@ -2,7 +2,7 @@
   <view class="mine">
     <!-- 橙色头部 -->
     <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="header-title">我的账户</view>
+      <view class="header-title">{{ t('我的账户') }}</view>
 
       <view class="header-body">
         <view class="user-row" @click="onAvatarClick">
@@ -14,7 +14,7 @@
                 @click.stop="onEditUserInfo" />
             </view>
             <view class="level-row">
-              <text class="level-label">购物达人等级：</text>
+              <text class="level-label">{{ t('购物达人等级：') }}</text>
               <view class="level-pill" >
                 <text class="level-text">Classic</text>
                 <!-- <text class="level-arrow">›</text> -->
@@ -43,7 +43,7 @@
           <image class="vip-crown" src="/static/images/about_me/icon_vip_or_deco.png" mode="aspectFit" />
           <text class="vip-badge-text">VIP</text>
         </view>
-        <text class="vip-text">开通 VIP 享专属权益</text>
+        <text class="vip-text">{{ t('开通 VIP 享专属权益') }}</text>
         <!-- <text class="vip-arrow">›</text> -->
       </view>
     </view>
@@ -84,9 +84,9 @@
     <!-- 我的订单 -->
     <view class="order-card">
       <view class="order-header">
-        <text class="order-title">我的订单</text>
+        <text class="order-title">{{ t('我的订单') }}</text>
         <view class="order-link" @click="onViewAllOrders">
-          <text class="order-link-text">查看购买历史</text>
+          <text class="order-link-text">{{ t('查看购买历史') }}</text>
           <text class="order-link-arrow">›</text>
         </view>
       </view>
@@ -101,32 +101,32 @@
 
     <!-- 其他 -->
     <view class="others-card">
-      <text class="others-title">其他</text>
+      <text class="others-title">{{ t('其他') }}</text>
       <view class="others-grid">
         <view class="others-item" @click="onShopClick">
           <image class="others-icon" src="/static/images/about_me/icon_service_shop.png" mode="aspectFit" />
-          <text class="others-text">{{ userInfo.user_role == 'merchant' ? '我的店铺' : '开店铺' }}</text>
+          <text class="others-text">{{ userInfo.user_role == 'merchant' ? t('我的店铺') : t('开店铺') }}</text>
         </view>
         <view class="others-item" @click="addressClick">
           <image class="others-icon" src="/static/images/about_me/icon_service_address.png" mode="aspectFit" />
-          <text class="others-text">收货地址</text>
+          <text class="others-text">{{ t('收货地址') }}</text>
         </view>
         <view class="others-item" @click="onServiceClick">
           <image class="others-icon" src="/static/images/about_me/icon_service_contact.png" mode="aspectFit" />
-          <text class="others-text">联系我们</text>
+          <text class="others-text">{{ t('联系我们') }}</text>
         </view>
       </view>
     </view>
 
     <view v-if="isLoggedIn" class="exit-btn" @click="onExit">
-      <text class="exit-btn-text">退出登录</text>
+      <text class="exit-btn-text">{{ t('退出登录') }}</text>
     </view>
 
     <!-- 推荐商品 -->
     <view class="recommend-section">
       <view class="recommend-header">
         <image class="recommend-flame" src="/static/images/about_me/icon_section_flame.png" mode="aspectFit" />
-        <text class="recommend-title">推荐商品</text>
+        <text class="recommend-title">{{ t('推荐商品') }}</text>
       </view>
       <view class="recommend-grid">
         <view class="product-card" v-for="(p, idx) in recommendProducts" :key="p.id || idx" @click="onProductClick(p)">
@@ -138,7 +138,7 @@
         </view>
       </view>
       <view v-if="!recommendProducts.length" class="empty">
-        <text class="empty-text">暂无推荐商品</text>
+        <text class="empty-text">{{ t('暂无推荐商品') }}</text>
       </view>
     </view>
   </view>
@@ -149,7 +149,9 @@ import { computed, onUnmounted, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getMallCart, getMallProductList } from '@/api';
 import { useUserStoreHook } from '@/stores/modules/userStore';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const isLoggedIn = ref(false);
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
@@ -158,8 +160,8 @@ const statusBarHeight = ref(20);
 const cartCount = ref(0);
 
 const displayAccount = computed(() => {
-  if (!isLoggedIn.value) return '点击登录';
-  return userInfo.value.phone || userInfo.value.username || '用户';
+  if (!isLoggedIn.value) return t('点击登录');
+  return userInfo.value.phone || userInfo.value.username || t('用户');
 });
 
 const avatarSrc = computed(() => {
@@ -175,25 +177,25 @@ const avatarSrc = computed(() => {
 const orderMenus = computed(() => [
   {
     status: 'pending',
-    label: '待付款',
+    label: t('待付款'),
     icon: '/static/images/about_me/icon_order_pay.png',
     badge: orderCounts.value.pending || 0,
   },
   {
     status: 'paid',
-    label: '待发货',
+    label: t('待发货'),
     icon: '/static/images/about_me/icon_order_toship.png',
     badge: 0,
   },
   {
     status: 'processing',
-    label: '待收货',
+    label: t('待收货'),
     icon: '/static/images/about_me/icon_order_ship.png',
     badge: 0,
   },
   {
     status: 'completed',
-    label: '已完成',
+    label: t('已完成'),
     icon: '/static/images/about_me/icon_order_completed.png',
     badge: 0,
   },
@@ -264,17 +266,17 @@ function loadRecommend() {
       recommendProducts.value = res?.data?.list ?? res?.data?.data?.list ?? res?.data?.data ?? [];
       if (!recommendProducts.value.length) {
         recommendProducts.value = [
-          { id: 'a', title: '精选热卖商品 A', img: '/static/images/about_me/product_a.png' },
-          { id: 'b', title: '精选热卖商品 B', img: '/static/images/about_me/product_b.png' },
-          { id: 'c', title: '精选热卖商品 C', img: '/static/images/about_me/product_a.png' },
+          { id: 'a', title: t('精选热卖商品 A'), img: '/static/images/about_me/product_a.png' },
+          { id: 'b', title: t('精选热卖商品 B'), img: '/static/images/about_me/product_b.png' },
+          { id: 'c', title: t('精选热卖商品 C'), img: '/static/images/about_me/product_a.png' },
         ];
       }
     })
     .catch(() => {
       recommendProducts.value = [
-        { id: 'a', title: '精选热卖商品 A', img: '/static/images/about_me/product_a.png' },
-        { id: 'b', title: '精选热卖商品 B', img: '/static/images/about_me/product_b.png' },
-        { id: 'c', title: '精选热卖商品 C', img: '/static/images/about_me/product_a.png' },
+        { id: 'a', title: t('精选热卖商品 A'), img: '/static/images/about_me/product_a.png' },
+        { id: 'b', title: t('精选热卖商品 B'), img: '/static/images/about_me/product_b.png' },
+        { id: 'c', title: t('精选热卖商品 C'), img: '/static/images/about_me/product_a.png' },
       ];
     });
 }
@@ -304,7 +306,7 @@ function onSettings() {
     return;
   }
   uni.showActionSheet({
-    itemList: ['编辑资料', '充值', '退出登录'],
+    itemList: [t('编辑资料'), t('充值'), t('退出登录')],
     success: (res) => {
       if (res.tapIndex === 0) onEditUserInfo();
       else if (res.tapIndex === 1) {
@@ -323,7 +325,7 @@ function onEditUserInfo() {
 }
 
 function onVipClick() {
-  uni.showToast({ title: 'VIP 权益即将上线', icon: 'none' });
+  uni.showToast({ title: t('VIP 权益即将上线'), icon: 'none' });
 }
 
 function onViewAllOrders() {
@@ -371,7 +373,7 @@ function onShopClick() {
 function onProductClick(p: any) {
   const id = p?.product?.id ?? p?.product_id ?? p?.id;
   if (!id || String(id).length <= 1) {
-    uni.showToast({ title: '商品详情暂不可用', icon: 'none' });
+    uni.showToast({ title: t('商品详情暂不可用'), icon: 'none' });
     return;
   }
   uni.navigateTo({ url: '/pages/goodsDetail/goodsDetail?id=' + id });

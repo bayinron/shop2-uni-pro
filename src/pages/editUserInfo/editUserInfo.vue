@@ -3,19 +3,19 @@
     <view class="card">
       <!-- 昵称 -->
       <view class="row row-border">
-        <text class="label">昵称</text>
+        <text class="label">{{ t('昵称') }}</text>
         <input
           class="input"
           type="text"
           v-model="nickname"
-          placeholder="请输入昵称"
+          :placeholder="t('请输入昵称')"
           placeholder-class="input-placeholder"
         />
       </view>
 
       <!-- 头像 -->
       <view class="row avatar-row">
-        <text class="label">头像</text>
+        <text class="label">{{ t('头像') }}</text>
         <view class="avatar-wrap" @click="onChooseAvatar">
           <image
             v-if="avatar"
@@ -32,7 +32,7 @@
 
     <!-- 底部按钮 -->
     <view class="bottom-bar">
-      <button class="confirm-btn" @click="onConfirm">确定</button>
+      <button class="confirm-btn" @click="onConfirm">{{ t('确定') }}</button>
     </view>
   </view>
 </template>
@@ -43,7 +43,9 @@ import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import { authUpdateMe } from '@/api';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const userStore = useUserStoreHook();
 const userInfo = userStore.userInfo;
 
@@ -55,7 +57,7 @@ onLoad(() => {
 });
 
 function onChooseAvatar() {
-  uni.showToast({ title: '选择头像（测试功能）', icon: 'none' });
+  uni.showToast({ title: t('选择头像（测试功能）'), icon: 'none' });
   // 这里仅做演示，实际项目中可使用 uni.chooseImage
   // avatar.value = '/static/img/money-bag.png';
 }
@@ -65,7 +67,7 @@ function onConfirm() {
     real_name: nickname.value.trim(),
     avatar: avatar.value,
   }).then(() => {
-    globalTool.showToast('保存成功', true);
+    globalTool.showToast(t('保存成功'), true);
     userStore.reqUserInfo();
   });
 }

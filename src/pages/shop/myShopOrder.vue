@@ -20,11 +20,11 @@
         <input
           class="search-input"
           v-model="orderNo"
-          placeholder="搜索订单号"
+          :placeholder="t('搜索订单号')"
           confirm-type="search"
           @confirm="onSearch"
         />
-        <button class="search-btn" @click="onSearch">搜索</button>
+        <button class="search-btn" @click="onSearch">{{ t('搜索') }}</button>
       </view>
     </view>
 
@@ -33,14 +33,14 @@
       <view v-if="list.length > 0" class="order-list">
         <view v-for="o in list" :key="o.id" class="order-card">
           <view class="order-card-header">
-            <text class="order-no">订单号：{{ o.order_no }}</text>
+            <text class="order-no">{{ t('订单号：') }}{{ o.order_no }}</text>
             <text class="order-status" :class="`order-status--${o.status}`">
               {{ statusText(o.status) }}
             </text>
           </view>
 
           <view class="buyer-row">
-            <text class="buyer-label">买家：</text>
+            <text class="buyer-label">{{ t('买家：') }}</text>
             <text class="buyer-name">{{ o.buyer?.nickname || o.buyer?.username || '-' }}</text>
           </view>
 
@@ -61,20 +61,20 @@
           <view class="order-card-footer">
             <text class="order-time">{{ o.created_at }}</text>
             <view class="order-total">
-              <text class="total-label">合计：</text>
+              <text class="total-label">{{ t('合计：') }}</text>
               <text class="total-price">￥{{ o.total_amount }}</text>
             </view>
           </view>
         </view>
 
         <view class="list-footer">
-          <text v-if="loading">加载中...</text>
-          <text v-else-if="!hasMore">没有更多了</text>
+          <text v-if="loading">{{ t('加载中...') }}</text>
+          <text v-else-if="!hasMore">{{ t('没有更多了') }}</text>
         </view>
       </view>
 
       <view v-else class="empty-state">
-        <text class="empty-text">{{ loading ? '加载中...' : '暂无订单' }}</text>
+        <text class="empty-text">{{ loading ? t('加载中...') : t('暂无订单') }}</text>
       </view>
     </view>
   </view>
@@ -85,16 +85,19 @@ import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getMyShopOrders, type MyShopOrder, type MyShopOrderListResponse } from '@/api/myshop';
 
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 type StatusTabKey = '' | 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
 
-const tabs = ref<Array<{ key: StatusTabKey; text: string }>>([
-  { key: '', text: '全部' },
-  { key: 'pending', text: '待付款' },
-  { key: 'paid', text: '待发货' },
-  { key: 'processing', text: '备货中' },
-  { key: 'shipped', text: '已发货' },
-  { key: 'completed', text: '已完成' },
-  { key: 'cancelled', text: '已取消' },
+const tabs = computed(() => [
+  { key: '' as StatusTabKey, text: t('全部') },
+  { key: 'pending' as StatusTabKey, text: t('待付款') },
+  { key: 'paid' as StatusTabKey, text: t('待发货') },
+  { key: 'processing' as StatusTabKey, text: t('备货中') },
+  { key: 'shipped' as StatusTabKey, text: t('已发货') },
+  { key: 'completed' as StatusTabKey, text: t('已完成') },
+  { key: 'cancelled' as StatusTabKey, text: t('已取消') },
 ]);
 
 const activeStatus = ref<StatusTabKey>('');
@@ -106,18 +109,17 @@ const hasMore = ref(true);
 const loading = ref(false);
 const list = ref<MyShopOrder[]>([]);
 
-const statusTextMap: Record<string, string> = {
-  pending: '待付款',
-  paid: '待发货',
-  processing: '备货中',
-  shipped: '已发货',
-  delivered: '待确认',
-  completed: '已完成',
-  cancelled: '已取消',
-};
-
 function statusText(status: string) {
-  return statusTextMap[status] || status || '-';
+  const map: Record<string, string> = {
+    pending: t('待付款'),
+    paid: t('待发货'),
+    processing: t('备货中'),
+    shipped: t('已发货'),
+    delivered: t('待确认'),
+    completed: t('已完成'),
+    cancelled: t('已取消'),
+  };
+  return map[status] || status || '-';
 }
 
 function parseResponse(res: any): MyShopOrderListResponse {

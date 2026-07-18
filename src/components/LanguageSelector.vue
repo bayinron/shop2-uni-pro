@@ -25,55 +25,31 @@ const displayLanguageName = ref('');
 
 // 初始化当前语言索引
 const initLanguageIndex = () => {
-    const index = languageOptions.findIndex((lang) => lang.code === currentLanguage);
+    const index = languageOptions.value.findIndex((lang) => lang.code === currentLanguage.value);
     currentLanguageIndex.value = index >= 0 ? index : 0;
     updateDisplayLanguage();
 };
 
 // 更新显示的语言名称
 const updateDisplayLanguage = () => {
-    displayLanguageName.value = currentLanguageInfo.nativeName;
+    displayLanguageName.value = currentLanguageInfo.value.nativeName;
 };
 
 // 语言切换处理
 const onLanguageChange = (e: any) => {
     const index = e.detail.value;
     currentLanguageIndex.value = index;
-    const selectedLang = languageOptions[index];
+    const selectedLang = languageOptions.value[index];
     if (selectedLang) {
         setLanguage(selectedLang.code);
         // 立即更新显示
         displayLanguageName.value = selectedLang.nativeName;
-        // setTimeout(() => {
-        //     window.location.reload();
-        // }, 500);
-
-        // uni.setTabBarItem({
-        //     index: 0,
-        //     text: t('首页')
-        // });
-        // uni.setTabBarItem({
-        //     index: 1,
-        //     text: t('利息')
-        // });
-        // uni.setTabBarItem({
-        //     index: 2,
-        //     text: t('开始')
-        // });
-        // uni.setTabBarItem({
-        //     index: 3,
-        //     text: t('历史')
-        // });
-        // uni.setTabBarItem({
-        //     index: 4,
-        //     text: t('我的')
-        // });
     }
 };
 
 // 监听语言变化事件
 const handleLanguageChange = (lang: SupportedLanguage) => {
-    const index = languageOptions.findIndex((l) => l.code === lang);
+    const index = languageOptions.value.findIndex((l) => l.code === lang);
     if (index >= 0) {
         currentLanguageIndex.value = index;
         updateDisplayLanguage();
@@ -85,9 +61,9 @@ const handleLanguageChange = (lang: SupportedLanguage) => {
 
 // 监听 currentLanguage 变化，确保索引同步
 watch(
-    () => currentLanguage,
+    currentLanguage,
     (newLang) => {
-        const index = languageOptions.findIndex((l) => l.code === newLang);
+        const index = languageOptions.value.findIndex((l) => l.code === newLang);
         if (index >= 0) {
             currentLanguageIndex.value = index;
             updateDisplayLanguage();

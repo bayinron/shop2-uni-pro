@@ -16,7 +16,7 @@
           class="form-input"
           :type="field.type === 'number' ? 'number' : 'text'"
           v-model="form[field.key]"
-          :placeholder="field.placeholder || `请输入${field.label}`"
+          :placeholder="field.placeholder || (t('请输入') + field.label)"
           placeholder-class="form-input-placeholder"
         />
       </view>
@@ -24,23 +24,26 @@
 
     <!-- 底部保存按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSave">保存</button>
+      <button class="submit-btn" @click="onSave">{{ t('保存') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import {getBankTemplates,bindUserPaymentMethod, getUserPaymentMethods} from '@/api/pay';
 import { onLoad } from '@dcloudio/uni-app';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 const cny = ref<any>(null);
 const fieldConfigs = ref<any[]>([]);
 onLoad(() => {
   getBankTemplates().then((res: any) => {
     const tpl = res.data.find((t: any) => t.currency === 'USD');
     if (!tpl?.id) {
-      globalTool.showToast('未找到银行卡模板', false, 'none');
+      globalTool.showToast(t('未找到银行卡模板'), false, 'none');
       return;
     }
     cny.value = tpl;
@@ -74,7 +77,7 @@ function onSave() {
     const val = typeof rawVal === 'string' ? rawVal.trim() : rawVal;
     if (val === undefined || val === null || val === '') {
       uni.showToast({
-        title: field.placeholder || `请输入${field.label}`,
+        title: field.placeholder || (t('请输入') + field.label),
         icon: 'none',
       });
       return;
@@ -82,7 +85,7 @@ function onSave() {
   }
 
   if (!cny.value?.id) {
-    uni.showToast({ title: '银行模板未加载完成', icon: 'none' });
+    uni.showToast({ title: t('银行模板未加载完成'), icon: 'none' });
     return;
   }
 
@@ -92,12 +95,12 @@ function onSave() {
   });
 
   bindUserPaymentMethod({
-    name: '银行',
+    name: t('银行'),
     bank_template_id: cny.value.id,
     details: accountInfo,
   }).then((res: any) => {
     console.log(res);
-    globalTool.showToast('保存成功', true, 'success');
+    globalTool.showToast(t('保存成功'), true, 'success');
   });
 }
 </script>

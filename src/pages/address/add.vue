@@ -3,36 +3,36 @@
     <view class="card">
       <!-- 收货人 -->
       <view class="row row-border">
-        <text class="label">收货人</text>
+        <text class="label">{{ t('收货人') }}</text>
         <input
           class="input"
           type="text"
           v-model="form.receiver_name"
-          placeholder="请输入收货人姓名"
+          :placeholder="t('请输入收货人姓名')"
           placeholder-class="input-placeholder"
         />
       </view>
 
       <!-- 手机号 -->
       <view class="row row-border">
-        <text class="label">手机号</text>
+        <text class="label">{{ t('手机号') }}</text>
         <input
           class="input"
           type="number"
           v-model="form.receiver_phone"
-          placeholder="请输入手机号"
+          :placeholder="t('请输入手机号')"
           placeholder-class="input-placeholder"
         />
       </view>
 
       <!-- 详细地址 -->
       <view class="row">
-        <text class="label">详细地址</text>
+        <text class="label">{{ t('详细地址') }}</text>
         <input
           class="input"
           type="text"
           v-model="form.address"
-          placeholder="请输入详细地址"
+          :placeholder="t('请输入详细地址')"
           placeholder-class="input-placeholder"
         />
       </view>
@@ -40,7 +40,7 @@
 
     <!-- 底部按钮 -->
     <view class="bottom-bar">
-      <button class="save-btn" @click="onSave">保存</button>
+      <button class="save-btn" @click="onSave">{{ t('保存') }}</button>
     </view>
   </view>
 </template>
@@ -49,7 +49,9 @@
 import { ref } from 'vue';
 import { createUserAddress } from '@/api';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
 
+const { t } = useI18n();
 const form = ref({
   receiver_name: '',
   receiver_phone: '',
@@ -61,15 +63,15 @@ const form = ref({
 
 function validate(): boolean {
   if (!form.value.receiver_name.trim()) {
-    uni.showToast({ title: '请输入收货人姓名', icon: 'none' });
+    uni.showToast({ title: t('请输入收货人姓名'), icon: 'none' });
     return false;
   }
   if (!form.value.receiver_phone.trim()) {
-    uni.showToast({ title: '请输入手机号', icon: 'none' });
+    uni.showToast({ title: t('请输入手机号'), icon: 'none' });
     return false;
   }
   if (!form.value.address.trim()) {
-    uni.showToast({ title: '请输入详细地址', icon: 'none' });
+    uni.showToast({ title: t('请输入详细地址'), icon: 'none' });
     return false;
   }
   return true;
@@ -87,9 +89,9 @@ async function onSave() {
       district: '',
       address: form.value.address,
     });
-    globalTool.showToast('保存成功',true);
+    globalTool.showToast(t('保存成功'),true);
   } catch (e) {
-    uni.showToast({ title: '保存失败，请稍后重试', icon: 'none' });
+    uni.showToast({ title: t('保存失败，请稍后重试'), icon: 'none' });
   }
 }
 </script>

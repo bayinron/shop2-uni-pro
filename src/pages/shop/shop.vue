@@ -3,7 +3,7 @@
     <!-- 顶部标题栏 -->
     <view class="topbar">
       <view class="topbar-inner">
-        <text class="topbar-title">全部店铺</text>
+        <text class="topbar-title">{{ t('全部店铺') }}</text>
         <view class="topbar-action" @click="onSupport">
           <image class="topbar-icon" src="/static/images/store/icon_support_header.png" mode="aspectFit" />
         </view>
@@ -17,8 +17,8 @@
           <view class="featured-brand">
             <image class="featured-logo" src="/static/images/store/logo_shopee_header.png" mode="aspectFit" />
             <view class="featured-titles">
-              <text class="featured-title">本月精选店铺</text>
-              <text class="featured-sub">达成销售目标 · 准时发货</text>
+              <text class="featured-title">{{ t('本月精选店铺') }}</text>
+              <text class="featured-sub">{{ t('达成销售目标 · 准时发货') }}</text>
             </view>
           </view>
 
@@ -39,9 +39,9 @@
               <view class="stats-left">
                 <view class="stats-num-row">
                   <text class="stats-num">{{ featured.orders }}</text>
-                  <text class="stats-unit">订单</text>
+                  <text class="stats-unit">{{ t('订单') }}</text>
                 </view>
-                <text class="stats-desc">成功发货的销售总额</text>
+                <text class="stats-desc">{{ t('成功发货的销售总额') }}</text>
               </view>
               <view class="stats-right">
                 <image class="stats-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
@@ -60,14 +60,14 @@
       <view class="rank-section">
         <view class="section-head">
           <view class="section-bar" />
-          <text class="section-title">精选店铺排行</text>
+          <text class="section-title">{{ t('精选店铺排行') }}</text>
         </view>
 
         <view v-if="rankLoading && !rankList.length" class="rank-tip">
-          <text class="rank-tip-text">排行加载中...</text>
+          <text class="rank-tip-text">{{ t('排行加载中...') }}</text>
         </view>
         <view v-else-if="!rankList.length" class="rank-tip">
-          <text class="rank-tip-text">暂无排行数据</text>
+          <text class="rank-tip-text">{{ t('暂无排行数据') }}</text>
         </view>
 
         <view
@@ -92,7 +92,7 @@
             <view class="rank-meta">
               <view class="rank-orders-block">
                 <text class="rank-orders-num">{{ formatOrders(item) || '0' }}</text>
-                <text class="rank-orders-unit">订单</text>
+                <text class="rank-orders-unit">{{ t('订单') }}</text>
               </view>
               <view class="rank-rating">
                 <image class="rank-flame" src="/static/images/store/icon_bag_flame.png" mode="aspectFit" />
@@ -110,7 +110,7 @@
       <view class="all-section">
         <view class="section-head">
           <view class="section-bar" />
-          <text class="section-title">全部店铺</text>
+          <text class="section-title">{{ t('全部店铺') }}</text>
         </view>
 
         <view class="search-wrap">
@@ -156,14 +156,14 @@
         </view>
 
         <view v-if="loading" class="loading-more">
-          <text class="loading-text">加载中...</text>
+          <text class="loading-text">{{ t('加载中...') }}</text>
         </view>
         <view v-if="!hasMore && shops.length > 0" class="no-more">
-          <text class="no-more-text">没有更多了</text>
+          <text class="no-more-text">{{ t('没有更多了') }}</text>
         </view>
         <view v-if="!shops.length && !loading" class="empty">
           <image class="empty-img" src="/static/img/empty.svg" mode="aspectFit" />
-          <text class="empty-text">暂无符合条件的店铺</text>
+          <text class="empty-text">{{ t('暂无符合条件的店铺') }}</text>
         </view>
       </view>
 
@@ -176,6 +176,9 @@ import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getShopCategories, getMallShopList, type MallShop } from '@/api';
 
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 type Category = {
   id: number;
   name?: string;
@@ -188,7 +191,7 @@ type ShopItem = MallShop & {
   orders?: number;
 };
 
-const placeholderText = '搜索店铺';
+const placeholderText = computed(() => t('搜索店铺'));
 const statusBarHeight = ref(20);
 const scrollHeight = ref('100vh');
 
@@ -222,7 +225,7 @@ const featured = computed(() => {
   const s = rankList.value[0] || shops.value[0];
   return {
     id: s?.id,
-    name: s?.name || '精选店铺',
+    name: s?.name || t('精选店铺'),
     avatar: s?.logo || '/static/img/empty.svg',
     orders: formatOrders(s) || '0',
     rating: formatRating(s),
@@ -260,7 +263,7 @@ async function loadRankList() {
     });
     rankList.value = normalizeList(res).slice(0, 3);
   } catch (e) {
-    console.error('加载店铺排行失败', e);
+    console.error(t('加载店铺排行失败'), e);
   } finally {
     rankLoading.value = false;
   }
@@ -296,8 +299,8 @@ async function loadShops(reset = false) {
     hasMore.value = newShops.length >= limit.value;
     if (hasMore.value) page.value += 1;
   } catch (e) {
-    console.error('加载店铺列表失败', e);
-    uni.showToast({ title: '加载失败', icon: 'none' });
+    console.error(t('加载店铺列表失败'), e);
+    uni.showToast({ title: t('加载失败'), icon: 'none' });
   } finally {
     loading.value = false;
   }
@@ -328,7 +331,7 @@ function onFeaturedClick() {
 }
 
 function onSupport() {
-  uni.showToast({ title: '客服功能开发中', icon: 'none' });
+  uni.showToast({ title: t('客服功能开发中'), icon: 'none' });
 }
 
 onReachBottom(() => onReachBottomLoad());
@@ -346,10 +349,10 @@ onLoad(async () => {
   try {
     const res: any = await getShopCategories();
     const list = res?.data || res || [];
-    categories.value = [{ id: 0, name: '全部' }, ...(Array.isArray(list) ? list : [])];
+    categories.value = [{ id: 0, name: t('全部') }, ...(Array.isArray(list) ? list : [])];
     activeCateId.value = 0;
   } catch (e) {
-    console.error('加载分类失败', e);
+    console.error(t('加载分类失败'), e);
   }
 
   await Promise.all([loadRankList(), loadShops(true)]);

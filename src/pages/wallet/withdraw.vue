@@ -6,17 +6,17 @@
 
     <!-- 提现金额 -->
     <view class="section">
-      <text class="section-label">提现金额</text>
+      <text class="section-label">{{ t('提现金额') }}</text>
       <view class="amount-input-wrap">
         <text class="currency-symbol">￥</text>
-        <input class="amount-input" type="number" v-model="form.amount" placeholder="请输入提现金额" />
+        <input class="amount-input" type="number" v-model="form.amount" :placeholder="t('请输入提现金额')" />
       </view>
     </view>
 
     <!-- 提现类型 -->
     <view class="section">
       <view class="section-row" @click="onWithdrawTypeClick">
-        <text class="section-label">提现类型</text>
+        <text class="section-label">{{ t('提现类型') }}</text>
         <view class="section-right">
           <text class="section-value">{{ currentWithdrawType.name }}</text>
           <uni-icons type="bottom" size="18" color="#999" />
@@ -26,28 +26,32 @@
 
     <!-- 支付密码 -->
     <view class="section">
-      <text class="section-label">支付密码</text>
-      <input class="password-input" type="text" password v-model="form.payPassword" placeholder="请输入支付密码" />
+      <text class="section-label">{{ t('支付密码') }}</text>
+      <input class="password-input" type="text" password v-model="form.payPassword" :placeholder="t('请输入支付密码')" />
 
       <view class="balance-row">
         <text class="balance-text">
-          可用余额：<text class="balance-amount">￥ {{ availableBalance }}</text>
+          {{ t('可用余额：') }}<text class="balance-amount">￥ {{ availableBalance }}</text>
         </text>
       </view>
     </view>
 
     <!-- 底部按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSubmit">提现</button>
+      <button class="submit-btn" @click="onSubmit">{{ t('提现') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import { getBankTemplates, getUserPaymentMethods, submitWalletWithdraw } from '@/api/pay';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 
 type WithdrawType = {
   key: string;
@@ -76,7 +80,7 @@ const availableBalance = computed(() =>
 );
 watch(userInfo, (newVal) => {
   if (!newVal.has_withdraw_password) {
-    globalTool.showToast('请先设置提现密码', () => {
+    globalTool.showToast(t('请先设置提现密码'), () => {
       uni.navigateTo({
         url: '/pages/wallet/editPayPwd?first=true',
       });
@@ -89,12 +93,12 @@ onLoad(() => {
   getBankTemplates().then((res: any) => {
     bankTemplate.value = res.data.find((t: any) => t.currency === 'USDT');
     if (!bankTemplate.value?.id) {
-      globalTool.showToast('未找到 USDT 提现模板', false, 'none');
+      globalTool.showToast(t('未找到 USDT 提现模板'), false, 'none');
       return;
     }
     getUserPaymentMethods({ bank_template_id: bankTemplate.value.id }).then((methodsRes: any) => {
       if (!methodsRes.data?.length) {
-        globalTool.showToast('请先绑定提现地址', () => {
+        globalTool.showToast(t('请先绑定提现地址'), () => {
           uni.navigateTo({
             url: '/pages/wallet/usdt',
           });
@@ -124,15 +128,15 @@ function onSubmit() {
 
   const amountNum = Number(form.value.amount);
   if (!amountNum || amountNum <= 0) {
-    uni.showToast({ title: '请输入正确的提现金额', icon: 'none' });
+    uni.showToast({ title: t('请输入正确的提现金额'), icon: 'none' });
     return;
   }
   if (!form.value.payPassword.trim()) {
-    uni.showToast({ title: '请输入支付密码', icon: 'none' });
+    uni.showToast({ title: t('请输入支付密码'), icon: 'none' });
     return;
   }
   if (!paymentMethod.value?.id) {
-    uni.showToast({ title: '请先绑定提现地址', icon: 'none' });
+    uni.showToast({ title: t('请先绑定提现地址'), icon: 'none' });
     return;
   }
 
@@ -142,7 +146,7 @@ function onSubmit() {
     payment_method_id: paymentMethod.value.id,
     withdraw_password: form.value.payPassword,
   }).then(() => {
-    globalTool.showToast('提现成功', () => {
+    globalTool.showToast(t('提现成功'), () => {
       uni.navigateBack();
     });
   });

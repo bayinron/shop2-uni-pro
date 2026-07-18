@@ -12,14 +12,14 @@
         <uni-icons type="right" size="18" color="#999" />
       </view>
       <view class="address-card address-card--empty" @click="onSelectAddress" v-else>
-        <text class="address-empty-text">请选择收货地址</text>
+        <text class="address-empty-text">{{ t('请选择收货地址') }}</text>
         <uni-icons type="right" size="18" color="#999" />
       </view>
 
       <!-- 支付方式卡片 -->
       <view class="payment-card">
-        <text class="payment-label">支付方式</text>
-        <text class="payment-value">在线支付</text>
+        <text class="payment-label">{{ t('支付方式') }}</text>
+        <text class="payment-value">{{ t('在线支付') }}</text>
       </view>
 
       <!-- 商品列表 -->
@@ -39,11 +39,11 @@
     <!-- 底部固定栏 -->
     <view class="order-footer">
       <view class="footer-left">
-        <text class="footer-label">实付款:</text>
+        <text class="footer-label">{{ t('实付款:') }}</text>
         <text class="footer-amount">￥{{ totalPrice }}</text>
-        <text class="footer-count">共{{ totalCount }}件</text>
+        <text class="footer-count">{{ t('共') }}{{ totalCount }}{{ t('件') }}</text>
       </view>
-      <button class="submit-btn" @click="onSubmitOrder">提交订单</button>
+      <button class="submit-btn" @click="onSubmitOrder">{{ t('提交订单') }}</button>
     </view>
   </view>
 </template>
@@ -54,6 +54,9 @@ import { onLoad, onShow } from '@dcloudio/uni-app';
 import { createMallOrder, getUserAddresses } from '@/api';
 import type { MallCreateOrderPayload, UserAddress } from '@/api';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
+
+const { t } = useI18n();
 
 type OrderItem = {
   id: number; // 购物车项 ID
@@ -86,7 +89,7 @@ onLoad((options: any) => {
     try {
       orderItems.value = JSON.parse(decodeURIComponent(options.items));
     } catch (e) {
-      console.error('解析商品数据失败', e);
+      console.error(t('解析商品数据失败'), e);
     }
   }
   if (options.shopId) {
@@ -96,7 +99,7 @@ onLoad((options: any) => {
     try {
       cartIds.value = JSON.parse(decodeURIComponent(options.cartIds));
     } catch (e) {
-      console.error('解析购物车ID失败', e);
+      console.error(t('解析购物车ID失败'), e);
     }
   }
 
@@ -125,7 +128,7 @@ async function loadDefaultAddress() {
     const defaultAddr = addresses.find((addr) => addr.is_default) || addresses[0];
     selectedAddress.value = defaultAddr || null;
   } catch (e) {
-    console.error('加载地址失败', e);
+    console.error(t('加载地址失败'), e);
   }
 }
 
@@ -139,13 +142,13 @@ function onSelectAddress() {
 // 提交订单
 async function onSubmitOrder() {
   if (!selectedAddress.value) {
-    uni.showToast({ title: '请先选择收货地址', icon: 'none' });
+    uni.showToast({ title: t('请先选择收货地址'), icon: 'none' });
     onSelectAddress();
     return;
   }
 
   if (!cartIds.value.length) {
-    uni.showToast({ title: '订单数据不完整', icon: 'none' });
+    uni.showToast({ title: t('订单数据不完整'), icon: 'none' });
     return;
   }
 
@@ -156,17 +159,17 @@ async function onSubmitOrder() {
   };
 
 
-  uni.showLoading({ title: '提交中...' });
+  uni.showLoading({ title: t('提交中...') });
   try {
     await createMallOrder(payload);
     uni.hideLoading();
-    globalTool.showToast('下单成功', true, 'success');
+    globalTool.showToast(t('下单成功'), true, 'success');
     setTimeout(() => {
       uni.navigateTo({ url: '/pages/order/order?status=pending' });
     }, 800);
   } catch (e) {
     uni.hideLoading();
-    console.error('提交订单失败', e);
+    console.error(t('提交订单失败'), e);
   }
 }
 </script>

@@ -6,14 +6,14 @@
     <scroll-view class="scroll" scroll-y>
       <!-- 充值金额 -->
       <view class="section">
-        <text class="section-label">充值金额</text>
+        <text class="section-label">{{ t('充值金额') }}</text>
         <view class="amount-input-wrap">
           <text class="currency-symbol">￥</text>
           <input
             class="amount-input"
             type="number"
             v-model="form.amount"
-            placeholder="请输入充值金额"
+            :placeholder="t('请输入充值金额')"
           />
         </view>
       </view>
@@ -21,9 +21,9 @@
       <!-- 充值方式 -->
       <view class="section" v-if="payTypes.length > 0">
         <view class="section-row" @click="onPayTypeClick">
-          <text class="section-label">充值方式</text>
+          <text class="section-label">{{ t('充值方式') }}</text>
           <view class="section-right">
-            <text class="section-value">{{ currentPayType?.name || '请选择' }}</text>
+            <text class="section-value">{{ currentPayType?.name || t('请选择') }}</text>
             <uni-icons type="right" size="18" color="#999" />
           </view>
         </view>
@@ -46,8 +46,8 @@
           <block v-else>
             <image class="upload-icon" src="/static/img/upload.png" mode="aspectFill" />
             <view class="upload-text-wrap">
-              <text class="upload-title">点击上传付款凭证</text>
-              <text class="upload-sub">请上传转账截图，方便客服为您核对到账</text>
+              <text class="upload-title">{{ t('点击上传付款凭证') }}</text>
+              <text class="upload-sub">{{ t('请上传转账截图，方便客服为您核对到账') }}</text>
             </view>
           </block>
         </view>
@@ -55,27 +55,30 @@
 
       <!-- 温馨提示 -->
       <view class="tips-section">
-        <text class="tips-title">温馨提示：</text>
-        <view class="tips-item" v-for="(t, idx) in tips" :key="idx">
+        <text class="tips-title">{{ t('温馨提示：') }}</text>
+        <view class="tips-item" v-for="(tip, idx) in tips" :key="idx">
           <text class="tips-index">{{ idx + 1 }}.</text>
-          <text class="tips-text">{{ t }}</text>
+          <text class="tips-text">{{ tip }}</text>
         </view>
       </view>
     </scroll-view>
 
     <!-- 底部按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSubmit">立即充值</button>
+      <button class="submit-btn" @click="onSubmit">{{ t('立即充值') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import  {submitWalletDeposit, type WalletDepositPayload,getPaymentChannels, type PaymentChannel} from '@/api/pay';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import globalTool from '@/utils/globalTool';
+import { useI18n } from '@/utils/i18n';
+import { onLoad } from '@dcloudio/uni-app';
 
+const { t } = useI18n();
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
 
@@ -92,12 +95,12 @@ const payTypes = ref<PaymentChannel[]>([
 
 const currentPayType = ref<PaymentChannel | null>(null);
 
-const tips = [
-  '为确保充值及时到账，请严格按照充值金额进行支付。',
-  '完成转账后，请上传清晰的转账截图，方便客服为您核对。',
-  '每日审核时间为 9:00-22:00，其他时间提交的订单将顺延处理。',
-  '如有任何疑问，请及时联系在线客服为您处理。',
-];
+const tips = computed(() => [
+  t('为确保充值及时到账，请严格按照充值金额进行支付。'),
+  t('完成转账后，请上传清晰的转账截图，方便客服为您核对。'),
+  t('每日审核时间为 9:00-22:00，其他时间提交的订单将顺延处理。'),
+  t('如有任何疑问，请及时联系在线客服为您处理。'),
+]);
 
 function onPayTypeClick() {
   const itemList = payTypes.value.map((p) => p.name);
@@ -122,15 +125,15 @@ function onUploadProofImg() {
 async function onSubmit() {
   const amountNum = Number(form.value.amount);
   if (!amountNum || amountNum <= 0) {
-    uni.showToast({ title: '请输入正确的充值金额', icon: 'none' });
+    uni.showToast({ title: t('请输入正确的充值金额'), icon: 'none' });
     return;
   }
   if (!currentPayType.value?.id) {
-    uni.showToast({ title: '充值方式加载中，请稍后重试', icon: 'none' });
+    uni.showToast({ title: t('充值方式加载中，请稍后重试'), icon: 'none' });
     return;
   }
   if (!form.value.proof_img) {
-    uni.showToast({ title: '请上传付款凭证', icon: 'none' });
+    uni.showToast({ title: t('请上传付款凭证'), icon: 'none' });
     return;
   }
   const payload: WalletDepositPayload = {
@@ -141,7 +144,7 @@ async function onSubmit() {
   };
   try {
     await submitWalletDeposit(payload);
-    globalTool.showToast('提交成功，请等待审核', true, 'success');
+    globalTool.showToast(t('提交成功，请等待审核'), true, 'success');
   } catch {
     // 错误提示由 request 拦截器统一处理
   }
