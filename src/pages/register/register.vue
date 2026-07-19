@@ -85,9 +85,9 @@
               class="input-field input-field--password"
               :type="showPassword ? 'text' : 'password'"
               v-model="formData.password"
-              :placeholder="t('密码 8 - 12 位')"
+              :placeholder="t('密码至少6位')"
               placeholder-class="input-placeholder"
-              maxlength="12"
+              maxlength="64"
               @blur="onFieldBlur('password')"
               @input="onFieldInput('password')"
             />
@@ -110,7 +110,7 @@
               v-model="formData.confirmPassword"
               :placeholder="t('请再次输入密码')"
               placeholder-class="input-placeholder"
-              maxlength="12"
+              maxlength="64"
               @blur="onFieldBlur('confirmPassword')"
               @input="onFieldInput('confirmPassword')"
             />
@@ -125,27 +125,24 @@
           <text v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</text>
         </view>
 
-        <!-- 验证码 -->
+        <!-- 邀请码 -->
         <view class="form-item">
-          <view class="input-group" :class="{ 'input-group--error': errors.verifyCode }">
+          <view class="input-group" :class="{ 'input-group--error': errors.inviteCode }">
             <view class="input-icon">
               <image class="input-icon-img" src="/static/images/icon_captcha.png" mode="aspectFit" />
             </view>
             <input
-              class="input-field input-field--captcha"
+              class="input-field"
               type="text"
-              v-model="formData.verifyCode"
-              :placeholder="t('请输入验证码')"
+              v-model="formData.inviteCode"
+              :placeholder="t('请输入邀请码')"
               placeholder-class="input-placeholder"
-              maxlength="6"
-              @blur="onFieldBlur('verifyCode')"
-              @input="onFieldInput('verifyCode')"
+              maxlength="32"
+              @blur="onFieldBlur('inviteCode')"
+              @input="onFieldInput('inviteCode')"
             />
-            <view class="verify-code-wrap" @click="refreshVerifyCode">
-              <image class="verify-code-img" :src="verifyCodeImg" mode="aspectFit" />
-            </view>
           </view>
-          <text v-if="errors.verifyCode" class="field-error">{{ errors.verifyCode }}</text>
+          <text v-if="errors.inviteCode" class="field-error">{{ errors.inviteCode }}</text>
         </view>
 
         <!-- 注册按钮 -->
@@ -186,35 +183,33 @@
 <script setup lang="ts">
 import { computed, ref, reactive, watch } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { authRegister, getCaptcha } from '@/api';
+import { authRegister, type AuthRegisterPayload } from '@/api';
 import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 
-type FieldKey = 'phone' | 'email' | 'verifyCode' | 'password' | 'confirmPassword';
+type FieldKey = 'phone' | 'email' | 'password' | 'confirmPassword' | 'inviteCode';
 
 const registerType = ref<'phone' | 'email'>('phone');
 
 const formData = reactive({
   phone: '',
   email: '',
-  verifyCode: '',
   password: '',
   confirmPassword: '',
+  inviteCode: '',
 });
-const captcha_id = ref('');
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
-const verifyCodeImg = ref('');
 const registering = ref(false);
 const showAllErrors = ref(false);
 const touched = reactive<Record<FieldKey, boolean>>({
   phone: false,
   email: false,
-  verifyCode: false,
   password: false,
   confirmPassword: false,
+  inviteCode: false,
 });
 
 function isEmail(value: string) {
@@ -237,17 +232,16 @@ function getFieldError(field: FieldKey): string {
       if (!formData.email.trim()) return t('请输入邮箱地址');
       if (!isEmail(formData.email.trim())) return t('请输入正确的邮箱地址');
       return '';
-    case 'verifyCode':
-      if (!formData.verifyCode.trim()) return t('请输入验证码');
-      if (formData.verifyCode.trim().length < 4) return t('验证码至少4位');
-      return '';
     case 'password':
       if (!formData.password) return t('请输入密码');
-      if (formData.password.length < 8 || formData.password.length > 12) return t('密码需为 8 - 12 位');
+      if (formData.password.length < 6) return t('密码至少6位');
       return '';
     case 'confirmPassword':
       if (!formData.confirmPassword) return t('请再次输入密码');
       if (formData.confirmPassword !== formData.password) return t('两次密码输入不一致');
+      return '';
+    case 'inviteCode':
+      if (!formData.inviteCode.trim()) return t('请输入邀请码');
       return '';
   }
 }
@@ -259,9 +253,9 @@ function shouldShowError(field: FieldKey) {
 const errors = computed(() => ({
   phone: shouldShowError('phone') ? getFieldError('phone') : '',
   email: shouldShowError('email') ? getFieldError('email') : '',
-  verifyCode: shouldShowError('verifyCode') ? getFieldError('verifyCode') : '',
   password: shouldShowError('password') ? getFieldError('password') : '',
   confirmPassword: shouldShowError('confirmPassword') ? getFieldError('confirmPassword') : '',
+  inviteCode: shouldShowError('inviteCode') ? getFieldError('inviteCode') : '',
 }));
 
 function onFieldBlur(field: FieldKey) {
@@ -287,31 +281,17 @@ watch(registerType, () => {
   showAllErrors.value = false;
   touched.phone = false;
   touched.email = false;
-  touched.verifyCode = false;
 });
 
-function loadCaptcha() {
-  return getCaptcha().then((res: any) => {
-    verifyCodeImg.value = res.data.image;
-    captcha_id.value = res.data.captcha_id;
-  });
-}
-
-function refreshVerifyCode() {
-  loadCaptcha();
-}
-
 const canRegister = computed(() => {
-  const verifyOk = formData.verifyCode.trim().length >= 4;
   const passwordOk =
-    formData.password.length >= 8 &&
-    formData.password.length <= 12 &&
-    formData.password === formData.confirmPassword;
+    formData.password.length >= 6 && formData.password === formData.confirmPassword;
+  const inviteOk = formData.inviteCode.trim().length > 0;
 
   if (registerType.value === 'phone') {
-    return isValidPhone(formData.phone) && verifyOk && passwordOk;
+    return isValidPhone(formData.phone) && passwordOk && inviteOk;
   }
-  return isEmail(formData.email.trim()) && verifyOk && passwordOk;
+  return isEmail(formData.email.trim()) && passwordOk && inviteOk;
 });
 
 function togglePassword() {
@@ -329,25 +309,28 @@ async function onRegister() {
   markAllFieldsTouched();
   if (!canRegister.value) return;
 
-  const params: any = {
+  const account =
+    registerType.value === 'phone' ? formData.phone.trim() : formData.email.trim();
+  const params: AuthRegisterPayload = {
     password: formData.password,
-    captcha_id: captcha_id.value,
-    captcha_code: formData.verifyCode.trim(),
+    invite_code: formData.inviteCode.trim(),
   };
   if (registerType.value === 'phone') {
-    params.phone = formData.phone.trim();
+    params.phone = account;
   } else {
-    params.email = formData.email.trim();
+    params.email = account;
   }
 
   registering.value = true;
   try {
     await authRegister(params);
+    // 注册成功不返回 Token，引导去登录；预填账号方便登录
+    uni.setStorageSync('loginInfo', { login: account, rememberMe: true });
     globalTool.showToast(t('注册成功'), () => {
       uni.navigateTo({ url: '/pages/login/login' });
     });
   } catch {
-    refreshVerifyCode();
+    // 错误提示由请求拦截器处理
   } finally {
     registering.value = false;
   }
@@ -377,8 +360,12 @@ function onPrivacy() {
   uni.showToast({ title: t('隐私政策'), icon: 'none' });
 }
 
-onLoad(() => {
-  loadCaptcha();
+onLoad((options: any) => {
+  const code =
+    options?.invite_code || options?.invitation_code || options?.code || options?.inviteCode || '';
+  if (code) {
+    formData.inviteCode = String(code).trim();
+  }
 });
 </script>
 
@@ -546,10 +533,6 @@ onLoad(() => {
   padding-right: 56rpx;
 }
 
-.input-field--captcha {
-  padding-right: 8rpx;
-}
-
 .password-toggle {
   position: absolute;
   right: 0;
@@ -560,24 +543,6 @@ onLoad(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.verify-code-wrap {
-  flex-shrink: 0;
-  width: 180rpx;
-  height: 64rpx;
-  margin-left: 12rpx;
-  border-radius: 8rpx;
-  overflow: hidden;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.verify-code-img {
-  width: 100%;
-  height: 100%;
 }
 
 .submit-btn {

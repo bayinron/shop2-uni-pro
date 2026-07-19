@@ -282,30 +282,46 @@ export * from './mall';
 // ===== 註冊 =====
 
 export interface AuthRegisterPayload {
-    // username: string;
-    email: string;
-    phone: string;
+    /** 信箱或手機號碼至少二擇一 */
+    email?: string;
+    /** 信箱或手機號碼至少二擇一 */
+    phone?: string;
+    /** 密碼，至少 6 位 */
     password: string;
-    captcha_id: string;
-    captcha_code: string;
+    /** 暱稱；未提供時預設等同系統自動產生的 username */
+    nickname?: string;
+    /** 邀請碼（必填），亦相容舊參數名 invitation_code */
+    invite_code: string;
 }
 
 export interface AuthRegisterResponse {
-    user: {
-        id: number;
-        username: string;
-        email: string;
-    };
-    token: string;
+    id: number;
+    username: string;
+    email?: string | null;
+    nickname: string;
+    invite_code: string;
+    created_at?: string;
 }
-//获取验证码
+
+/** 圖形驗證碼（僅用於登入） */
 export function getCaptcha() {
     return http<any>({
         method: 'POST',
         url: 'captcha/create'
     });
 }
-// 1. 用戶註冊 - POST /api/register
+
+/** 預先驗證邀請碼是否有效 - GET /api/invitation/validate */
+export function validateInvitationCode(code: string) {
+    return http<{ valid?: boolean; invite_code?: string }>({
+        method: 'GET',
+        url: 'invitation/validate',
+        data: { code },
+        noLoading: true
+    });
+}
+
+// 1. 用戶註冊 - POST /api/register（邀請碼制，無圖形驗證碼；成功後需再呼叫 login 取得 Token）
 export function authRegister(data: AuthRegisterPayload) {
     return http<AuthRegisterResponse>({
         method: 'POST',

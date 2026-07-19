@@ -300,6 +300,13 @@
         "la": "ກະລຸນາໃສ່ຣຫັດແນະນຳ",
         "ms": "Sila masukkan kod jemputan"
     },
+    "邀请码无效": {
+        "zh": "邀请码无效",
+        "en": "Invalid invitation code",
+        "th": "รหัสเชิญไม่ถูกต้อง",
+        "la": "ຣຫັດແນະນຳບໍ່ຖືກຕ້ອງ",
+        "ms": "Kod jemputan tidak sah"
+    },
     "请输入确认密码": {
         "zh": "请输入确认密码",
         "en": "Please enter confirm password",
