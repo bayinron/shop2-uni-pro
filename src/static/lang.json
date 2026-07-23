@@ -4107,5 +4107,89 @@
         "th": "กรุณากรอกให้ถูกต้อง: ",
         "la": "กรุณากรอกให้ถูกต้อง: ",
         "ms": "Please enter a valid "
+    },
+    "申请共同开设店铺": {
+        "zh": "申请共同开设店铺",
+        "en": "Apply to open a shop with",
+        "th": "สมัครร่วม เปิดร้านค้ากับ",
+        "la": "สมัครร่วม เปิดร้านค้ากับ",
+        "ms": "Apply to open a shop with"
+    },
+    "请填写店铺信息": {
+        "zh": "请填写店铺信息",
+        "en": "Please fill in shop information",
+        "th": "โปรดกรอกข้อมูลร้านค้า",
+        "la": "โปรดกรอกข้อมูลร้านค้า",
+        "ms": "Please fill in shop information"
+    },
+    "请选择图片": {
+        "zh": "请选择图片",
+        "en": "Please select an image",
+        "th": "กรุณาเลือกรูป",
+        "la": "กรุณาเลือกรูป",
+        "ms": "Please select an image"
+    },
+    "商品类别": {
+        "zh": "商品类别",
+        "en": "Product category",
+        "th": "หมวดประเภทสินค้า",
+        "la": "หมวดประเภทสินค้า",
+        "ms": "Product category"
+    },
+    "请选择商品类别": {
+        "zh": "请选择商品类别",
+        "en": "Please select product category",
+        "th": "กรุณาเลือกประเภทสินค้า",
+        "la": "กรุณาเลือกประเภทสินค้า",
+        "ms": "Please select product category"
+    },
+    "请输入姓名和姓氏": {
+        "zh": "请输入姓名和姓氏",
+        "en": "Please enter first and last name",
+        "th": "กรุณากรอกชื่อและนามสกุล",
+        "la": "กรุณากรอกชื่อและนามสกุล",
+        "ms": "Please enter first and last name"
+    },
+    "请输入电话号码": {
+        "zh": "请输入电话号码",
+        "en": "Please enter phone number",
+        "th": "กรุณากรอกหมายเลขโทรศัพท์",
+        "la": "กรุณากรอกหมายเลขโทรศัพท์",
+        "ms": "Please enter phone number"
+    },
+    "请输入地址": {
+        "zh": "请输入地址",
+        "en": "Please enter address",
+        "th": "กรุณากรอกที่อยู่",
+        "la": "กรุณากรอกที่อยู่",
+        "ms": "Please enter address"
+    },
+    "身份验证文件": {
+        "zh": "身份验证文件",
+        "en": "Identity verification documents",
+        "th": "เอกสารยืนยันตัวตน",
+        "la": "เอกสารยืนยันตัวตน",
+        "ms": "Identity verification documents"
+    },
+    "证件正面照片": {
+        "zh": "证件正面照片",
+        "en": "Front of ID card",
+        "th": "รูปถ่ายหน้าบัตร",
+        "la": "รูปถ่ายหน้าบัตร",
+        "ms": "Front of ID card"
+    },
+    "证件背面照片": {
+        "zh": "证件背面照片",
+        "en": "Back of ID card",
+        "th": "รูปถ่ายหลังบัตร",
+        "la": "รูปถ่ายหลังบัตร",
+        "ms": "Back of ID card"
+    },
+    "加载分类中...": {
+        "zh": "加载分类中...",
+        "en": "Loading categories...",
+        "th": "กำลังโหลดหมวดหมู่...",
+        "la": "กำลังโหลดหมวดหมู่...",
+        "ms": "Loading categories..."
     }
 }

@@ -11,6 +11,7 @@ node_modules
 .DS_Store
 dist
 extracted_from_pdf
+extracted-icons
 *.local
 
 # Editor directories and files

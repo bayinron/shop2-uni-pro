@@ -1,90 +1,134 @@
 <template>
   <view class="apply-page">
     <scroll-view class="content" scroll-y>
-      <!-- 基本信息卡片 -->
-      <view class="card">
-        <text class="section-title">{{ t('基本信息') }}</text>
+      <!-- 品牌标题 -->
+      <view class="brand-header">
+        <text class="brand-title">{{ t('申请共同开设店铺') }}</text>
+        <image class="brand-logo" src="/static/images/logo_shopee_orange.png" mode="aspectFit" />
+      </view>
+      <view class="brand-divider"></view>
 
-        <!-- 店铺头像 -->
-        <view class="form-item">
-          <text class="form-label">{{ t('店铺头像') }}</text>
-          <view class="avatar-upload" @click="onUploadAvatar">
+      <text class="page-hint">- {{ t('请填写店铺信息') }}</text>
+
+      <!-- 店铺头像 -->
+      <view class="section">
+        <text class="section-label">{{ t('店铺头像') }}</text>
+        <view class="avatar-row" @click="onUploadAvatar">
+          <view class="avatar-circle">
             <image v-if="form.avatar" class="avatar-img" :src="resolveMediaUrl(form.avatar)" mode="aspectFill" />
-            <view v-else class="avatar-placeholder">
-              <uni-icons type="camera" size="32" color="#ff6b9d" />
-            </view>
+            <uni-icons v-else type="image" size="36" color="#bfbfbf" />
           </view>
-        </view>
-
-        <!-- 店铺名称 -->
-        <view class="form-item form-item-border">
-          <text class="form-label">{{ t('店铺名称') }}</text>
-          <input class="form-input" type="text" v-model="form.name" :placeholder="t('请输入店铺名称')"
-            placeholder-class="input-placeholder" />
-        </view>
-
-        <!-- 商品类型 -->
-        <view class="form-item form-item-border" @click="onSelectCategory">
-          <text class="form-label">{{ t('商品类型') }}</text>
-          <view class="form-select">
-            <text :class="['select-text', !form.category_id ? 'select-placeholder' : '']">
-              {{ selectedCategoryName || t('请选择商品类型') }}
-            </text>
-            <uni-icons type="bottom" size="16" color="#999" />
-          </view>
-        </view>
-
-        <!-- 账户所有者姓名 -->
-        <view class="form-item form-item-border">
-          <text class="form-label">{{ t('账户所有者姓名') }}</text>
-          <input class="form-input" type="text" v-model="form.owner_name" :placeholder="t('请输入账户所有者姓名')"
-            placeholder-class="input-placeholder" />
-        </view>
-
-        <!-- 身份证照片 -->
-        <view class="form-item">
-          <text class="form-label">{{ t('身份证照片') }}</text>
-          <view class="id-photos">
-            <view class="id-photo-item" @click="onUploadIdPhotoFront">
-              <image v-if="form.id_photo_front" class="id-photo-img" :src="resolveMediaUrl(form.id_photo_front)" mode="aspectFill" />
-              <view v-else class="id-photo-placeholder">
-                <view class="id-photo-icon">
-                  <view class="icon-person"></view>
-                </view>
-                <text class="id-photo-text">{{ t('正面') }}</text>
-              </view>
-            </view>
-            <view class="id-photo-item" @click="onUploadIdPhotoBack">
-              <image v-if="form.id_photo_back" class="id-photo-img" :src="resolveMediaUrl(form.id_photo_back)" mode="aspectFill" />
-              <view v-else class="id-photo-placeholder">
-                <view class="id-photo-icon">
-                  <view class="icon-doc"></view>
-                </view>
-                <text class="id-photo-text">{{ t('背面') }}</text>
-              </view>
-            </view>
-          </view>
-          <text class="upload-tip">{{ t('图片文件最大上传 3 MB') }}</text>
-        </view>
-
-        <!-- 存折封面 -->
-        <view class="form-item">
-          <text class="form-label">{{ t('存折封面') }}</text>
-          <view class="passbook-upload" @click="onUploadBankPassbook">
-            <image v-if="form.bank_passbook" class="passbook-img" :src="resolveMediaUrl(form.bank_passbook)" mode="aspectFill" />
-            <view v-else class="passbook-placeholder">
-              <uni-icons type="camera" size="32" color="#4fc3f7" />
-              <text class="passbook-text">{{ t('点击上传存折封面') }}</text>
-            </view>
-          </view>
-          <text class="upload-tip">{{ t('图片文件最大上传 3 MB') }}</text>
+          <text class="pick-hint">← {{ t('请选择图片') }}</text>
         </view>
       </view>
+
+      <!-- 店铺名称 -->
+      <view class="section">
+        <text class="section-label">{{ t('店铺名称') }}</text>
+        <input
+          class="underline-input"
+          type="text"
+          v-model="form.name"
+          :placeholder="t('请输入店铺名称')"
+          placeholder-class="input-placeholder"
+        />
+      </view>
+
+      <!-- 商品类别 -->
+      <view class="section">
+        <text class="section-label">{{ t('商品类别') }}</text>
+        <view class="underline-select" @click="onSelectCategory">
+          <text :class="['select-text', !form.category_id ? 'input-placeholder' : '']">
+            {{ selectedCategoryName || t('请选择商品类别') }}
+          </text>
+          <uni-icons type="bottom" size="14" color="#666" />
+        </view>
+      </view>
+
+      <!-- 个人资料 -->
+      <view class="section">
+        <text class="section-label">{{ t('个人资料') }}</text>
+        <input
+          class="underline-input"
+          type="text"
+          v-model="form.owner_name"
+          :placeholder="t('请输入姓名和姓氏')"
+          placeholder-class="input-placeholder"
+        />
+        <input
+          class="underline-input"
+          type="number"
+          v-model="form.phone"
+          :placeholder="t('请输入电话号码')"
+          placeholder-class="input-placeholder"
+        />
+        <input
+          class="underline-input"
+          type="text"
+          v-model="form.address"
+          :placeholder="t('请输入地址')"
+          placeholder-class="input-placeholder"
+        />
+      </view>
+
+      <!-- 身份验证文件 -->
+      <view class="section">
+        <text class="section-label">{{ t('身份验证文件') }}</text>
+        <view class="underline-select" @click="onSelectDocType">
+          <text :class="['select-text', !form.doc_type ? 'input-placeholder' : '']">
+            {{ selectedDocTypeName || t('请选择证件类型') }}
+          </text>
+          <uni-icons type="bottom" size="14" color="#666" />
+        </view>
+
+        <view class="id-photos">
+          <view class="id-photo-col">
+            <text class="id-photo-label">-{{ t('证件正面照片') }}</text>
+            <view class="id-photo-box" @click="onUploadIdPhotoFront">
+              <image
+                v-if="form.id_photo_front"
+                class="id-photo-img"
+                :src="resolveMediaUrl(form.id_photo_front)"
+                mode="aspectFill"
+              />
+              <view v-else class="id-photo-placeholder">
+                <view class="id-icon id-icon-front">
+                  <view class="id-icon-face"></view>
+                  <view class="id-icon-lines">
+                    <view class="id-icon-line"></view>
+                    <view class="id-icon-line"></view>
+                    <view class="id-icon-line short"></view>
+                  </view>
+                </view>
+                <text class="pick-hint">← {{ t('请选择图片') }}</text>
+              </view>
+            </view>
+          </view>
+          <view class="id-photo-col">
+            <text class="id-photo-label">-{{ t('证件背面照片') }}</text>
+            <view class="id-photo-box" @click="onUploadIdPhotoBack">
+              <image
+                v-if="form.id_photo_back"
+                class="id-photo-img"
+                :src="resolveMediaUrl(form.id_photo_back)"
+                mode="aspectFill"
+              />
+              <view v-else class="id-photo-placeholder">
+                <view class="id-icon id-icon-back">
+                  <view class="id-icon-stripe"></view>
+                </view>
+                <text class="pick-hint">← {{ t('请选择图片') }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="bottom-spacer"></view>
     </scroll-view>
 
-    <!-- 底部提交按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSubmit">{{ t('提交申请') }}</button>
+      <button class="submit-btn" @click="onSubmit">{{ t('确认') }}</button>
     </view>
   </view>
 </template>
@@ -96,36 +140,41 @@ import { submitMerchantApplication } from '@/api/myshop';
 import type { MerchantApplicationPayload } from '@/api/myshop';
 import globalTool from '@/utils/globalTool';
 import { getShopCategories } from '@/api';
-
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
+
+const DOC_TYPES = ['身份证', '驾照', '护照'] as const;
+
 const form = ref({
   name: '',
   category_id: 0,
   owner_name: '',
+  phone: '',
+  address: '',
+  doc_type: '' as (typeof DOC_TYPES)[number] | '',
   avatar: '',
   id_photo_front: '',
   id_photo_back: '',
-  bank_passbook: '',
 });
 
 const categories = ref<any[]>([]);
+
 const selectedCategoryName = computed(() => {
   const category = categories.value.find((c) => c.id === form.value.category_id);
   return category?.name || category?.slug || '';
 });
 
+const selectedDocTypeName = computed(() => (form.value.doc_type ? t(form.value.doc_type) : ''));
+
 const resolveMediaUrl = (url: string) => globalTool.resolveMediaUrl(url);
 
-// 上传店铺头像
 function onUploadAvatar() {
   globalTool.chooseAndUploadImage(3).then((url) => {
     if (url) form.value.avatar = url;
   });
 }
 
-// 上传身份证照片
 function onUploadIdPhotoFront() {
   globalTool.chooseAndUploadImage(3).then((url) => {
     if (url) form.value.id_photo_front = url;
@@ -138,13 +187,6 @@ function onUploadIdPhotoBack() {
   });
 }
 
-function onUploadBankPassbook() {
-  globalTool.chooseAndUploadImage(3).then((url) => {
-    if (url) form.value.bank_passbook = url;
-  });
-}
-
-// 选择商品类型
 function onSelectCategory() {
   if (!categories.value.length) {
     globalTool.showToast(t('加载分类中...'), false, 'none');
@@ -163,40 +205,55 @@ function onSelectCategory() {
   });
 }
 
-// 表单验证
+function onSelectDocType() {
+  uni.showActionSheet({
+    itemList: DOC_TYPES.map((key) => t(key)),
+    success: (res) => {
+      form.value.doc_type = DOC_TYPES[res.tapIndex] || '';
+    },
+  });
+}
+
 function validate(): boolean {
+  if (!globalTool.isUploadedMediaUrl(form.value.avatar)) {
+    globalTool.showToast(t('请上传店铺头像'), false, 'none');
+    return false;
+  }
   if (!form.value.name.trim()) {
     globalTool.showToast(t('请输入店铺名称'), false, 'none');
     return false;
   }
   if (!form.value.category_id) {
-    globalTool.showToast(t('请选择商品类型'), false, 'none');
+    globalTool.showToast(t('请选择商品类别'), false, 'none');
     return false;
   }
   if (!form.value.owner_name.trim()) {
-    globalTool.showToast(t('请输入账户所有者姓名'), false, 'none');
+    globalTool.showToast(t('请输入姓名和姓氏'), false, 'none');
     return false;
   }
-  if (!globalTool.isUploadedMediaUrl(form.value.avatar)) {
-    globalTool.showToast(t('请上传店铺头像'), false, 'none');
+  if (!form.value.phone.trim()) {
+    globalTool.showToast(t('请输入电话号码'), false, 'none');
+    return false;
+  }
+  if (!form.value.address.trim()) {
+    globalTool.showToast(t('请输入地址'), false, 'none');
+    return false;
+  }
+  if (!form.value.doc_type) {
+    globalTool.showToast(t('请选择证件类型'), false, 'none');
     return false;
   }
   if (!globalTool.isUploadedMediaUrl(form.value.id_photo_front)) {
-    globalTool.showToast(t('请上传身份证正面照片'), false, 'none');
+    globalTool.showToast(t('请上传证件正面'), false, 'none');
     return false;
   }
   if (!globalTool.isUploadedMediaUrl(form.value.id_photo_back)) {
-    globalTool.showToast(t('请上传身份证背面照片'), false, 'none');
-    return false;
-  }
-  if (!globalTool.isUploadedMediaUrl(form.value.bank_passbook)) {
-    globalTool.showToast(t('请上传存折封面'), false, 'none');
+    globalTool.showToast(t('请上传证件反面'), false, 'none');
     return false;
   }
   return true;
 }
 
-// 提交申请
 async function onSubmit() {
   if (!validate()) return;
 
@@ -204,13 +261,12 @@ async function onSubmit() {
 
   try {
     const payload: MerchantApplicationPayload = {
-      applicant_name: form.value.owner_name,
-      shop_name: form.value.name,
-      shop_description: '',
+      applicant_name: form.value.owner_name.trim(),
+      shop_name: form.value.name.trim(),
+      shop_description: `${t('电话号码')}: ${form.value.phone.trim()}\n${t('详细地址')}: ${form.value.address.trim()}\n${t('证件类型')}: ${t(form.value.doc_type)}`,
       shop_category_id: form.value.category_id,
       id_doc_front_url: globalTool.stripMediaUrl(form.value.id_photo_front),
       id_doc_back_url: globalTool.stripMediaUrl(form.value.id_photo_back),
-      bank_passbook_url: globalTool.stripMediaUrl(form.value.bank_passbook),
       shop_logo_url: globalTool.stripMediaUrl(form.value.avatar),
     };
     await submitMerchantApplication(payload);
@@ -222,7 +278,6 @@ async function onSubmit() {
   }
 }
 
-// 加载商品分类
 onLoad(async () => {
   try {
     const res: any = await getShopCategories();
@@ -234,81 +289,86 @@ onLoad(async () => {
 </script>
 
 <style scoped lang="scss">
+$orange: #ee4d2d;
+$text: #222222;
+$muted: #bdbdbd;
+$line: #e5e5e5;
+
 .apply-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
 }
 
-
 .content {
   flex: 1;
-  padding: 20rpx;
-  padding-bottom: 120rpx;
+  padding: 24rpx 36rpx 0;
+  box-sizing: border-box;
 }
 
-.card {
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-
-.section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333333;
-  margin-bottom: 30rpx;
-  display: block;
-}
-
-.form-item {
-  padding: 24rpx 0;
-}
-
-.form-item-border {
-  border-bottom: 2rpx solid #f3f3f3;
-}
-
-.form-label {
-  font-size: 28rpx;
-  color: #333333;
-  margin-bottom: 20rpx;
-  display: block;
-}
-
-.form-input {
-  flex: 1;
-  font-size: 28rpx;
-  color: #333333;
-}
-
-.input-placeholder {
-  color: #c7c7c7;
-}
-
-.form-select {
+.brand-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 20rpx;
+  padding: 12rpx 0 20rpx;
 }
 
-.select-text {
+.brand-title {
+  font-size: 34rpx;
+  font-weight: 500;
+  color: $orange;
+  line-height: 1.35;
+}
+
+.brand-logo {
+  flex-shrink: 0;
+  width: 200rpx;
+  border-radius: 10rpx;
+  height: 72rpx;
+}
+
+.brand-divider {
+  height: 2rpx;
+  background: #8b3a2a;
+  margin-bottom: 28rpx;
+}
+
+.page-hint {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $text;
+  margin-bottom: 28rpx;
+}
+
+.section {
+  margin-bottom: 36rpx;
+}
+
+.section-label {
+  display: inline-block;
   font-size: 28rpx;
-  color: #333333;
+  color: $text;
+  font-weight: 500;
+  padding-bottom: 6rpx;
+  border-bottom: 2rpx solid $text;
+  margin-bottom: 20rpx;
 }
 
-.select-placeholder {
-  color: #c7c7c7;
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
 }
 
-// 头像上传
-.avatar-upload {
+.avatar-circle {
   width: 120rpx;
   height: 120rpx;
-  border-radius: 60rpx;
-  background: #f5f5f5;
+  border-radius: 50%;
+  border: 2rpx solid #d8d8d8;
+  background: #fafafa;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -320,32 +380,65 @@ onLoad(async () => {
   height: 100%;
 }
 
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.pick-hint {
+  font-size: 24rpx;
+  color: $muted;
 }
 
-// 身份证照片上传
+.underline-input {
+  width: 100%;
+  height: 72rpx;
+  font-size: 28rpx;
+  color: $text;
+  border-bottom: 2rpx solid $line;
+  margin-bottom: 8rpx;
+}
+
+.underline-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72rpx;
+  border-bottom: 2rpx solid $line;
+}
+
+.select-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: $text;
+}
+
+.input-placeholder {
+  color: $muted;
+}
+
 .id-photos {
   display: flex;
   gap: 20rpx;
-  margin-top: 20rpx;
+  margin-top: 24rpx;
 }
 
-.id-photo-item {
+.id-photo-col {
   flex: 1;
-  height: 200rpx;
-  border: 2rpx dashed #4fc3f7;
-  border-radius: 12rpx;
-  background: #f8fdff;
+  min-width: 0;
+}
+
+.id-photo-label {
+  display: block;
+  font-size: 24rpx;
+  color: $text;
+  margin-bottom: 12rpx;
+}
+
+.id-photo-box {
+  height: 220rpx;
+  border: 2rpx solid #333333;
+  border-radius: 8rpx;
+  background: #ffffff;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 .id-photo-img {
@@ -358,108 +451,66 @@ onLoad(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16rpx;
+  padding: 12rpx;
 }
 
-.id-photo-icon {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12rpx;
-}
-
-.icon-person {
-  width: 60rpx;
+.id-icon {
+  width: 88rpx;
   height: 60rpx;
-  border: 3rpx solid #4fc3f7;
-  border-radius: 50%;
+  border: 3rpx solid #bdbdbd;
+  border-radius: 6rpx;
   position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 30rpx;
-    height: 30rpx;
-    border: 3rpx solid #4fc3f7;
-    border-top: none;
-    border-radius: 0 0 30rpx 30rpx;
-  }
+  box-sizing: border-box;
 }
 
-.icon-doc {
-  width: 50rpx;
-  height: 70rpx;
-  border: 3rpx solid #4fc3f7;
-  border-radius: 4rpx;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 8rpx;
-    left: 8rpx;
-    right: 8rpx;
-    height: 8rpx;
-    background: #4fc3f7;
-    border-radius: 2rpx;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 20rpx;
-    left: 8rpx;
-    right: 8rpx;
-    height: 2rpx;
-    background: #4fc3f7;
-  }
-}
-
-.id-photo-text {
-  font-size: 24rpx;
-  color: #666666;
-}
-
-.upload-tip {
-  font-size: 24rpx;
-  color: #ff3e6c;
-  margin-top: 12rpx;
-  display: block;
-}
-
-.passbook-upload {
-  width: 100%;
-  height: 200rpx;
-  margin-top: 20rpx;
-  border: 2rpx dashed #4fc3f7;
-  border-radius: 12rpx;
-  background: #f8fdff;
+.id-icon-front {
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 0 10rpx;
+  gap: 8rpx;
+}
+
+.id-icon-face {
+  width: 22rpx;
+  height: 22rpx;
+  border-radius: 50%;
+  background: #cfcfcf;
+  flex-shrink: 0;
+}
+
+.id-icon-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.id-icon-line {
+  height: 4rpx;
+  background: #cfcfcf;
+  border-radius: 2rpx;
+
+  &.short {
+    width: 60%;
+  }
+}
+
+.id-icon-back {
   overflow: hidden;
 }
 
-.passbook-img {
-  width: 100%;
-  height: 100%;
+.id-icon-stripe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 14rpx;
+  height: 16rpx;
+  background: #cfcfcf;
 }
 
-.passbook-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-}
-
-.passbook-text {
-  font-size: 24rpx;
-  color: #666666;
+.bottom-spacer {
+  height: 160rpx;
 }
 
 .bottom-bar {
@@ -467,10 +518,9 @@ onLoad(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20rpx;
+  padding: 20rpx 36rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   background: #ffffff;
-  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
 .submit-btn {
@@ -479,9 +529,14 @@ onLoad(async () => {
   line-height: 88rpx;
   text-align: center;
   border-radius: 44rpx;
-  background: #ff6b9d;
+  background: $orange;
   color: #ffffff;
   font-size: 32rpx;
+  font-weight: 600;
   border: none;
+
+  &::after {
+    border: none;
+  }
 }
 </style>
