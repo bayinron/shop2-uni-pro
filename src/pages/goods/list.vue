@@ -21,7 +21,7 @@
         <view class="card-body">
           <text class="card-title breakcss">{{ productName(p) }}</text>
           <view class="card-row">
-            <text class="price">￥ {{ productPrice(p) }}</text>
+            <text class="price">฿ {{ productPrice(p) }}</text>
             <view class="buy-btn">{{ t('购买') }}</view>
           </view>
         </view>

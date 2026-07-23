@@ -29,7 +29,7 @@
           <view class="product-info">
             <text class="product-title breakcss">{{ item.title }}</text>
             <view class="product-price-row">
-              <text class="product-price">￥{{ item.price }} x {{ item.qty }}</text>
+              <text class="product-price">฿{{ item.price }} x {{ item.qty }}</text>
             </view>
           </view>
         </view>
@@ -40,7 +40,7 @@
     <view class="order-footer">
       <view class="footer-left">
         <text class="footer-label">{{ t('实付款:') }}</text>
-        <text class="footer-amount">￥{{ totalPrice }}</text>
+        <text class="footer-amount">฿{{ totalPrice }}</text>
         <text class="footer-count">{{ t('共') }}{{ totalCount }}{{ t('件') }}</text>
       </view>
       <button class="submit-btn" @click="onSubmitOrder">{{ t('提交订单') }}</button>

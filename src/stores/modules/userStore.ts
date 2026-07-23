@@ -129,7 +129,7 @@ export const useUserStore = defineStore('user', () => {
             if (walletBalance !== undefined && walletBalance !== null) {
                 data.balance = Number(walletBalance).toFixed(2);
             } else if (wallet?.balance_wallet?.balance_formatted) {
-                // 从类似 "¥7,578.00" 中提取数字
+                // 从类似 "฿7,578.00" 中提取数字
                 data.balance = String(wallet.balance_wallet.balance_formatted).replace(/[^\d.-]/g, '');
             } else if (wallet?.balance_formatted) {
                 // 旧结构：wallet.balance_formatted

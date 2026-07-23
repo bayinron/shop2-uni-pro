@@ -8,7 +8,7 @@
       <view class="section">
         <text class="section-label">{{ t('充值金额') }}</text>
         <view class="amount-input-wrap">
-          <text class="currency-symbol">￥</text>
+          <text class="currency-symbol">฿</text>
           <input
             class="amount-input"
             type="number"

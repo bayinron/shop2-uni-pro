@@ -47,7 +47,7 @@
                   <text class="spec-text">{{ item.spec }}</text>
                 </view>
                 <view class="product-price-row">
-                  <text class="product-price">￥{{ item.price }}</text>
+                  <text class="product-price">฿{{ item.price }}</text>
                   <text class="product-quantity">x{{ item.quantity }}</text>
                 </view>
               </view>
@@ -68,7 +68,7 @@
             <text class="order-time">{{ order.time }}</text>
             <view class="order-total">
               <text class="total-label">{{ t('合计：') }}</text>
-              <text class="total-price">￥{{ order.total }}</text>
+              <text class="total-price">฿{{ order.total }}</text>
             </view>
           </view>
 
@@ -386,7 +386,7 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
   if (action.key === 'pay') {
     uni.showModal({
       title: t('确认付款'),
-      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}￥${order.total}`,
+      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}฿${order.total}`,
       confirmText: t('付款'),
       cancelText: t('取消'),
       success: async (r) => {

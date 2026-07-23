@@ -12,9 +12,9 @@
     <!-- 价格和操作栏 -->
     <view class="price-bar">
       <view class="price-left">
-        <text class="price-symbol">￥</text>
+        <text class="price-symbol">฿</text>
         <text class="price-value">{{ goodsData.sale_price }}</text>
-        <text class="price-original" v-if="goodsData.original_price">￥{{ goodsData.original_price }}</text>
+        <text class="price-original" v-if="goodsData.original_price">฿{{ goodsData.original_price }}</text>
       </view>
       <view class="price-center">
         <view class="points-btn">
@@ -329,7 +329,7 @@ async function onBuyNow() {
 
     uni.showModal({
       title: t('确认付款'),
-      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}￥${orderAmount}`,
+      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}฿${orderAmount}`,
       confirmText: t('付款'),
       cancelText: t('取消'),
       success: async (r) => {

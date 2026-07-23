@@ -1,6 +1,5 @@
 <template>
   <view class="bank-page">
-    <!-- 顶部标题栏占位（导航由 pages.json 控制） -->
     <view class="header-placeholder" />
 
     <!-- 表单区域（根据后端返回的 fields_config 动态生成） -->
@@ -10,9 +9,21 @@
         :key="field.key"
         class="form-item"
         :class="{ 'no-border': index === fieldConfigs.length - 1 }"
+        @click="field.type === 'select' ? onSelectField(field) : undefined"
       >
         <text class="form-label">{{ field.label }}</text>
+
+        <!-- 下拉选择类型 -->
+        <view v-if="field.type === 'select'" class="form-right">
+          <text class="form-value">
+            {{ form[field.key] || t('请选择') }}
+          </text>
+          <uni-icons type="bottom" size="18" color="#c7c7c7" />
+        </view>
+
+        <!-- 普通输入类型 -->
         <input
+          v-else
           class="form-input"
           :type="field.type === 'number' ? 'number' : 'text'"
           v-model="form[field.key]"
@@ -31,46 +42,82 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue';
-import {getBankTemplates,bindUserPaymentMethod, getUserPaymentMethods} from '@/api/pay';
+import { getBankTemplates, bindUserPaymentMethod, getUserPaymentMethods } from '@/api/pay';
 import { onLoad } from '@dcloudio/uni-app';
 import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
-const cny = ref<any>(null);
+const currentTpl = ref<any>(null);
 const fieldConfigs = ref<any[]>([]);
-onLoad(() => {
+const form = ref<Record<string, string>>({});
+const templateIdFromQuery = ref<number | null>(null);
+
+onLoad((options: any) => {
+  if (options?.templateId) {
+    templateIdFromQuery.value = Number(options.templateId);
+  }
+  loadTemplate();
+});
+
+function loadTemplate() {
   getBankTemplates().then((res: any) => {
-    const tpl = res.data.find((t: any) => t.currency === 'USD');
+    const list = res.data || [];
+    let tpl: any = null;
+
+    if (templateIdFromQuery.value) {
+      tpl = list.find((item: any) => item.id === templateIdFromQuery.value);
+    }
+    // 兼容旧入口：未传 templateId 时优先 USD，其次取第一项
+    if (!tpl) {
+      tpl = list.find((item: any) => item.currency === 'USD') || list[0];
+    }
+
     if (!tpl?.id) {
       globalTool.showToast(t('未找到银行卡模板'), false, 'none');
       return;
     }
-    cny.value = tpl;
-    // 兼容字段名为 fields_config 或 fields
+
+    currentTpl.value = tpl;
+    if (tpl.name) {
+      uni.setNavigationBarTitle({ title: tpl.name });
+    }
+
     const cfg = tpl?.fields_config || tpl?.fields || [];
     fieldConfigs.value = Array.isArray(cfg) ? cfg : [];
-    // 初始化表单字段
+
     fieldConfigs.value.forEach((f: any) => {
       const key = f.key;
       if (form.value[key] === undefined) {
         form.value[key] = '';
       }
     });
+
     nextTick(() => {
-      getUserPaymentMethods({ bank_template_id: cny.value.id }).then((res: any) => {
-        if (res.data.length > 0) {
-          form.value = res.data[0].details;
+      getUserPaymentMethods({ bank_template_id: currentTpl.value.id }).then((methodRes: any) => {
+        if (methodRes.data?.length > 0) {
+          form.value = { ...form.value, ...methodRes.data[0].details };
         }
       });
     });
   });
-});
+}
 
-const form = ref<Record<string, string>>({});
+function onSelectField(field: any) {
+  const options: string[] = field.options || [];
+  if (!options.length) return;
+  uni.showActionSheet({
+    itemList: options,
+    success: (res) => {
+      const idx = res.tapIndex;
+      if (idx >= 0 && idx < options.length) {
+        form.value[field.key] = options[idx];
+      }
+    },
+  });
+}
 
 function onSave() {
-  // 按配置做必填校验
   for (const field of fieldConfigs.value as any[]) {
     if (!field.required) continue;
     const rawVal = form.value[field.key] as unknown;
@@ -82,9 +129,23 @@ function onSave() {
       });
       return;
     }
+    if (field.regex) {
+      try {
+        const re = new RegExp(field.regex);
+        if (!re.test(String(val))) {
+          uni.showToast({
+            title: field.placeholder || (t('请输入正确的') + field.label),
+            icon: 'none',
+          });
+          return;
+        }
+      } catch (e) {
+        // 忽略非法正则
+      }
+    }
   }
 
-  if (!cny.value?.id) {
+  if (!currentTpl.value?.id) {
     uni.showToast({ title: t('银行模板未加载完成'), icon: 'none' });
     return;
   }
@@ -95,12 +156,13 @@ function onSave() {
   });
 
   bindUserPaymentMethod({
-    name: t('银行'),
-    bank_template_id: cny.value.id,
+    name: currentTpl.value.name || t('银行'),
+    bank_template_id: currentTpl.value.id,
     details: accountInfo,
-  }).then((res: any) => {
-    console.log(res);
-    globalTool.showToast(t('保存成功'), true, 'success');
+  }).then(() => {
+    globalTool.showToast(t('保存成功'), () => {
+      uni.navigateBack();
+    }, 'success');
   });
 }
 </script>
@@ -128,6 +190,7 @@ function onSave() {
   border-bottom: 1rpx solid #f2f2f2;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .form-item.no-border {
@@ -135,7 +198,19 @@ function onSave() {
 }
 
 .form-label {
-  width: 180rpx;
+  width: 220rpx;
+  font-size: 28rpx;
+  color: #333333;
+  flex-shrink: 0;
+}
+
+.form-right {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.form-value {
   font-size: 28rpx;
   color: #333333;
 }
@@ -168,4 +243,3 @@ function onSave() {
   border: none;
 }
 </style>
-

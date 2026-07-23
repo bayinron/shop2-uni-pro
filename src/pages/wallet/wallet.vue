@@ -2,7 +2,7 @@
   <view class="wallet-page">
     <!-- 顶部余额区域 -->
     <view class="wallet-header">
-      <text class="wallet-label">{{ t('余额（￥）') }}</text>
+      <text class="wallet-label">{{ t('余额（฿）') }}</text>
       <text class="wallet-amount">{{ balance }}</text>
     </view>
 
@@ -10,7 +10,7 @@
     <view class="wallet-list">
       <view class="wallet-item" @click="goRecharge">
         <view class="wallet-item-left">
-          <text class="iconfont wallet-icon">￥</text>
+          <text class="iconfont wallet-icon">฿</text>
           <text class="wallet-text">{{ t('充值') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />

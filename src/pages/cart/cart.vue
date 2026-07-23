@@ -64,7 +64,7 @@
             <view class="item-info">
               <text class="item-title">{{ item.title }}</text>
               <view class="item-bottom">
-                <text class="item-price">￥{{ formatPrice(item.price) }}</text>
+                <text class="item-price">฿{{ formatPrice(item.price) }}</text>
                 <view class="qty-pill">
                   <text class="qty-btn" @click="decreaseQty(shop, item)">−</text>
                   <text class="qty-num">{{ item.qty }}</text>
@@ -91,7 +91,7 @@
 
       <view class="footer-total">
         <text class="total-label">{{ t('合计金额') }}</text>
-        <text class="total-amount">￥{{ formatPrice(totalPrice) }}</text>
+        <text class="total-amount">฿{{ formatPrice(totalPrice) }}</text>
       </view>
 
       <view class="checkout-btn" @click="onCheckout">
@@ -436,7 +436,7 @@ async function onCheckout() {
 
     uni.showModal({
       title: t('确认付款'),
-      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}￥${orderAmount}`,
+      content: `${t('确认使用钱包支付订单？')}\n${t('金额：')}฿${orderAmount}`,
       confirmText: t('付款'),
       cancelText: t('取消'),
       success: async (r) => {

@@ -66,7 +66,7 @@
           <view class="coupon-dash" />
           <view class="coupon-info">
             <text class="coupon-main coupon-main--red">立减 50%</text>
-            <text class="coupon-sub">满 ¥0 可用</text>
+            <text class="coupon-sub">满 ฿0 可用</text>
           </view>
         </view>
         <view class="coupon coupon--ship">
@@ -74,7 +74,7 @@
           <view class="coupon-dash" />
           <view class="coupon-info">
             <text class="coupon-main coupon-main--teal">免运费券</text>
-            <text class="coupon-sub">满 ¥0 可用</text>
+            <text class="coupon-sub">满 ฿0 可用</text>
           </view>
         </view>
       </view>

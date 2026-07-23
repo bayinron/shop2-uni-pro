@@ -51,7 +51,7 @@
                 <text class="product-name">{{ it.product_name }}</text>
                 <text class="product-spec" v-if="it.sku">{{ it.sku }}</text>
                 <view class="product-price-row">
-                  <text class="product-price">￥{{ it.unit_price }}</text>
+                  <text class="product-price">฿{{ it.unit_price }}</text>
                   <text class="product-quantity">x{{ it.quantity }}</text>
                 </view>
               </view>
@@ -62,7 +62,7 @@
             <text class="order-time">{{ o.created_at }}</text>
             <view class="order-total">
               <text class="total-label">{{ t('合计：') }}</text>
-              <text class="total-price">￥{{ o.total_amount }}</text>
+              <text class="total-price">฿{{ o.total_amount }}</text>
             </view>
           </view>
         </view>

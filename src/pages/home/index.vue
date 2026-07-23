@@ -109,7 +109,7 @@
         </view>
         <view class="card-body">
           <view class="card-title">{{ productName(p) }}</view>
-          <text class="price">￥{{ formatPrice(productPrice(p)) }}</text>
+          <text class="price">฿{{ formatPrice(productPrice(p)) }}</text>
           <view class="card-meta">
             <view class="rating">
               <text class="star">★</text>
