@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { store } from '@/stores';
 import { ref } from 'vue';
 import globalTool from '@/utils/globalTool';
-import { type AuthMeResponse, authGetMe, getHomeConfig } from '@/api';
+import { type AuthMeResponse, type KefuLinkResponse, authGetMe, getHomeConfig, getKefuLink } from '@/api';
 // import { getSystemConfig, type SystemConfig, } from '@/api';
 import langData from '@/static/lang.json'
 
@@ -114,6 +114,49 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
+    /** 客服外部連結配置（啟動時預拉取） */
+    const kefuConfig = ref<KefuLinkResponse>({
+        enabled: false,
+        label: '在線客服',
+        url: '',
+        external_url: '',
+        open_type: 'external',
+    });
+
+    function reqKefuLink() {
+        return getKefuLink()
+            .then((res: any) => {
+                const data = (res?.data ?? res) as KefuLinkResponse;
+                if (data && typeof data === 'object') {
+                    kefuConfig.value = {
+                        enabled: !!data.enabled,
+                        label: data.label || '在線客服',
+                        url: data.url || data.external_url || '',
+                        external_url: data.external_url || data.url || '',
+                        open_type: data.open_type || 'external',
+                    };
+                }
+                return kefuConfig.value;
+            })
+            .catch(() => kefuConfig.value);
+    }
+
+    /** 開啟客服外部連結（新分頁 / 系統瀏覽器） */
+    function openKefu() {
+        const link = kefuConfig.value.url || kefuConfig.value.external_url;
+        if (!kefuConfig.value.enabled || !link) {
+            return false;
+        }
+        // #ifdef H5
+        window.open(link, '_blank');
+        // #endif
+        // #ifndef H5
+        // @ts-ignore
+        plus?.runtime?.openURL?.(link);
+        // #endif
+        return true;
+    }
+
     function setUserInfo(user: AuthMeResponse) {
         userInfo.value = user;
     }
@@ -144,7 +187,10 @@ export const useUserStore = defineStore('user', () => {
         url,
         setUserInfo,
         userInfo,
-        reqUserInfo
+        reqUserInfo,
+        kefuConfig,
+        reqKefuLink,
+        openKefu,
     };
 });
 

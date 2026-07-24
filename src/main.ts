@@ -56,6 +56,8 @@ export function createApp() {
     const userStore = useUserStoreHook();
     // userStore.reqConfig();
     userStore.reqUserInfo();
+    // 啟動時預拉取客服外部連結（免登入）
+    userStore.reqKefuLink();
 
     return {
         app

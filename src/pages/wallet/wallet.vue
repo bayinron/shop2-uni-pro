@@ -78,9 +78,12 @@ const userInfo = computed(() => userStore.userInfo);
 const balance = computed(() => userInfo.value.wallet.balance_wallet.balance_formatted ?? '0');
 
 function goRecharge() {
+  // uni.navigateTo({
+  //   url: '/pages/wallet/recharge',
+  // });
   uni.navigateTo({
-    url: '/pages/wallet/recharge',
-  });
+      url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
+    });
 }
 
 function withdrawClick() {

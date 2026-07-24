@@ -766,3 +766,28 @@ export interface MerchantApplicationResponse {
     // ...其它回應字段
 }
 
+// ===== 客服系統（外部連結模式，免登入唯讀）=====
+
+/** 客服連結響應 - GET /api/kefu */
+export interface KefuLinkResponse {
+    /** 是否顯示客服入口；後台已啟用且有合法連結時為 true */
+    enabled: boolean;
+    /** 客服入口顯示名稱（後台可自訂，預設「在線客服」） */
+    label: string;
+    /** 外部客服連結；未設定或非法時為 ""，與 external_url 相同 */
+    url: string;
+    /** 同 url（相容欄位） */
+    external_url: string;
+    /** 開啟方式，固定為 external（前端以新分頁開啟） */
+    open_type: 'external';
+}
+
+/** 取得客服連結 - GET /api/kefu（免登入） */
+export function getKefuLink() {
+    return http<KefuLinkResponse>({
+        method: 'GET',
+        url: 'kefu',
+        noLoading: true
+    });
+}
+

@@ -275,7 +275,7 @@ function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
     }
   } else if (key === 'cs') {
     uni.navigateTo({
-      url: '/pages/service/index?url=' + 'https://www.baidu.com',
+      url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
     });
   } else if (key === 'help') {
     uni.navigateTo({ url: '/pages/help/help' });

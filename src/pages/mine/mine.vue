@@ -15,7 +15,7 @@
             </view>
             <view class="level-row">
               <text class="level-label">{{ t('购物达人等级：') }}</text>
-              <view class="level-pill" >
+              <view class="level-pill">
                 <text class="level-text">Classic</text>
                 <!-- <text class="level-arrow">›</text> -->
               </view>
@@ -310,7 +310,10 @@ function onSettings() {
     success: (res) => {
       if (res.tapIndex === 0) onEditUserInfo();
       else if (res.tapIndex === 1) {
-        uni.navigateTo({ url: '/pages/wallet/recharge' });
+        // uni.navigateTo({ url: '/pages/wallet/recharge' });
+        uni.navigateTo({
+          url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
+        });
       } else if (res.tapIndex === 2) onExit();
     },
   });
