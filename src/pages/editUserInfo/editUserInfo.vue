@@ -10,6 +10,7 @@
           v-model="nickname"
           :placeholder="t('请输入昵称')"
           placeholder-class="input-placeholder"
+          maxlength="32"
         />
       </view>
 
@@ -18,9 +19,9 @@
         <text class="label">{{ t('头像') }}</text>
         <view class="avatar-wrap" @click="onChooseAvatar">
           <image
-            v-if="avatar"
+            v-if="avatarDisplay"
             class="avatar-img"
-            :src="avatar"
+            :src="avatarDisplay"
             mode="aspectFill"
           />
           <view v-else class="avatar-placeholder">
@@ -32,13 +33,15 @@
 
     <!-- 底部按钮 -->
     <view class="bottom-bar">
-      <button class="confirm-btn" @click="onConfirm">{{ t('确定') }}</button>
+      <button class="confirm-btn" :disabled="submitting" @click="onConfirm">
+        {{ t('确定') }}
+      </button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import { authUpdateMe } from '@/api';
@@ -47,29 +50,65 @@ import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 const userStore = useUserStoreHook();
-const userInfo = userStore.userInfo;
 
-const nickname = ref<string>(userInfo.nickname || '');
-const avatar = ref<string>(userInfo.avatar || '');
+const nickname = ref('');
+const avatar = ref('');
+const submitting = ref(false);
+
+const avatarDisplay = computed(() => globalTool.resolveMediaUrl(avatar.value));
+
+function syncFormFromStore() {
+  const info = userStore.userInfo;
+  nickname.value = ( info.nickname || '').trim();
+  avatar.value = info.avatar || '';
+}
 
 onLoad(() => {
-  // 如果需要，可以在这里从参数中预填数据（当前直接用 store）
+  syncFormFromStore();
+  userStore.reqUserInfo().then(() => {
+    syncFormFromStore();
+  }).catch(() => {
+    // 已有本地 store 数据时可继续编辑
+  });
 });
 
 function onChooseAvatar() {
-  uni.showToast({ title: t('选择头像（测试功能）'), icon: 'none' });
-  // 这里仅做演示，实际项目中可使用 uni.chooseImage
-  // avatar.value = '/static/img/money-bag.png';
+  if (submitting.value) return;
+  globalTool.chooseAndUploadImage(3).then((url) => {
+    if (url) avatar.value = url;
+  });
 }
 
-function onConfirm() {
-  authUpdateMe({
-    real_name: nickname.value.trim(),
-    avatar: avatar.value,
-  }).then(() => {
+function validate(): boolean {
+  if (!nickname.value.trim()) {
+    globalTool.showToast(t('请输入昵称'), false, 'none');
+    return false;
+  }
+  return true;
+}
+
+async function onConfirm() {
+  if (submitting.value || !validate()) return;
+
+  submitting.value = true;
+  uni.showLoading({ title: t('提交中...'), mask: true });
+
+  try {
+    const payload: { nickname: string; avatar?: string } = {
+      nickname: nickname.value.trim(),
+    };
+    if (avatar.value) {
+      payload.avatar = globalTool.stripMediaUrl(avatar.value);
+    }
+    await authUpdateMe(payload);
+    await userStore.reqUserInfo();
     globalTool.showToast(t('保存成功'), true);
-    userStore.reqUserInfo();
-  });
+  } catch (e) {
+    console.error(t('保存失败'), e);
+  } finally {
+    submitting.value = false;
+    uni.hideLoading();
+  }
 }
 </script>
 
@@ -155,6 +194,9 @@ function onConfirm() {
   color: #fff;
   font-size: 32rpx;
   border: none;
+
+  &[disabled] {
+    opacity: 0.6;
+  }
 }
 </style>
-

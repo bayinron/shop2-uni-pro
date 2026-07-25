@@ -439,6 +439,7 @@ export interface AuthMeResponse {
     id: number;
     username: string;
     nickname?: string;
+    real_name?: string | null;
     email?: string;
     phone?: string;
     avatar?: string | null;

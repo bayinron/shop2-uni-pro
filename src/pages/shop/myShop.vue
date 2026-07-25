@@ -13,7 +13,7 @@
             <text class="my-shop-id-value">{{ userInfo.id }}</text>
           </view>
           <view class="my-shop-name-row">
-            <text class="my-shop-name">{{ userInfo.phone }}</text>
+            <text class="my-shop-name">{{ userInfo.nickname || userInfo.phone }}</text>
             <!-- <image class="my-shop-badge" src="/static/img/invitebg.png" mode="aspectFill" /> -->
           </view>
           <!-- <view class="my-shop-phone-wrap">

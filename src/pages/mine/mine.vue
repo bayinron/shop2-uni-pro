@@ -161,7 +161,7 @@ const cartCount = ref(0);
 
 const displayAccount = computed(() => {
   if (!isLoggedIn.value) return t('点击登录');
-  return userInfo.value.phone || userInfo.value.username || t('用户');
+  return userInfo.value.nickname || userInfo.value.username || t('用户');
 });
 
 const avatarSrc = computed(() => {

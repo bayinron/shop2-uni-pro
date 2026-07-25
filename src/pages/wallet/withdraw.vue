@@ -6,7 +6,7 @@
     <view class="section">
       <text class="section-label">{{ t('提现金额') }}</text>
       <view class="amount-input-wrap">
-        <text class="currency-symbol">{{ currencySymbol }}</text>
+        <text class="currency-symbol">฿</text>
         <input class="amount-input" type="number" v-model="form.amount" :placeholder="t('请输入提现金额')" />
       </view>
     </view>
@@ -48,7 +48,7 @@
 
       <view class="balance-row">
         <text class="balance-text">
-          {{ t('可用余额：') }}<text class="balance-amount">{{ currencySymbol }} {{ availableBalance }}</text>
+          {{ t('可用余额：') }}<text class="balance-amount">฿ {{ availableBalance }}</text>
         </text>
       </view>
     </view>

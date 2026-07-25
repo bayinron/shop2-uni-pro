@@ -1,4 +1,5 @@
 import { uploadFile, type UploadFileType } from '@/api/upload';
+import { $t } from '@/utils/i18n';
 
 // 兼容小程序端 wx 全局对象（用于文件系统等 API）
 declare const wx: any;
@@ -25,18 +26,18 @@ export default {
             });
         }
     },
-    showModal: function (content: any, cb: Function, showCancel: boolean = false, title: string = '提示', confirmText: string = '确定', cancelText: string = '取消') {
+    showModal: function (content: any, cb: Function, showCancel: boolean = false, title?: string, confirmText?: string, cancelText?: string) {
         uni.showModal({
-            title: title,
+            title: title || $t('提示'),
             content: content,
             showCancel: showCancel,
-            confirmText: confirmText,
-            cancelText: cancelText,
+            confirmText: confirmText || $t('确定'),
+            cancelText: cancelText || $t('取消'),
             success: function (res) {
                 if (res.confirm && cb instanceof Function) {
                     cb();
                 } else if (res.cancel) {
-                    console.log('用户点击取消');
+                    console.log($t('用户点击取消'));
                 }
             }
         });
@@ -154,7 +155,7 @@ export default {
         }
     },
     numToChinese: function (num: number) {
-        let numArr = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        let numArr = [$t('一'), $t('二'), $t('三'), $t('四'), $t('五'), $t('六'), $t('七'), $t('八'), $t('九')];
 
         return numArr[num];
     },
@@ -180,7 +181,7 @@ export default {
 
             const callNow = immediate && !timeout;
             if (timeout) {
-                console.log('点太快了');
+                console.log($t('点太快了'));
             }
             clearTimeout(timeout);
             timeout = setTimeout(later, duration);
@@ -191,19 +192,20 @@ export default {
         };
     },
 
-    copyText: function (text: string, tips: string = '已复制到剪贴板') {
+    copyText: function (text: string, tips?: string) {
+        const successTips = tips || $t('已复制到剪贴板');
         if (navigator.clipboard) {
             navigator.clipboard
                 .writeText(text)
                 .then(() => {
-                    this.showToast(tips);
+                    this.showToast(successTips);
                 })
                 .catch((err) => {
-                    this.showToast('复制失败,请手动长按复制');
+                    this.showToast($t('复制失败,请手动长按复制'));
                 });
         } else {
             // TipsManger.getInstance().showTips('当前浏览器不支持粘贴板功能');
-            this.fallbackCopyTextToClipboard(text, tips);
+            this.fallbackCopyTextToClipboard(text, successTips);
         }
     },
     fallbackCopyTextToClipboard: function (text: string, tips: string) {
@@ -218,7 +220,7 @@ export default {
             this.showToast(tips);
         } catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
-            this.showToast('复制失败,请手动长按复制');
+            this.showToast($t('复制失败,请手动长按复制'));
         }
         document.body.removeChild(textArea);
     },
@@ -293,7 +295,11 @@ export default {
                         filePath: tempFilePath,
                         success: async (fileInfo) => {
                             if (fileInfo.size > maxSize) {
-                                this.showToast(`图片大小不能超过 ${maxSizeMB}MB`, false, 'none');
+                                this.showToast(
+                                    $t('图片大小不能超过 {size}MB').replace('{size}', String(maxSizeMB)),
+                                    false,
+                                    'none',
+                                );
                                 resolve('');
                                 return;
                             }
