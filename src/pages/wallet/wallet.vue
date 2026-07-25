@@ -1,9 +1,23 @@
 <template>
   <view class="wallet-page">
-    <!-- 顶部余额区域 -->
+    <!-- 顶部余额区域：店铺结算钱包 -->
     <view class="wallet-header">
-      <text class="wallet-label">{{ t('余额（฿）') }}</text>
+      <text class="wallet-label">{{ t('余额') }}（{{ currencySymbol }}）</text>
       <text class="wallet-amount">{{ balance }}</text>
+      <view class="wallet-stats">
+        <view class="stat-item">
+          <text class="stat-label">{{ t('待结算') }}</text>
+          <text class="stat-value">{{ formatAmount(financial?.pending_amount) }}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">{{ t('已结算') }}</text>
+          <text class="stat-value">{{ formatAmount(financial?.settled_amount) }}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">{{ t('累计收益') }}</text>
+          <text class="stat-value">{{ formatAmount(financial?.total_earned) }}</text>
+        </view>
+      </view>
     </view>
 
     <!-- 功能列表 -->
@@ -31,14 +45,6 @@
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
-<!-- 
-      <view class="wallet-item" @click="todo('bill')">
-        <view class="wallet-item-left">
-          <text class="iconfont wallet-icon">📄</text>
-          <text class="wallet-text">账单明细</text>
-        </view>
-        <uni-icons type="right" size="18" color="#c7c7c7" />
-      </view> -->
 
       <view class="wallet-item" @click="todo('withdrawLog')">
         <view class="wallet-item-left">
@@ -68,22 +74,55 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
+import {
+  getMyShopFinancialSummary,
+  type MyShopFinancialSummary,
+} from '@/api/myshop';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-const balance = computed(() => userInfo.value.wallet.balance_wallet.balance_formatted ?? '0');
+
+const financial = ref<MyShopFinancialSummary | null>(null);
+
+const currencySymbol = computed(
+  () => userInfo.value.wallet?.balance_symbol || '฿',
+);
+
+/** 可提现余额 = settlement_wallet.balance */
+const balance = computed(() => formatAmount(financial.value?.settlement_wallet?.balance));
+
+function formatAmount(v: number | string | null | undefined) {
+  if (v === undefined || v === null || v === '') return '0.00';
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(2) : String(v);
+}
+
+function unwrapData<T>(res: any): T {
+  return (res?.data?.data ?? res?.data ?? res) as T;
+}
+
+async function loadFinancial() {
+  try {
+    const res: any = await getMyShopFinancialSummary();
+    financial.value = unwrapData<MyShopFinancialSummary>(res);
+  } catch {
+    financial.value = null;
+  }
+}
+
+onShow(() => {
+  loadFinancial();
+});
 
 function goRecharge() {
-  // uni.navigateTo({
-  //   url: '/pages/wallet/recharge',
-  // });
   uni.navigateTo({
-      url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
-    });
+    url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
+  });
 }
 
 function withdrawClick() {
@@ -100,7 +139,7 @@ function bankClick() {
 
 function todo(type: string) {
   let url = '';
-  switch(type) {
+  switch (type) {
     case 'bill':
       url = '/pages/wallet/bill';
       break;
@@ -130,7 +169,7 @@ function todo(type: string) {
 
 .wallet-header {
   background: #ff3e6c;
-  padding: 40rpx 30rpx 50rpx;
+  padding: 40rpx 30rpx 40rpx;
 }
 
 .wallet-label {
@@ -142,6 +181,30 @@ function todo(type: string) {
   margin-top: 20rpx;
   font-size: 56rpx;
   font-weight: 700;
+  color: #ffffff;
+}
+
+.wallet-stats {
+  margin-top: 28rpx;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.stat-value {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
   color: #ffffff;
 }
 
@@ -175,4 +238,3 @@ function todo(type: string) {
   color: #333333;
 }
 </style>
-
