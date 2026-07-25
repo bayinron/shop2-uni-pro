@@ -1,31 +1,35 @@
 <template>
   <view class="my-shop-page">
-    <!-- 顶部橙色头部 + 店铺账户信息（按截图） -->
+    <!-- 顶部：店铺资料 -->
     <view class="my-shop-header">
       <view class="my-shop-header-bg"></view>
       <view class="my-shop-header-main">
         <view class="my-shop-logo-box">
-          <text class="my-shop-logo-text">S</text>
+          <image
+            v-if="shopLogo"
+            class="my-shop-logo-img"
+            :src="shopLogo"
+            mode="aspectFill"
+          />
+          <text v-else class="my-shop-logo-text">{{ shopInitial }}</text>
         </view>
         <view class="my-shop-user-info">
           <view class="my-shop-id-row">
             <text class="my-shop-id-label">{{ t('ID：') }}</text>
-            <text class="my-shop-id-value">{{ userInfo.id }}</text>
+            <text class="my-shop-id-value">{{ shopProfile?.id || '-' }}</text>
           </view>
           <view class="my-shop-name-row">
-            <text class="my-shop-name">{{ userInfo.nickname || userInfo.phone }}</text>
-            <!-- <image class="my-shop-badge" src="/static/img/invitebg.png" mode="aspectFill" /> -->
+            <text class="my-shop-name">{{ shopName }}</text>
           </view>
-          <!-- <view class="my-shop-phone-wrap">
-            <text class="my-shop-phone">{{ userInfo.phone }}</text>
-          </view> -->
+          <view v-if="shopProfile?.rating" class="my-shop-rating-row">
+            <text class="my-shop-rating">{{ t('评分') }} {{ shopProfile.rating }}</text>
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- 主体内容：我的订单 + 我的钱包 + 广告 Banner -->
     <scroll-view class="my-shop-content" scroll-y>
-      <!-- 我的订单 -->
+      <!-- 我的订单（卖家） -->
       <view class="my-shop-card my-shop-card--order">
         <view class="card-header">
           <text class="card-title">{{ t('我的订单') }}</text>
@@ -43,7 +47,7 @@
             <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
             <text class="order-icon-text">{{ t('待发货') }}</text>
           </view>
-          <view class="order-icon-item" @click="goOrderByStatus('processing')">
+          <view class="order-icon-item" @click="goOrderByStatus('shipped')">
             <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
             <text class="order-icon-text">{{ t('待收货') }}</text>
           </view>
@@ -54,7 +58,7 @@
         </view>
       </view>
 
-      <!-- 我的钱包 -->
+      <!-- 结算钱包 -->
       <view class="my-shop-card my-shop-card--wallet">
         <view class="card-header">
           <text class="card-title">{{ t('我的钱包') }}</text>
@@ -68,14 +72,17 @@
             <text class="wallet-label">{{ t('余额') }}</text>
           </view>
           <view class="wallet-amount">
-            <text class="wallet-currency">฿</text>
-            <text class="wallet-value">{{ userBalance }}</text>
+            <text class="wallet-currency">{{ currencySymbol }}</text>
+            <text class="wallet-value">{{ shopBalance }}</text>
           </view>
         </view>
       </view>
 
-      <!-- 店铺活动 Banner（测试图片） -->
-      <view class="banner-wrap">
+      <!-- 店铺封面 -->
+      <view v-if="shopCover" class="banner-wrap">
+        <image class="banner-img" :src="shopCover" mode="aspectFill" />
+      </view>
+      <view v-else class="banner-wrap">
         <image class="banner-img" src="/static/img/invitebg.png" mode="aspectFill" />
       </view>
 
@@ -138,30 +145,97 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
-
+import {
+  getMyShopFinancialSummary,
+  getMyShopProfile,
+  type MyShopFinancialSummary,
+  type MyShopProfile,
+} from '@/api/myshop';
+import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-const userBalance = computed(() =>
-  userInfo.value.wallet?.balance_wallet?.balance_formatted ??
-  userInfo.value.balance ??
-  '0'
+
+const shopProfile = ref<MyShopProfile | null>(null);
+const financial = ref<MyShopFinancialSummary | null>(null);
+
+const shopName = computed(() => shopProfile.value?.name || t('我的店铺'));
+const shopInitial = computed(() => {
+  const name = shopProfile.value?.name?.trim();
+  return name ? name.charAt(0).toUpperCase() : 'S';
+});
+const shopLogo = computed(() => globalTool.resolveMediaUrl(shopProfile.value?.logo || ''));
+const shopCover = computed(() => globalTool.resolveMediaUrl(shopProfile.value?.cover_image || ''));
+
+const currencySymbol = computed(
+  () => userInfo.value.wallet?.balance_symbol || '฿',
 );
 
+const shopBalance = computed(() => {
+  const balance = financial.value?.settlement_wallet?.balance;
+  if (balance === undefined || balance === null) return '0.00';
+  const n = Number(balance);
+  return Number.isFinite(n) ? n.toFixed(2) : String(balance);
+});
+
+function unwrapData<T>(res: any): T {
+  return (res?.data?.data ?? res?.data ?? res) as T;
+}
+
+async function loadShopProfile() {
+  try {
+    const res: any = await getMyShopProfile();
+    shopProfile.value = unwrapData<MyShopProfile>(res);
+  } catch (e: any) {
+    shopProfile.value = null;
+    const status = e?.statusCode ?? e?.data?.code;
+    const message = e?.data?.message || '';
+    // 尚未成为商户
+    if (status === 403 || String(message).includes('尚未成为商户')) {
+      globalTool.showModal(
+        message || t('尚未成为商户，请先提交商户申请'),
+        () => {
+          uni.navigateTo({ url: '/pages/shop/apply' });
+        },
+        true,
+      );
+    }
+  }
+}
+
+async function loadFinancial() {
+  try {
+    const res: any = await getMyShopFinancialSummary();
+    financial.value = unwrapData<MyShopFinancialSummary>(res);
+  } catch {
+    financial.value = null;
+  }
+}
+
+function refreshPage() {
+  loadShopProfile();
+  loadFinancial();
+  userStore.reqUserInfo().catch(() => {});
+}
+
+onShow(() => {
+  refreshPage();
+});
 
 function goAllOrders() {
   uni.navigateTo({
-    url: '/pages/order/order',
+    url: '/pages/shop/myShopOrder',
   });
 }
 
 function goOrderByStatus(status: string) {
   uni.navigateTo({
-    url: '/pages/order/order?status=' + status,
+    url: `/pages/shop/myShopOrder?status=${status}`,
   });
 }
 
@@ -178,29 +252,28 @@ function onToolClick(type: string) {
     uni.navigateTo({
       url: '/pages/address/list',
     });
-  }else if (type === 'product') {
+  } else if (type === 'product') {
     uni.navigateTo({
       url: '/pages/shop/productManage',
     });
-  }else if (type === 'wholesale') {
+  } else if (type === 'wholesale') {
     uni.navigateTo({
       url: '/pages/shop/wholesale',
     });
-  }
-  else if (type === 'password') {
+  } else if (type === 'password') {
     uni.navigateTo({
-        url: `/pages/wallet/editPayPwd?first=${!userInfo.value.has_withdraw_password}`,
+      url: `/pages/wallet/editPayPwd?first=${!userInfo.value.has_withdraw_password}`,
     });
-  }else if (type === 'logout') {
+  } else if (type === 'logout') {
     uni.removeStorageSync('token');
     uni.removeStorageSync('userInfo');
     uni.redirectTo({
       url: '/pages/login/login',
     });
   } else if (type === 'service') {
-    uni.navigateTo({
-      url: '/pages/service/index?url=' + encodeURIComponent('https://www.baidu.com'),
-    });
+    if (!userStore.openKefu()) {
+      uni.showToast({ title: t('联系客服'), icon: 'none' });
+    }
   } else if (type === 'order') {
     uni.navigateTo({
       url: '/pages/shop/myShopOrder',
@@ -247,6 +320,12 @@ function onToolClick(type: string) {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.my-shop-logo-img {
+  width: 100%;
+  height: 100%;
 }
 
 .my-shop-logo-text {
@@ -293,23 +372,13 @@ function onToolClick(type: string) {
   margin-right: 14rpx;
 }
 
-.my-shop-badge {
-  width: 48rpx;
-  height: 32rpx;
-  border-radius: 8rpx;
+.my-shop-rating-row {
+  margin-top: 8rpx;
 }
 
-.my-shop-phone-wrap {
-  margin-top: 16rpx;
-  align-self: flex-start;
-  padding: 10rpx 26rpx;
-  border-radius: 40rpx;
-  background: #ffffff;
-}
-
-.my-shop-phone {
-  font-size: 26rpx;
-  color: #ff3e6c;
+.my-shop-rating {
+  font-size: 24rpx;
+  color: #ffe4c4;
 }
 
 .my-shop-content {
