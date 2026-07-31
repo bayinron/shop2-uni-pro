@@ -47,8 +47,8 @@
           </view>
         </view>
 
-        <!-- 验证码 -->
-        <view class="input-group">
+        <!-- 验证码（ENABLE_CAPTCHA 为 true 时启用） -->
+        <view v-if="ENABLE_CAPTCHA" class="input-group">
           <view class="input-icon">
             <image class="input-icon-img" src="/static/images/icon_captcha.png" mode="aspectFit" />
           </view>
@@ -120,6 +120,10 @@ import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 const userStore = useUserStore();
+
+/** 验证码开关：改为 true 即可重新启用 */
+const ENABLE_CAPTCHA = false;
+
 const formData = ref({
   login: '',
   password: '',
@@ -144,11 +148,9 @@ function isValidLogin(value: string) {
 
 const canLogin = computed(() => {
   const login = formData.value.login.trim();
-  return (
-    isValidLogin(login) &&
-    formData.value.password.length >= 6 &&
-    formData.value.verifyCode.trim().length >= 4
-  );
+  const baseOk = isValidLogin(login) && formData.value.password.length >= 6;
+  if (!ENABLE_CAPTCHA) return baseOk;
+  return baseOk && formData.value.verifyCode.trim().length >= 4;
 });
 
 function togglePassword() {
@@ -196,7 +198,9 @@ onLoad(() => {
   if (loginInfo?.rememberMe === false) {
     rememberMe.value = false;
   }
-  loadCaptcha();
+  if (ENABLE_CAPTCHA) {
+    loadCaptcha();
+  }
 });
 
 async function onLogin() {
@@ -213,19 +217,19 @@ async function onLogin() {
     uni.showToast({ title: t('密码至少6位'), icon: 'none' });
     return;
   }
-  if (formData.value.verifyCode.trim().length < 4) {
+  if (ENABLE_CAPTCHA && formData.value.verifyCode.trim().length < 4) {
     uni.showToast({ title: t('请输入验证码'), icon: 'none' });
     return;
   }
 
   loggingIn.value = true;
   try {
-    const res: any = await authLogin({
-      login,
-      password,
-      captcha_id: captcha_id.value,
-      captcha_code: formData.value.verifyCode.trim(),
-    });
+    const loginPayload: Record<string, string> = { login, password };
+    if (ENABLE_CAPTCHA) {
+      loginPayload.captcha_id = captcha_id.value;
+      loginPayload.captcha_code = formData.value.verifyCode.trim();
+    }
+    const res: any = await authLogin(loginPayload);
     const payload = res.data;
 
     if (payload?.totp_required) {
@@ -251,9 +255,11 @@ async function onLogin() {
     uni.switchTab({ url: '/pages/home/index' });
   } catch {
     // 错误提示由 request 拦截器统一处理
-    setTimeout(() => {
-      refreshVerifyCode();
-    }, 1000);
+    if (ENABLE_CAPTCHA) {
+      setTimeout(() => {
+        refreshVerifyCode();
+      }, 1000);
+    }
   } finally {
     loggingIn.value = false;
   }

@@ -87,7 +87,7 @@
             />
             <view class="rank-main">
               <text class="rank-name">{{ item.name }}</text>
-              <text class="rank-sub">{{ item.description || item.tagline || '' }}</text>
+              <!-- <text class="rank-sub">{{ item.description || item.tagline || '' }}</text> -->
             </view>
             <view class="rank-meta">
               <view class="rank-orders-block">

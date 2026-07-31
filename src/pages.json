@@ -199,6 +199,12 @@
             "style": {
                 "navigationBarTitleText": "关于我们"
             }
+        },
+        {
+            "path": "pages/content/page",
+            "style": {
+                "navigationBarTitleText": "详情"
+            }
         }
     ],
     "globalStyle": {

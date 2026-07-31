@@ -278,9 +278,9 @@ function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
       url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
     });
   } else if (key === 'help') {
-    uni.navigateTo({ url: '/pages/help/help' });
+    uni.navigateTo({ url: '/pages/content/page?slug=help' });
   } else if (key === 'about') {
-    uni.navigateTo({ url: '/pages/about/about' });
+    uni.navigateTo({ url: '/pages/content/page?slug=about' });
   } else if (key === 'order') {
     uni.navigateTo({ url: '/pages/shop/myShopOrder' });
   }

@@ -356,11 +356,12 @@ export function getWithdrawalRules() {
  * POST /api/wallet/withdraw
  */
 export interface WalletWithdrawPayload {
+  amount: string | number;
   currency: string;
-  amount: number;
-  payment_method_id?: number;
-  remark?: string;
-  withdraw_password:string;
+  account_name: string;
+  account_number: string;
+  bank_name: string;
+  withdraw_password: string;
 }
 
 export interface WalletWithdrawResponse {

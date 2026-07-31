@@ -65,6 +65,14 @@ export function getPublicAdList(params: { position: string; limit?: number }) {
     });
 }
 
+// 獲取內容頁（按 slug）- GET /api/content/pages/slug/:slug
+export function getContentPageBySlug(slug: string) {
+    return http<any>({
+        method: 'GET',
+        url: `content/pages/slug/${slug}`
+    });
+}
+
 // 2. 獲取文章列表 - GET /api/articles
 export interface ArticleListParams {
     page?: number;

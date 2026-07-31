@@ -100,7 +100,7 @@
           </view>
         </view>
 
-        <view class="sheet-row">
+        <!-- <view class="sheet-row">
           <text class="sheet-row-label">{{ t('数量') }}</text>
           <view class="qty">
             <view
@@ -111,7 +111,7 @@
             <view class="qty-num">{{ shipQty }}</view>
             <view class="qty-btn" @click="incQty">＋</view>
           </view>
-        </view>
+        </view> -->
 
         <view class="sheet-actions">
           <view class="sheet-btn sheet-btn--close" @click="closeShipSheet">{{ t('关闭') }}</view>
