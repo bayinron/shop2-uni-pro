@@ -352,6 +352,17 @@ export function getWithdrawalRules() {
 }
 
 /**
+ * 可提現幣種
+ * GET /api/wallet/withdraw-currencies
+ */
+export function getWithdrawCurrencies() {
+  return http<WalletCurrency[]>({
+    method: 'GET',
+    url: 'wallet/withdraw-currencies',
+  });
+}
+
+/**
  * 主動向平台申請提現
  * POST /api/wallet/withdraw
  */

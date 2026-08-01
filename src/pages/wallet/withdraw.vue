@@ -4,7 +4,7 @@
     <view class="amount-card">
       <text class="amount-label">{{ t('提现金额') }}</text>
       <view class="amount-input-wrap">
-        <text class="currency-symbol">฿</text>
+        <text class="currency-symbol">{{ currencySymbol }}</text>
         <input
           class="amount-input"
           type="number"
@@ -15,23 +15,21 @@
       </view>
       <view class="balance-row">
         <text class="balance-text">
-          {{ t('可用余额：') }}<text class="balance-amount">฿ {{ availableBalance }}</text>
+          {{ t('可用余额：') }}<text class="balance-amount">{{ currencySymbol }} {{ availableBalance }}</text>
         </text>
       </view>
     </view>
 
     <!-- 表单字段 -->
     <view class="form-card">
-      <view class="form-item">
+      <view class="form-item" @click="onSelectCurrency">
         <text class="form-label">{{ t('提现币种') }}</text>
-        <input
-          class="form-input"
-          type="text"
-          v-model="form.currency"
-          :placeholder="t('请输入提现币种')"
-          placeholder-class="form-input-placeholder"
-          autocomplete="off"
-        />
+        <view class="form-right">
+          <text class="form-value" :class="{ placeholder: !form.currency }">
+            {{ currencyDisplay || t('请选择') }}
+          </text>
+          <uni-icons type="bottom" size="18" color="#c7c7c7" />
+        </view>
       </view>
       <view class="form-item">
         <text class="form-label">{{ t('持有人') }}</text>
@@ -87,8 +85,9 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
-import { submitWalletWithdraw } from '@/api/pay';
+import { getWithdrawCurrencies, submitWalletWithdraw, type WalletCurrency } from '@/api/pay';
 import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
@@ -103,6 +102,8 @@ const form = ref({
   payPassword: '',
 });
 
+const currencies = ref<WalletCurrency[]>([]);
+
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
 const availableBalance = computed(() =>
@@ -110,6 +111,20 @@ const availableBalance = computed(() =>
   userInfo.value?.balance ??
   '0'
 );
+
+const currencyDisplay = computed(() => {
+  const code = form.value.currency;
+  if (!code) return '';
+  const item = currencies.value.find((c) => getCurrencyCode(c) === code);
+  if (!item) return code;
+  const name = item.name || '';
+  return name && name !== code ? `${name} (${code})` : code;
+});
+
+const currencySymbol = computed(() => {
+  const item = currencies.value.find((c) => getCurrencyCode(c) === form.value.currency);
+  return item?.symbol || '฿';
+});
 
 watch(userInfo, (newVal) => {
   if (newVal && !newVal.has_withdraw_password) {
@@ -121,6 +136,62 @@ watch(userInfo, (newVal) => {
   }
 });
 
+onLoad(() => {
+  loadCurrencies();
+});
+
+function getCurrencyCode(item: WalletCurrency | string): string {
+  if (typeof item === 'string') return item;
+  return item.code || item.currency || '';
+}
+
+function normalizeCurrencies(raw: any): WalletCurrency[] {
+  const list = raw?.data?.list ?? raw?.data ?? raw?.list ?? raw ?? [];
+  if (!Array.isArray(list)) return [];
+  return list.map((item: any) => {
+    if (typeof item === 'string') {
+      return { code: item, name: item, symbol: item, decimal_places: 2, is_fiat: true };
+    }
+    return {
+      ...item,
+      code: item.code || item.currency || '',
+      name: item.name || item.code || item.currency || '',
+      symbol: item.symbol || item.code || item.currency || '',
+    } as WalletCurrency;
+  }).filter((item: WalletCurrency) => !!item.code);
+}
+
+function loadCurrencies() {
+  getWithdrawCurrencies().then((res: any) => {
+    const list = normalizeCurrencies(res);
+    currencies.value = list;
+    if (list.length === 1) {
+      form.value.currency = list[0].code;
+    }
+  });
+}
+
+function onSelectCurrency() {
+  if (!currencies.value.length) {
+    uni.showToast({ title: t('暂无可用提现方式'), icon: 'none' });
+    loadCurrencies();
+    return;
+  }
+  const itemList = currencies.value.map((c) => {
+    const code = getCurrencyCode(c);
+    return c.name && c.name !== code ? `${c.name} (${code})` : code;
+  });
+  uni.showActionSheet({
+    itemList,
+    success: (res) => {
+      const idx = res.tapIndex;
+      if (idx >= 0 && idx < currencies.value.length) {
+        form.value.currency = getCurrencyCode(currencies.value[idx]);
+      }
+    },
+  });
+}
+
 function onSubmit() {
   const amountNum = Number(form.value.amount);
   if (!amountNum || amountNum <= 0) {
@@ -128,7 +199,7 @@ function onSubmit() {
     return;
   }
   if (!form.value.currency.trim()) {
-    uni.showToast({ title: t('请输入提现币种'), icon: 'none' });
+    uni.showToast({ title: t('请选择提现币种'), icon: 'none' });
     return;
   }
   if (!form.value.account_name.trim()) {
@@ -239,6 +310,23 @@ function onSubmit() {
   font-size: 28rpx;
   color: #333;
   flex-shrink: 0;
+}
+
+.form-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+}
+
+.form-value {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.form-value.placeholder {
+  color: #c7c7c7;
 }
 
 .form-input {
