@@ -98,6 +98,8 @@ import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 
+const WITHDRAW_ACCOUNT_CACHE_KEY = 'withdraw_account_info';
+
 const form = ref({
   amount: '',
   currency: '',
@@ -112,6 +114,33 @@ const availableBalance = ref('0');
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
+
+function getWithdrawAccountCacheKey() {
+  const uid = userInfo.value?.id;
+  return uid ? `${WITHDRAW_ACCOUNT_CACHE_KEY}_${uid}` : WITHDRAW_ACCOUNT_CACHE_KEY;
+}
+
+function loadCachedAccountInfo() {
+  try {
+    const cached = uni.getStorageSync(getWithdrawAccountCacheKey()) ||
+      uni.getStorageSync(WITHDRAW_ACCOUNT_CACHE_KEY);
+    if (!cached || typeof cached !== 'object') return;
+    if (cached.account_name) form.value.account_name = String(cached.account_name);
+    if (cached.bank_name) form.value.bank_name = String(cached.bank_name);
+    if (cached.account_number) form.value.account_number = String(cached.account_number);
+  } catch (_) {
+    // ignore broken cache
+  }
+}
+
+function saveCachedAccountInfo() {
+  const payload = {
+    account_name: form.value.account_name.trim(),
+    bank_name: form.value.bank_name.trim(),
+    account_number: form.value.account_number.trim(),
+  };
+  uni.setStorageSync(getWithdrawAccountCacheKey(), payload);
+}
 
 const currencyDisplay = computed(() => {
   const code = form.value.currency;
@@ -138,6 +167,7 @@ watch(userInfo, (newVal) => {
 });
 
 onLoad(() => {
+  loadCachedAccountInfo();
   loadCurrencies();
   loadBalance();
 });
@@ -239,6 +269,7 @@ function onSubmit() {
     bank_name: form.value.bank_name.trim(),
     withdraw_password: form.value.payPassword,
   }).then(() => {
+    saveCachedAccountInfo();
     globalTool.showToast(t('提现成功'), () => {
       uni.navigateBack();
     });

@@ -277,6 +277,8 @@ const prefixUrl = computed(() => userStore.prefixUrl);
       // 本地乐观更新
       currentProduct.value.in_my_shop = true;
       globalTool.showToast(t('铺货成功'), false, 'success');
+      shipSubmitting.value = false;
+
       closeShipSheet();
     } catch (e: any) {
       console.error(t('铺货失败'), e);
