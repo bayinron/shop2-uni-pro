@@ -15,7 +15,7 @@
       </view>
       <view class="balance-row">
         <text class="balance-text">
-          {{ t('可用余额：') }}<text class="balance-amount">{{ currencySymbol }} {{ availableBalance }}</text>
+          {{ t('可用余额：') }}<text class="balance-amount">{{ availableBalance }}</text>
         </text>
       </view>
     </view>
@@ -87,7 +87,12 @@
 import { computed, ref, watch } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
-import { getWithdrawCurrencies, submitWalletWithdraw, type WalletCurrency } from '@/api/pay';
+import {
+  getWalletBalanceOverview,
+  getWithdrawCurrencies,
+  submitWalletWithdraw,
+  type WalletCurrency,
+} from '@/api/pay';
 import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
@@ -103,14 +108,10 @@ const form = ref({
 });
 
 const currencies = ref<WalletCurrency[]>([]);
+const availableBalance = ref('0');
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-const availableBalance = computed(() =>
-  userInfo.value?.wallet?.balance_wallet?.balance_formatted ??
-  userInfo.value?.balance ??
-  '0'
-);
 
 const currencyDisplay = computed(() => {
   const code = form.value.currency;
@@ -138,7 +139,18 @@ watch(userInfo, (newVal) => {
 
 onLoad(() => {
   loadCurrencies();
+  loadBalance();
 });
+
+function loadBalance() {
+  getWalletBalanceOverview().then((res: any) => {
+    const data = res?.data ?? res;
+    availableBalance.value =
+      data?.balance_wallet?.balance_formatted ||
+      data?.total_formatted ||
+      '0';
+  });
+}
 
 function getCurrencyCode(item: WalletCurrency | string): string {
   if (typeof item === 'string') return item;

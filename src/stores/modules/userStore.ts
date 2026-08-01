@@ -164,19 +164,20 @@ export const useUserStore = defineStore('user', () => {
     function reqUserInfo() {
         return authGetMe().then((res: any) => {
             const data = res.data;
-            // 新接口：钱包信息统一在 `wallet`，但页面仍使用 `userInfo.balance` 字段
+            // 新接口：钱包信息统一在 `wallet`，优先使用 balance_wallet.balance_formatted
             const wallet = data?.wallet;
-            const walletBalance =
-                wallet?.balance_wallet?.balance ??
-                wallet?.balance; // 兼容旧结构
-            if (walletBalance !== undefined && walletBalance !== null) {
-                data.balance = Number(walletBalance).toFixed(2);
-            } else if (wallet?.balance_wallet?.balance_formatted) {
-                // 从类似 "฿7,578.00" 中提取数字
-                data.balance = String(wallet.balance_wallet.balance_formatted).replace(/[^\d.-]/g, '');
-            } else if (wallet?.balance_formatted) {
-                // 旧结构：wallet.balance_formatted
-                data.balance = String(wallet.balance_formatted).replace(/[^\d.-]/g, '');
+            const balanceFormatted =
+                wallet?.balance_wallet?.balance_formatted ??
+                wallet?.total_formatted;
+            if (balanceFormatted) {
+                data.balance = String(balanceFormatted);
+            } else {
+                const walletBalance =
+                    wallet?.balance_wallet?.balance ??
+                    wallet?.balance;
+                if (walletBalance !== undefined && walletBalance !== null) {
+                    data.balance = Number(walletBalance).toFixed(2);
+                }
             }
             userInfo.value = data;
             return data;

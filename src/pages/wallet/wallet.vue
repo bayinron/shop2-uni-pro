@@ -2,7 +2,7 @@
   <view class="wallet-page">
     <!-- 顶部余额区域：店铺结算钱包 -->
     <view class="wallet-header">
-      <text class="wallet-label">{{ t('余额') }}（{{ currencySymbol }}）</text>
+      <text class="wallet-label">{{ t('余额') }}</text>
       <text class="wallet-amount">{{ balance }}</text>
       <view class="wallet-stats">
         <view class="stat-item">
@@ -74,27 +74,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import {
   getMyShopFinancialSummary,
   type MyShopFinancialSummary,
 } from '@/api/myshop';
+import { getWalletBalanceOverview } from '@/api/pay';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.userInfo);
 
 const financial = ref<MyShopFinancialSummary | null>(null);
-
-const currencySymbol = computed(
-  () => userInfo.value.wallet?.balance_symbol || '฿',
-);
-
-/** 可提现余额 = settlement_wallet.balance */
-const balance = computed(() => formatAmount(financial.value?.settlement_wallet?.balance));
+const balance = ref('0');
 
 function formatAmount(v: number | string | null | undefined) {
   if (v === undefined || v === null || v === '') return '0.00';
@@ -104,6 +98,19 @@ function formatAmount(v: number | string | null | undefined) {
 
 function unwrapData<T>(res: any): T {
   return (res?.data?.data ?? res?.data ?? res) as T;
+}
+
+async function loadBalance() {
+  try {
+    const res: any = await getWalletBalanceOverview();
+    const data = unwrapData<any>(res);
+    balance.value =
+      data?.balance_wallet?.balance_formatted ||
+      data?.total_formatted ||
+      '0';
+  } catch {
+    balance.value = '0';
+  }
 }
 
 async function loadFinancial() {
@@ -116,6 +123,7 @@ async function loadFinancial() {
 }
 
 onShow(() => {
+  loadBalance();
   loadFinancial();
 });
 

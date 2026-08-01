@@ -35,20 +35,32 @@ export function getWalletCurrencies() {
 }
 
 /**
- * 餘額總覽
- * GET /api/wallet/balance
+ * 單錢包餘額明細
  */
-export interface WalletBalanceItem {
-  currency: string;
-  available: string;
-  frozen: string;
-  balance: string;
+export interface WalletBalanceDetail {
+  balance: number | string;
+  frozen: number | string;
+  total: number | string;
+  balance_formatted: string;
+  frozen_formatted: string;
+  total_formatted: string;
   [key: string]: any;
 }
 
+/**
+ * 用戶當前餘額
+ * GET /api/wallet/balance
+ * 返回 balance_wallet（系統餘額）與 settlement_wallet（結算錢包）
+ */
 export interface WalletBalanceOverviewResponse {
-  list: WalletBalanceItem[];
-  total_value_usd?: string | number;
+  user_id: number;
+  balance_wallet: WalletBalanceDetail;
+  settlement_wallet: WalletBalanceDetail;
+  total: number | string;
+  total_formatted: string;
+  balance_name: string;
+  balance_symbol: string;
+  updated_at: string;
   [key: string]: any;
 }
 
@@ -63,6 +75,14 @@ export function getWalletBalanceOverview() {
  * 查詢單一幣種餘額
  * GET /api/wallet/:currency/balance
  */
+export interface WalletBalanceItem {
+  currency: string;
+  available: string;
+  frozen: string;
+  balance: string;
+  [key: string]: any;
+}
+
 export function getWalletBalanceByCurrency(currency: string) {
   return http<WalletBalanceItem>({
     method: 'GET',

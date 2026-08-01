@@ -72,7 +72,6 @@
             <text class="wallet-label">{{ t('余额') }}</text>
           </view>
           <view class="wallet-amount">
-            <text class="wallet-currency">{{ currencySymbol }}</text>
             <text class="wallet-value">{{ shopBalance }}</text>
           </view>
         </view>
@@ -154,6 +153,7 @@ import {
   type MyShopFinancialSummary,
   type MyShopProfile,
 } from '@/api/myshop';
+import { getWalletBalanceOverview } from '@/api/pay';
 import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
@@ -163,6 +163,7 @@ const userInfo = computed(() => userStore.userInfo);
 
 const shopProfile = ref<MyShopProfile | null>(null);
 const financial = ref<MyShopFinancialSummary | null>(null);
+const shopBalance = ref('0');
 
 const shopName = computed(() => shopProfile.value?.name || t('我的店铺'));
 const shopInitial = computed(() => {
@@ -171,17 +172,6 @@ const shopInitial = computed(() => {
 });
 const shopLogo = computed(() => globalTool.resolveMediaUrl(shopProfile.value?.logo || ''));
 const shopCover = computed(() => globalTool.resolveMediaUrl(shopProfile.value?.cover_image || ''));
-
-const currencySymbol = computed(
-  () => userInfo.value.wallet?.balance_symbol || '฿',
-);
-
-const shopBalance = computed(() => {
-  const balance = financial.value?.settlement_wallet?.balance;
-  if (balance === undefined || balance === null) return '0.00';
-  const n = Number(balance);
-  return Number.isFinite(n) ? n.toFixed(2) : String(balance);
-});
 
 function unwrapData<T>(res: any): T {
   return (res?.data?.data ?? res?.data ?? res) as T;
@@ -217,9 +207,23 @@ async function loadFinancial() {
   }
 }
 
+async function loadBalance() {
+  try {
+    const res: any = await getWalletBalanceOverview();
+    const data = unwrapData<any>(res);
+    shopBalance.value =
+      data?.balance_wallet?.balance_formatted ||
+      data?.total_formatted ||
+      '0';
+  } catch {
+    shopBalance.value = '0';
+  }
+}
+
 function refreshPage() {
   loadShopProfile();
   loadFinancial();
+  loadBalance();
   userStore.reqUserInfo().catch(() => {});
 }
 
