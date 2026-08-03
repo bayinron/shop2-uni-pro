@@ -38,13 +38,13 @@
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
 
-      <view class="wallet-item" @click="bankClick">
+      <!-- <view class="wallet-item" @click="bankClick">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">🏦</text>
           <text class="wallet-text">{{ t('银行账户') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
-      </view>
+      </view> -->
 
       <view class="wallet-item" @click="todo('withdrawLog')">
         <view class="wallet-item-left">
