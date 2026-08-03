@@ -46,7 +46,7 @@
 
           <view class="order-products">
             <view v-for="it in o.items" :key="it.id" class="product-item">
-              <image class="product-img" :src="it.product_image_url" mode="aspectFill" />
+              <image class="product-img" :src="prefixUrl + it.product_image_url" mode="aspectFill" />
               <view class="product-info">
                 <text class="product-name">{{ it.product_name }}</text>
                 <text class="product-spec" v-if="it.sku">{{ it.sku }}</text>
@@ -84,9 +84,11 @@
 import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getMyShopOrders, type MyShopOrder, type MyShopOrderListResponse } from '@/api/myshop';
+import { useUserStore } from '@/stores/modules/userStore';
 
 import { useI18n } from '@/utils/i18n';
-
+const userStore = useUserStore();
+const prefixUrl = computed(() => userStore.prefixUrl);
 const { t } = useI18n();
 type StatusTabKey = '' | 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
 
@@ -123,8 +125,8 @@ function statusText(status: string) {
 }
 
 function parseResponse(res: any): MyShopOrderListResponse {
-  // 兼容不同包裹：res.data.data / res.data / res
-  return (res?.data?.data ?? res?.data ?? res) as MyShopOrderListResponse;
+  // http 返回 { code, message, data }，分页字段在 data 内：data.data 为订单列表
+  return (res?.data ?? res) as MyShopOrderListResponse;
 }
 
 function resetAndLoad() {
@@ -156,11 +158,13 @@ function loadMore() {
   })
     .then((res: any) => {
       const data = parseResponse(res);
-      const items = data?.list || [];
+      const items = Array.isArray(data?.data) ? data.data : [];
       list.value = list.value.concat(items);
       page.value = nextPage;
-      const limit = data?.limit ?? PAGE_SIZE;
-      hasMore.value = items.length >= limit;
+      hasMore.value =
+        typeof data?.has_more === 'boolean'
+          ? data.has_more
+          : items.length >= (data?.per_page ?? PAGE_SIZE);
     })
     .finally(() => {
       loading.value = false;
