@@ -127,7 +127,7 @@ type OrderItem = {
 };
 
 type OrderAction = {
-  key: 'cancel' | 'pay' | 'contact' | 'track' | 'confirm';
+  key: 'cancel' | 'pay' | 'track' | 'confirm';
   text: string;
   type: 'primary' | 'default';
 };
@@ -204,8 +204,6 @@ function buildActions(order: MallOrder): OrderAction[] {
       { key: 'cancel', text: t('取消订单'), type: 'default' },
       { key: 'pay', text: t('立即付款'), type: 'primary' },
     );
-  } else if (order.status === 'paid' || order.status === 'processing') {
-    actions.push({ key: 'contact', text: t('联系客服'), type: 'default' });
   } else if (order.status === 'shipped' || order.status === 'delivered') {
     actions.push(
       { key: 'track', text: t('查看物流'), type: 'default' },
@@ -354,7 +352,6 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
   const actionMap: Record<OrderAction['key'], string> = {
     cancel: t('取消订单'),
     pay: t('立即付款'),
-    contact: t('联系客服'),
     track: t('查看物流'),
     confirm: t('确认收货'),
   };
@@ -403,7 +400,7 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
           loadOrders('paid', false);
         } catch (e) {
           uni.hideLoading();
-          uni.showToast({ title: t('支付失败'), icon: 'none' });
+          // uni.showToast({ title: t('支付失败'), icon: 'none' });
         }
       },
     });

@@ -75,7 +75,7 @@
     <!-- 底部操作栏 -->
     <view class="bottom-bar">
       <view class="bottom-left">
-        <view class="bottom-icon-item" @click="onCustomerService">
+        <!-- <view class="bottom-icon-item" @click="onCustomerService">
           <uni-icons type="chatbubble" size="24" color="#666" />
           <text class="bottom-icon-text">{{ t('客服') }}</text>
         </view>
@@ -83,11 +83,54 @@
           <uni-icons type="cart" size="24" color="#666" />
           <text class="bottom-icon-text">{{ t('购物车') }}</text>
           <text class="bottom-badge" v-if="cartCount > 0">{{ cartCount }}</text>
-        </view>
+        </view> -->
       </view>
       <view class="bottom-right">
         <button class="add-cart-btn" @click="onAddToCart">{{ t('加入购物车') }}</button>
-        <button class="buy-now-btn" @click="onBuyNow">{{ t('立即购买') }}</button>
+        <button class="buy-now-btn" @click="openBuySheet">{{ t('立即购买') }}</button>
+      </view>
+    </view>
+
+    <!-- 立即购买：填写数量 -->
+    <view v-if="buySheetVisible" class="sheet-mask" @click="closeBuySheet" />
+    <view v-if="buySheetVisible" class="sheet" @click.stop>
+      <view class="sheet-content">
+        <image
+          class="sheet-img"
+          :src="prefixUrl + (goodsData.images?.[0]?.url || goodsData.cover_image || '')"
+          mode="aspectFill"
+        />
+        <view class="sheet-info">
+          <text class="sheet-title">{{ goodsData.name }}</text>
+          <text class="sheet-price">฿{{ goodsData.sale_price }}</text>
+        </view>
+        <view class="sheet-stock" v-if="!goodsData.is_unlimited_stock">
+          <text class="sheet-stock-text">{{ t('库存：') }}{{ goodsData.stock ?? 0 }}</text>
+        </view>
+      </view>
+
+      <view class="sheet-row">
+        <text class="sheet-row-label">{{ t('数量') }}</text>
+        <view class="qty">
+          <view class="qty-btn" :class="{ 'qty-btn--disabled': buyQty <= 1 }" @click="decBuyQty">－</view>
+          <input
+            class="qty-input"
+            type="number"
+            :value="String(buyQty)"
+            @input="onBuyQtyInput"
+            @blur="normalizeBuyQty"
+          />
+          <view
+            class="qty-btn"
+            :class="{ 'qty-btn--disabled': !goodsData.is_unlimited_stock && buyQty >= maxBuyQty }"
+            @click="incBuyQty"
+          >＋</view>
+        </view>
+      </view>
+
+      <view class="sheet-actions">
+        <view class="sheet-btn sheet-btn--close" @click="closeBuySheet">{{ t('关闭') }}</view>
+        <view class="sheet-btn sheet-btn--ok" @click="confirmBuy">{{ t('确认') }}</view>
       </view>
     </view>
   </view>
@@ -284,12 +327,69 @@ function pickCreatedOrder(res: any): MallOrder | null {
   return null;
 }
 
-async function onBuyNow() {
+const buySheetVisible = ref(false);
+const buyQty = ref(1);
+const buying = ref(false);
+
+const maxBuyQty = computed(() => {
+  if (goodsData.value?.is_unlimited_stock) return 9999;
+  const stock = Number(goodsData.value?.stock ?? 0);
+  return stock > 0 ? stock : 1;
+});
+
+function openBuySheet() {
+  if (!goodsData.value?.id || !goodsData.value?.shop_id) {
+    uni.showToast({ title: t('商品数据异常'), icon: 'none' });
+    return;
+  }
+  if (!goodsData.value.is_unlimited_stock && Number(goodsData.value.stock) <= 0) {
+    uni.showToast({ title: t('库存不足'), icon: 'none' });
+    return;
+  }
+  buyQty.value = 1;
+  buySheetVisible.value = true;
+}
+
+function closeBuySheet() {
+  if (buying.value) return;
+  buySheetVisible.value = false;
+}
+
+function decBuyQty() {
+  buyQty.value = Math.max(1, buyQty.value - 1);
+}
+
+function incBuyQty() {
+  buyQty.value = Math.min(maxBuyQty.value, buyQty.value + 1);
+}
+
+function onBuyQtyInput(e: any) {
+  const raw = String(e?.detail?.value ?? '').replace(/\D/g, '');
+  if (!raw) {
+    buyQty.value = 1;
+    return;
+  }
+  buyQty.value = Math.min(maxBuyQty.value, Math.max(1, parseInt(raw, 10) || 1));
+}
+
+function normalizeBuyQty() {
+  buyQty.value = Math.min(maxBuyQty.value, Math.max(1, Number(buyQty.value) || 1));
+}
+
+async function confirmBuy() {
+  normalizeBuyQty();
+  buySheetVisible.value = false;
+  await onBuyNow(buyQty.value);
+}
+
+async function onBuyNow(quantity = 1) {
   if (!goodsData.value?.id || !goodsData.value?.shop_id) {
     uni.showToast({ title: t('商品数据异常'), icon: 'none' });
     return;
   }
 
+  const qty = Math.min(maxBuyQty.value, Math.max(1, Number(quantity) || 1));
+  buying.value = true;
   uni.showLoading({ title: t('下单中...') });
   try {
     const addrRes: any = await getUserAddresses();
@@ -307,7 +407,7 @@ async function onBuyNow() {
       items: [
         {
           product_id: Number(goodsData.value.id),
-          quantity: 1,
+          quantity: qty,
           sku: goodsData.value.sku || undefined,
         },
       ],
@@ -357,6 +457,7 @@ async function onBuyNow() {
   } catch {
     // 错误提示由 request 拦截器统一处理
   } finally {
+    buying.value = false;
     uni.hideLoading();
   }
 }
@@ -642,5 +743,141 @@ async function onBuyNow() {
   font-size: 28rpx;
   border-radius: 50rpx;
   border: none;
+}
+
+.sheet-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 998;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 22rpx 24rpx calc(22rpx + env(safe-area-inset-bottom));
+  z-index: 999;
+}
+
+.sheet-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+}
+
+.sheet-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 14rpx;
+  background: #f5f5f5;
+}
+
+.sheet-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding-top: 4rpx;
+  min-width: 0;
+}
+
+.sheet-title {
+  font-size: 30rpx;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.sheet-price {
+  font-size: 40rpx;
+  color: #ff3e6c;
+  font-weight: 700;
+}
+
+.sheet-stock {
+  padding-top: 12rpx;
+  white-space: nowrap;
+}
+
+.sheet-stock-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.sheet-row {
+  margin-top: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet-row-label {
+  font-size: 30rpx;
+  color: #666;
+}
+
+.qty {
+  display: flex;
+  align-items: center;
+  border: 1rpx solid #eee;
+  border-radius: 10rpx;
+  overflow: hidden;
+  height: 64rpx;
+}
+
+.qty-btn {
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  background: #fff;
+  color: #666;
+  font-size: 28rpx;
+}
+
+.qty-btn--disabled {
+  color: #ccc;
+}
+
+.qty-input {
+  width: 88rpx;
+  height: 64rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #111;
+  border-left: 1rpx solid #eee;
+  border-right: 1rpx solid #eee;
+}
+
+.sheet-actions {
+  margin-top: 28rpx;
+  display: flex;
+  gap: 18rpx;
+}
+
+.sheet-btn {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 42rpx;
+  font-size: 30rpx;
+}
+
+.sheet-btn--close {
+  background: #f2f2f2;
+  color: #111;
+}
+
+.sheet-btn--ok {
+  background: #ff3e6c;
+  color: #fff;
 }
 </style>
