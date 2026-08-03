@@ -40,11 +40,17 @@
         </view>
         <view class="order-icons">
           <view class="order-icon-item" @click="goOrderByStatus('pending')">
-            <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
+            <view class="order-icon-wrap">
+              <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
+              <view v-if="pendingOrderCount > 0" class="order-badge">{{ formatBadge(pendingOrderCount) }}</view>
+            </view>
             <text class="order-icon-text">{{ t('待付款') }}</text>
           </view>
           <view class="order-icon-item" @click="goOrderByStatus('paid')">
-            <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
+            <view class="order-icon-wrap">
+              <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
+              <view v-if="paidOrderCount > 0" class="order-badge">{{ formatBadge(paidOrderCount) }}</view>
+            </view>
             <text class="order-icon-text">{{ t('待发货') }}</text>
           </view>
           <view class="order-icon-item" @click="goOrderByStatus('shipped')">
@@ -149,8 +155,10 @@ import { onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import {
   getMyShopFinancialSummary,
+  getMyShopOrderStatusCounts,
   getMyShopProfile,
   type MyShopFinancialSummary,
+  type MyShopOrderStatusCounts,
   type MyShopProfile,
 } from '@/api/myshop';
 import { getWalletBalanceOverview } from '@/api/pay';
@@ -164,6 +172,7 @@ const userInfo = computed(() => userStore.userInfo);
 const shopProfile = ref<MyShopProfile | null>(null);
 const financial = ref<MyShopFinancialSummary | null>(null);
 const shopBalance = ref('0');
+const orderStatusCounts = ref<MyShopOrderStatusCounts>({});
 
 const shopName = computed(() => shopProfile.value?.name || t('我的店铺'));
 const shopInitial = computed(() => {
@@ -172,6 +181,13 @@ const shopInitial = computed(() => {
 });
 const shopLogo = computed(() => globalTool.resolveMediaUrl(shopProfile.value?.logo || ''));
 const shopCover = computed(() => globalTool.resolveMediaUrl(shopProfile.value?.cover_image || ''));
+
+const pendingOrderCount = computed(() => Number(orderStatusCounts.value.pending_payment || 0));
+const paidOrderCount = computed(() => Number(orderStatusCounts.value.pending_shipment || 0));
+
+function formatBadge(n: number) {
+  return n > 99 ? '99+' : String(n);
+}
 
 function unwrapData<T>(res: any): T {
   return (res?.data?.data ?? res?.data ?? res) as T;
@@ -220,10 +236,20 @@ async function loadBalance() {
   }
 }
 
+async function loadOrderStatusCounts() {
+  try {
+    const res: any = await getMyShopOrderStatusCounts();
+    orderStatusCounts.value = unwrapData<MyShopOrderStatusCounts>(res) || {};
+  } catch {
+    orderStatusCounts.value = {};
+  }
+}
+
 function refreshPage() {
   loadShopProfile();
   loadFinancial();
   loadBalance();
+  loadOrderStatusCounts();
   userStore.reqUserInfo().catch(() => {});
 }
 
@@ -441,10 +467,33 @@ function onToolClick(type: string) {
   align-items: center;
 }
 
-.order-icon-img {
+.order-icon-wrap {
+  position: relative;
   width: 80rpx;
   height: 80rpx;
   margin-bottom: 12rpx;
+}
+
+.order-icon-img {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.order-badge {
+  position: absolute;
+  top: -10rpx;
+  right: -16rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 8rpx;
+  box-sizing: border-box;
+  border-radius: 16rpx;
+  background: #ff3e6c;
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 600;
+  line-height: 32rpx;
+  text-align: center;
 }
 
 .order-icon-text {

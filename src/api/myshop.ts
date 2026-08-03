@@ -461,10 +461,12 @@ export interface GetMyShopOrdersParams {
 }
 
 export interface MyShopOrderListResponse {
-  list: MyShopOrder[];
+  data: MyShopOrder[];
   total: number;
-  page: number;
-  limit: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+  has_more: boolean;
   [key: string]: any;
 }
 
@@ -477,6 +479,31 @@ export function getMyShopOrders(params: GetMyShopOrdersParams = {}) {
     method: 'GET',
     url: 'mall/my-shop/orders',
     data: params,
+  });
+}
+
+/** 店鋪各訂單狀態數量統計 */
+export interface MyShopOrderStatusCounts {
+  /** 待付款 */
+  pending_payment?: number;
+  /** 待發貨 */
+  pending_shipment?: number;
+  /** 待收貨 */
+  pending_receipt?: number;
+  /** 已完成 */
+  completed?: number;
+  [key: string]: number | undefined;
+}
+
+/**
+ * 2.1 店鋪訂單狀態數量統計
+ * GET /api/mall/my-shop/orders/status-counts
+ */
+export function getMyShopOrderStatusCounts() {
+  return http<MyShopOrderStatusCounts>({
+    method: 'GET',
+    url: 'mall/my-shop/orders/status-counts',
+    noLoading: true,
   });
 }
 
@@ -539,6 +566,7 @@ export interface MyShopFinancialSummary {
   /** pending + settled + paid */
   total_earned: number;
   settlement_wallet: MyShopSettlementWallet;
+  [key: string]: any;
 }
 
 /**
