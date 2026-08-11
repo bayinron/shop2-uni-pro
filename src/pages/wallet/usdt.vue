@@ -1,136 +1,39 @@
 <template>
   <view class="usdt-page">
-    <!-- 顶部标题栏占位（导航由 pages.json 控制） -->
-    <view class="header-placeholder" />
-
-    <!-- 表单区域（根据后端返回的 USDT fields_config 动态生成） -->
-    <view class="form-card" v-if="fieldConfigs.length">
-      <view
-        v-for="(field, index) in fieldConfigs"
-        :key="field.key"
-        class="form-item"
-        :class="{ 'no-border': index === fieldConfigs.length - 1 }"
-        @click="field.type === 'select' ? onSelectField(field) : undefined"
-      >
-        <text class="form-label">{{ field.label }}</text>
-
-        <!-- 下拉选择类型 -->
-        <view
-          v-if="field.type === 'select'"
-          class="form-right"
-        >
-          <text class="form-value">
-            {{ form[field.key] || t('请选择') }}
-          </text>
-          <uni-icons type="bottom" size="18" color="#c7c7c7" />
-        </view>
-
-        <!-- 普通输入类型 -->
-        <input
-          v-else
-          class="form-input"
-          :type="field.type === 'number' ? 'number' : 'text'"
-          v-model="form[field.key]"
-          :placeholder="field.placeholder || (t('请输入') + field.label)"
-          placeholder-class="form-input-placeholder"
-        />
-      </view>
+    <view class="tip-card">
+      <text class="tip-title">{{ t('收款账户') }}</text>
+      <text class="tip-text">{{ t('每位用户仅能绑定一组收款账户') }}</text>
+      <text class="tip-text">{{ t('如需变更请联系客服由管理员处理') }}</text>
     </view>
 
-    <!-- 底部保存按钮 -->
     <view class="bottom-bar">
-      <button class="submit-btn" @click="onSave">{{ t('保存') }}</button>
+      <button class="submit-btn" @click="goBank">{{ t('查看收款账户') }}</button>
+      <button class="submit-btn ghost" @click="goCustomerService">{{ t('联系客服') }}</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
-import { getBankTemplates, bindUserPaymentMethod,getUserPaymentMethods } from '@/api/pay';
-import globalTool from '@/utils/globalTool';
+import { useUserStoreHook } from '@/stores/modules/userStore';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
-const tpl = ref<any>(null);
-const fieldConfigs = ref<any[]>([]);
-const form = ref<Record<string, any>>({});
+const userStore = useUserStoreHook();
 
-onLoad(() => {
-  // 与银行卡页类似，这里使用 country_code: 'usdt'
-  getBankTemplates().then((res: any) => {
-    tpl.value = res.data.find((t: any) => t.currency === 'USDT');
-    if (!tpl.value?.id) {
-      globalTool.showToast(t('未找到 USDT 模板'), false, 'none');
-      return;
-    }
-
-    const cfg = tpl.value?.fields_config || tpl.value?.fields || [];
-    fieldConfigs.value = Array.isArray(cfg) ? cfg : [];
-
-    // 初始化表单字段
-    fieldConfigs.value.forEach((f: any) => {
-      if (form.value[f.key] === undefined) {
-        form.value[f.key] = '';
-      }
-    });
-
-    nextTick(() => {
-      getUserPaymentMethods({ bank_template_id: tpl.value.id }).then((res: any) => {
-        if (res.data.length > 0) {
-          form.value = res.data[0].details;
-        }
-      });
-    });
-  });
-});
-
-function onSelectField(field: any) {
-  const options: string[] = field.options || [];
-  if (!options.length) return;
-  uni.showActionSheet({
-    itemList: options,
-    success: (res) => {
-      const idx = res.tapIndex;
-      if (idx >= 0 && idx < options.length) {
-        form.value[field.key] = options[idx];
-      }
-    },
+function goBank() {
+  uni.redirectTo({
+    url: '/pages/wallet/bank',
   });
 }
 
-function onSave() {
-  // 必填校验
-  for (const field of fieldConfigs.value as any[]) {
-    if (!field.required) continue;
-    const rawVal = form.value[field.key] as unknown;
-    const val = typeof rawVal === 'string' ? rawVal.trim() : rawVal;
-    if (val === undefined || val === null || val === '') {
-      uni.showToast({
-        title: field.placeholder || (t('请输入') + field.label),
-        icon: 'none',
-      });
-      return;
-    }
-  }
-
-  if (!tpl.value?.id) {
-    uni.showToast({ title: t('USDT模板未加载完成'), icon: 'none' });
+function goCustomerService() {
+  const url = userStore.kefuConfig?.external_url;
+  if (!url) {
+    uni.showToast({ title: t('请联系客服'), icon: 'none' });
     return;
   }
-
-  const accountInfo: Record<string, any> = {};
-  fieldConfigs.value.forEach((field: any) => {
-    accountInfo[field.key] = form.value[field.key];
-  });
-
-  bindUserPaymentMethod({
-    name: 'USDT',
-    bank_template_id: tpl.value.id,
-    details: accountInfo,
-  }).then((res: any) => {
-    console.log(res);
-    globalTool.showToast(t('保存成功'), true, 'success');
+  uni.navigateTo({
+    url: '/pages/service/index?url=' + url,
   });
 }
 </script>
@@ -143,59 +46,34 @@ function onSave() {
   flex-direction: column;
 }
 
-.header-placeholder {
-  height: 0;
-}
-
-.form-card {
-  margin-top: 16rpx;
+.tip-card {
+  margin: 40rpx 30rpx 0;
+  padding: 32rpx;
   background: #ffffff;
-}
-
-.form-item {
-  padding: 0 30rpx;
-  height: 96rpx;
-  border-bottom: 1rpx solid #f2f2f2;
+  border-radius: 12rpx;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 16rpx;
 }
 
-.form-item.no-border {
-  border-bottom: none;
-}
-
-.form-label {
-  font-size: 28rpx;
+.tip-title {
+  font-size: 30rpx;
+  font-weight: 600;
   color: #333333;
 }
 
-.form-right {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-
-.form-value {
-  font-size: 28rpx;
-  color: #333333;
-}
-
-.form-input {
-  flex: 1;
-  text-align: right;
-  font-size: 28rpx;
-  color: #333333;
-}
-
-.form-input-placeholder {
-  font-size: 28rpx;
-  color: #c7c7c7;
+.tip-text {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.5;
 }
 
 .bottom-bar {
   margin-top: 60rpx;
   padding: 0 30rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
 .submit-btn {
@@ -208,5 +86,10 @@ function onSave() {
   font-size: 30rpx;
   border: none;
 }
-</style>
 
+.submit-btn.ghost {
+  background: #ffffff;
+  color: #ff3e6c;
+  border: 1rpx solid #ff3e6c;
+}
+</style>

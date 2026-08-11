@@ -38,13 +38,13 @@
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
 
-      <!-- <view class="wallet-item" @click="bankClick">
+      <view class="wallet-item" @click="bankClick">
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">🏦</text>
-          <text class="wallet-text">{{ t('银行账户') }}</text>
+          <text class="wallet-text">{{ t('收款账户') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
-      </view> -->
+      </view>
 
       <view class="wallet-item" @click="todo('withdrawLog')">
         <view class="wallet-item-left">
@@ -58,14 +58,6 @@
         <view class="wallet-item-left">
           <text class="iconfont wallet-icon">🧾</text>
           <text class="wallet-text">{{ t('充值日志') }}</text>
-        </view>
-        <uni-icons type="right" size="18" color="#c7c7c7" />
-      </view>
-
-      <view class="wallet-item" @click="todo('bindUsdt')">
-        <view class="wallet-item-left">
-          <text class="iconfont wallet-icon">₮</text>
-          <text class="wallet-text">{{ t('绑定USDT') }}</text>
         </view>
         <uni-icons type="right" size="18" color="#c7c7c7" />
       </view>
@@ -156,9 +148,6 @@ function todo(type: string) {
       break;
     case 'rechargeLog':
       url = '/pages/wallet/rechargeLog';
-      break;
-    case 'bindUsdt':
-      url = '/pages/wallet/usdt';
       break;
     default:
       url = '';

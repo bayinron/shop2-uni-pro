@@ -258,52 +258,70 @@ export function getBankTemplates(params: GetBankTemplatesParams = {}) {
 
 /**
  * =========================
- * 用戶收款方式管理
+ * 用戶收款方式管理（單一帳戶政策）
+ *
+ * 每位用戶僅能綁定一組收款帳戶，綁定後即鎖定。
+ * 用戶端只能新增一次，之後無法自行修改、刪除或更換；
+ * 任何異動一律由管理員在後台處理。
+ *
+ * 注意：被管理員停用（status = 0）的帳戶不會出現在 GET 列表中，
+ * 但仍佔用綁定名額——此時列表為空而 POST 會回 403，
+ * 前端需依 POST 錯誤訊息提示聯繫客服，不可僅憑列表為空就判定可綁定。
  * =========================
  */
 
+/**
+ * 綁定收款帳戶請求參數
+ * POST /api/user/payment-methods
+ *
+ * is_default 已移除：單一帳戶必然是預設帳戶，傳入會被忽略。
+ */
 export interface BindPaymentMethodPayload {
-  name: string;
-  /** 銀行模板 ID */
-  bank_template_id: number;
-  /** 帳戶信息（依模板字段而定） */
-  details: Record<string, any>;
-  /** 是否設為預設，默認 false */
-  is_default?: boolean;
+  /** 收款姓名 */
+  account_name: string;
+  /** 收款帳號 */
+  account_number: string;
+  /** 銀行名稱 */
+  bank_name: string;
 }
 
+/**
+ * 用戶收款帳戶
+ * GET /api/user/payment-methods 響應項
+ *
+ * 單一帳戶政策下正常情況只會有 0 或 1 筆：
+ * 空陣列 = 尚未綁定（可顯示「新增收款帳戶」）；
+ * 已有 1 筆 = 顯示帳戶資訊與「如需變更請聯繫客服」。
+ */
 export interface UserPaymentMethod {
+  /** 收款帳戶記錄 ID */
   id: number;
-  /** 系統自動判定的類型：fiat（法幣）或 crypto（加密貨幣） */
-  type: 'fiat' | 'crypto' | string;
-  /** 用戶自訂的帳戶別名 */
-  name: string;
-  /** 是否為預設打款帳戶 */
+  /** 收款姓名 */
+  account_name: string;
+  /** 收款帳號 */
+  account_number: string;
+  /** 銀行名稱 */
+  bank_name: string;
+  /** 是否為預設打款帳戶；單一帳戶時固定為 true */
   is_default: boolean;
-  /** 帳戶詳細資訊，對應綁定時填入的 Key/Value */
-  details: Record<string, any>;
-  /**
-   * 所屬銀行模板（type = fiat 時存在）
-   *  - name: 銀行名稱
-   *  - currency: 幣種
-   *  - fields_config: 欄位定義
-   */
-  bank_template?: {
-    id: number;
-    name: string;
-    currency: string;
-    fields_config?: any;
-    [key: string]: any;
-  } | null;
+  /** 1=啟用（列表僅回傳 status = 1 的帳戶） */
+  status: number;
   [key: string]: any;
 }
 
 /**
- * 綁定收款方式
+ * 綁定收款帳戶
  * POST /api/user/payment-methods
+ *
+ * 每位用戶最多綁定一組，綁定成功後自動成為預設收款帳戶。
+ *
+ * 錯誤：
+ *  - 401 用戶未登入
+ *  - 403 您已綁定收款帳戶，如需變更請聯繫客服由管理員處理
+ *  - 400 請輸入收款姓名／請輸入帳號／請輸入銀行名稱
  */
 export function bindUserPaymentMethod(data: BindPaymentMethodPayload) {
-  return http<any>({
+  return http<UserPaymentMethod>({
     method: 'POST',
     url: 'user/payment-methods',
     data,
@@ -311,38 +329,15 @@ export function bindUserPaymentMethod(data: BindPaymentMethodPayload) {
 }
 
 /**
- * 獲取我的收款方式列表
+ * 查詢已綁定的收款帳戶列表
  * GET /api/user/payment-methods
+ *
+ * 回傳當前登入用戶有效（status = 1）的收款帳戶，正常為 0 或 1 筆。
  */
-export function getUserPaymentMethods(params?: { bank_template_id?: number }) {
+export function getUserPaymentMethods() {
   return http<UserPaymentMethod[]>({
     method: 'GET',
     url: 'user/payment-methods',
-    data: params,
-  });
-}
-
-/**
- * 設為預設收款方式
- * PATCH /api/user/payment-methods/:id/default
- *
- * UniApp 不直接支持 PATCH，後端通常接受 POST 來表達更新語義。
- */
-export function setDefaultUserPaymentMethod(id: number) {
-  return http<{ success?: boolean } & Record<string, any>>({
-    method: 'POST',
-    url: `user/payment-methods/${id}/default`,
-  });
-}
-
-/**
- * 刪除收款帳戶
- * DELETE /api/user/payment-methods/:id
- */
-export function deleteUserPaymentMethod(id: number) {
-  return http<{ success?: boolean } & Record<string, any>>({
-    method: 'DELETE',
-    url: `user/payment-methods/${id}`,
   });
 }
 

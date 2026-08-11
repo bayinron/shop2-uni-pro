@@ -149,7 +149,7 @@
         {
             "path": "pages/wallet/bank",
             "style": {
-                "navigationBarTitleText": "银行账户"
+                "navigationBarTitleText": "收款账户"
             }
         },
         {
@@ -167,7 +167,7 @@
         {
             "path": "pages/wallet/usdt",
             "style": {
-                "navigationBarTitleText": "绑定USDT"
+                "navigationBarTitleText": "收款账户"
             }
         },
         {

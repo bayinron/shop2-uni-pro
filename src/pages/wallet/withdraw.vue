@@ -32,37 +32,16 @@
         </view>
       </view>
       <view class="form-item">
-        <text class="form-label">{{ t('持有人') }}</text>
-        <input
-          class="form-input"
-          type="text"
-          v-model="form.account_name"
-          :placeholder="t('请输入持有人姓名')"
-          placeholder-class="form-input-placeholder"
-          autocomplete="off"
-        />
+        <text class="form-label">{{ t('收款姓名') }}</text>
+        <text class="form-value readonly">{{ form.account_name || '-' }}</text>
       </view>
       <view class="form-item">
-        <text class="form-label">{{ t('发卡银行') }}</text>
-        <input
-          class="form-input"
-          type="text"
-          v-model="form.bank_name"
-          :placeholder="t('请输入发卡银行')"
-          placeholder-class="form-input-placeholder"
-          autocomplete="off"
-        />
+        <text class="form-label">{{ t('银行名称') }}</text>
+        <text class="form-value readonly">{{ form.bank_name || '-' }}</text>
       </view>
       <view class="form-item">
-        <text class="form-label">{{ t('银行卡号') }}</text>
-        <input
-          class="form-input"
-          type="text"
-          v-model="form.account_number"
-          :placeholder="t('请输入银行卡号')"
-          placeholder-class="form-input-placeholder"
-          autocomplete="off"
-        />
+        <text class="form-label">{{ t('收款账号') }}</text>
+        <text class="form-value readonly">{{ form.account_number || '-' }}</text>
       </view>
       <view class="form-item no-border">
         <text class="form-label">{{ t('支付密码') }}</text>
@@ -84,21 +63,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { computed, ref } from 'vue';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 import { useUserStoreHook } from '@/stores/modules/userStore';
 import {
+  getUserPaymentMethods,
   getWalletBalanceOverview,
   getWithdrawCurrencies,
   submitWalletWithdraw,
+  type UserPaymentMethod,
   type WalletCurrency,
 } from '@/api/pay';
 import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
-
-const WITHDRAW_ACCOUNT_CACHE_KEY = 'withdraw_account_info';
 
 const form = ref({
   amount: '',
@@ -111,36 +90,12 @@ const form = ref({
 
 const currencies = ref<WalletCurrency[]>([]);
 const availableBalance = ref('0');
+const hasBoundAccount = ref(false);
+const checkingGate = ref(false);
+let promptVisible = false;
 
 const userStore = useUserStoreHook();
 const userInfo = computed(() => userStore.userInfo);
-
-function getWithdrawAccountCacheKey() {
-  const uid = userInfo.value?.id;
-  return uid ? `${WITHDRAW_ACCOUNT_CACHE_KEY}_${uid}` : WITHDRAW_ACCOUNT_CACHE_KEY;
-}
-
-function loadCachedAccountInfo() {
-  try {
-    const cached = uni.getStorageSync(getWithdrawAccountCacheKey()) ||
-      uni.getStorageSync(WITHDRAW_ACCOUNT_CACHE_KEY);
-    if (!cached || typeof cached !== 'object') return;
-    if (cached.account_name) form.value.account_name = String(cached.account_name);
-    if (cached.bank_name) form.value.bank_name = String(cached.bank_name);
-    if (cached.account_number) form.value.account_number = String(cached.account_number);
-  } catch (_) {
-    // ignore broken cache
-  }
-}
-
-function saveCachedAccountInfo() {
-  const payload = {
-    account_name: form.value.account_name.trim(),
-    bank_name: form.value.bank_name.trim(),
-    account_number: form.value.account_number.trim(),
-  };
-  uni.setStorageSync(getWithdrawAccountCacheKey(), payload);
-}
 
 const currencyDisplay = computed(() => {
   const code = form.value.currency;
@@ -156,20 +111,115 @@ const currencySymbol = computed(() => {
   return item?.symbol || '฿';
 });
 
-watch(userInfo, (newVal) => {
-  if (newVal && !newVal.has_withdraw_password) {
-    globalTool.showToast(t('请先设置提现密码'), () => {
-      uni.navigateTo({
-        url: '/pages/wallet/editPayPwd?first=true',
-      });
-    });
+function unwrapPaymentList(res: any): UserPaymentMethod[] {
+  const data = res?.data?.data ?? res?.data ?? res;
+  return Array.isArray(data) ? data : [];
+}
+
+function applyBoundAccount(account: UserPaymentMethod | null) {
+  if (!account) {
+    hasBoundAccount.value = false;
+    form.value.account_name = '';
+    form.value.bank_name = '';
+    form.value.account_number = '';
+    return;
   }
-});
+  hasBoundAccount.value = true;
+  form.value.account_name = account.account_name || '';
+  form.value.bank_name = account.bank_name || '';
+  form.value.account_number = account.account_number || '';
+}
+
+function promptSetPayPassword() {
+  if (promptVisible) return;
+  promptVisible = true;
+  uni.showModal({
+    title: t('提示'),
+    content: t('请先设置提现密码'),
+    confirmText: t('去设置'),
+    cancelText: t('取消'),
+    success: (res) => {
+      promptVisible = false;
+      if (res.confirm) {
+        uni.navigateTo({
+          url: '/pages/wallet/editPayPwd?first=true',
+        });
+      } else {
+        uni.navigateBack();
+      }
+    },
+    fail: () => {
+      promptVisible = false;
+    },
+  });
+}
+
+function promptBindAccount() {
+  if (promptVisible) return;
+  promptVisible = true;
+  uni.showModal({
+    title: t('提示'),
+    content: t('请先绑定收款账户'),
+    confirmText: t('去绑定'),
+    cancelText: t('取消'),
+    success: (res) => {
+      promptVisible = false;
+      if (res.confirm) {
+        uni.navigateTo({ url: '/pages/wallet/bank' });
+      } else {
+        uni.navigateBack();
+      }
+    },
+    fail: () => {
+      promptVisible = false;
+    },
+  });
+}
+
+async function loadPaymentAccount(showPrompt = true) {
+  try {
+    const res: any = await getUserPaymentMethods();
+    const list = unwrapPaymentList(res);
+    const account = list.length > 0 ? list[0] : null;
+    applyBoundAccount(account);
+    if (!account && showPrompt) {
+      promptBindAccount();
+    }
+  } catch {
+    applyBoundAccount(null);
+    if (showPrompt) {
+      promptBindAccount();
+    }
+  }
+}
+
+/** 先校验支付密码，通过后再校验收款账户，避免两个弹窗同时出现 */
+async function checkWithdrawGate() {
+  if (checkingGate.value || promptVisible) return;
+  checkingGate.value = true;
+  try {
+    try {
+      await userStore.reqUserInfo();
+    } catch {
+      // 刷新失败时沿用本地 userInfo
+    }
+    if (!userInfo.value?.has_withdraw_password) {
+      promptSetPayPassword();
+      return;
+    }
+    await loadPaymentAccount(true);
+  } finally {
+    checkingGate.value = false;
+  }
+}
 
 onLoad(() => {
-  loadCachedAccountInfo();
   loadCurrencies();
   loadBalance();
+});
+
+onShow(() => {
+  checkWithdrawGate();
 });
 
 function loadBalance() {
@@ -235,6 +285,14 @@ function onSelectCurrency() {
 }
 
 function onSubmit() {
+  if (!userInfo.value?.has_withdraw_password) {
+    promptSetPayPassword();
+    return;
+  }
+  if (!hasBoundAccount.value) {
+    promptBindAccount();
+    return;
+  }
   const amountNum = Number(form.value.amount);
   if (!amountNum || amountNum <= 0) {
     uni.showToast({ title: t('请输入正确的提现金额'), icon: 'none' });
@@ -244,16 +302,8 @@ function onSubmit() {
     uni.showToast({ title: t('请选择提现币种'), icon: 'none' });
     return;
   }
-  if (!form.value.account_name.trim()) {
-    uni.showToast({ title: t('请输入持有人姓名'), icon: 'none' });
-    return;
-  }
-  if (!form.value.bank_name.trim()) {
-    uni.showToast({ title: t('请输入发卡银行'), icon: 'none' });
-    return;
-  }
-  if (!form.value.account_number.trim()) {
-    uni.showToast({ title: t('请输入银行卡号'), icon: 'none' });
+  if (!form.value.account_name.trim() || !form.value.bank_name.trim() || !form.value.account_number.trim()) {
+    uni.showToast({ title: t('请先绑定收款账户'), icon: 'none' });
     return;
   }
   if (!form.value.payPassword.trim()) {
@@ -269,7 +319,6 @@ function onSubmit() {
     bank_name: form.value.bank_name.trim(),
     withdraw_password: form.value.payPassword,
   }).then(() => {
-    saveCachedAccountInfo();
     globalTool.showToast(t('提现成功'), () => {
       uni.navigateBack();
     });
@@ -370,6 +419,12 @@ function onSubmit() {
 
 .form-value.placeholder {
   color: #c7c7c7;
+}
+
+.form-value.readonly {
+  flex: 1;
+  text-align: right;
+  color: #666;
 }
 
 .form-input {
