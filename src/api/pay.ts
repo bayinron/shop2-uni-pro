@@ -378,15 +378,20 @@ export function getWithdrawCurrencies() {
 }
 
 /**
- * 主動向平台申請提現
+ * 主動向平台申請提現（出金）
  * POST /api/wallet/withdraw
+ *
+ * 從用戶 SYS balance 錢包凍結指定金額（含手續費），建立提現申請等待審核。
+ * 來源錢包固定為 balance；不再讀取 payment_method_id、payout_currency、
+ * wallet_type、account_name、account_number、bank_name——收款帳戶由後端
+ * 依用戶已綁定的有效帳戶自動帶入；未綁定時回 HTTP 403「請先綁定收款帳戶」。
  */
 export interface WalletWithdrawPayload {
+  /** 以 SYS 系統餘額計算的提現金額；建議傳數字字串，後端兼容 JSON number */
   amount: string | number;
+  /** 提現／收款幣種代碼；SYS 按 1:1，其他幣種需已設定 SYS → 該幣種匯率 */
   currency: string;
-  account_name: string;
-  account_number: string;
-  bank_name: string;
+  /** 用戶支付密碼（未設定需先 PUT /api/auth/me/withdraw-password） */
   withdraw_password: string;
 }
 
@@ -405,7 +410,11 @@ export function submitWalletWithdraw(data: WalletWithdrawPayload) {
   return http<WalletWithdrawResponse>({
     method: 'POST',
     url: 'wallet/withdraw',
-    data,
+    data: {
+      amount: typeof data.amount === 'number' ? String(data.amount) : String(data.amount).trim(),
+      currency: String(data.currency).trim(),
+      withdraw_password: String(data.withdraw_password),
+    },
   });
 }
 

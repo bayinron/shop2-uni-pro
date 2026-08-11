@@ -311,13 +311,12 @@ function onSubmit() {
     return;
   }
 
+  // 新協議僅傳 amount / currency / withdraw_password；
+  // 收款帳戶由後端按已綁定帳戶處理，前端不再上送 account_* / bank_name。
   submitWalletWithdraw({
-    amount: amountNum,
+    amount: String(form.value.amount).trim(),
     currency: form.value.currency.trim(),
-    account_name: form.value.account_name.trim(),
-    account_number: form.value.account_number.trim(),
-    bank_name: form.value.bank_name.trim(),
-    withdraw_password: form.value.payPassword,
+    withdraw_password: form.value.payPassword.trim(),
   }).then(() => {
     globalTool.showToast(t('提现成功'), () => {
       uni.navigateBack();

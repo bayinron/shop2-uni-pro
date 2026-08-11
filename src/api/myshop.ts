@@ -663,17 +663,16 @@ export function applyMyShopPayout() {
 }
 
 /**
- * 商家提現參數（與 POST /api/wallet/withdraw 完全一致）
+ * 商家提現參數（與 POST /api/wallet/withdraw 對齊）
+ * 僅 amount / currency / withdraw_password；收款帳戶由後端依已綁定帳戶處理。
  */
 export interface MyShopWithdrawPayload {
+  /** 以 SYS 餘額計算的提現金額；建議傳數字字串 */
+  amount: string | number;
+  /** 提現／收款幣種代碼，如 USDT */
+  currency: string;
   /** 支付密碼（未設定需先 PUT /api/auth/me/withdraw-password） */
   withdraw_password: string;
-  /** 幣種代碼，如 USDT */
-  currency: string;
-  amount: number;
-  /** 收款帳戶 ID；留白則使用預設帳戶 */
-  payment_method_id?: number;
-  remark?: string;
 }
 
 export interface MyShopWithdrawResponse {
