@@ -75,8 +75,8 @@ async function onSubmit() {
     uni.showToast({ title: t('请输入新密码'), icon: 'none' });
     return;
   }
-  if (form.value.newPwd.length < 8) {
-    uni.showToast({ title: t('新密码至少8位'), icon: 'none' });
+  if (form.value.newPwd.length < 6) {
+    uni.showToast({ title: t('新密码至少6位'), icon: 'none' });
     return;
   }
   if (form.value.newPwd !== form.value.confirmPwd) {

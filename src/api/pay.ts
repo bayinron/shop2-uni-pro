@@ -504,3 +504,30 @@ export function getWalletWithdrawals(params: WalletWithdrawalListQuery = {}) {
   });
 }
 
+/**
+ * =========================
+ * 店鋪訂單發貨
+ * =========================
+ */
+
+export interface ShipMyShopOrderPayload {
+  /** 物流供應商名稱 */
+  logistics_provider?: string;
+  /** 物流追蹤編號 */
+  tracking_number?: string;
+}
+
+/**
+ * 賣家發貨
+ * POST /api/mall/my-shop/orders/:id/ship
+ *
+ * 前提：訂單 status 必須為 paid；成功後 status 變為 shipped。
+ */
+export function shipMyShopOrder(orderId: number, data: ShipMyShopOrderPayload = {}) {
+  return http<any>({
+    method: 'POST',
+    url: `mall/my-shop/orders/${orderId}/ship`,
+    data,
+  });
+}
+

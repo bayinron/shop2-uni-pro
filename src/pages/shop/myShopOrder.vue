@@ -1,7 +1,7 @@
 <template>
   <view class="seller-orders-page">
-    <!-- 顶部筛选 -->
-    <view class="filter-bar">
+    <!-- 订单状态标签页 -->
+    <view class="order-tabs">
       <scroll-view class="tabs-scroll" scroll-x>
         <view class="tabs-wrap">
           <view
@@ -15,7 +15,10 @@
           </view>
         </view>
       </scroll-view>
+    </view>
 
+    <!-- 搜索 -->
+    <!-- <view class="filter-bar">
       <view class="search-row">
         <input
           class="search-input"
@@ -26,7 +29,7 @@
         />
         <button class="search-btn" @click="onSearch">{{ t('搜索') }}</button>
       </view>
-    </view>
+    </view> -->
 
     <!-- 列表 -->
     <view class="order-content">
@@ -65,6 +68,12 @@
               <text class="total-price">฿{{ o.total_amount }}</text>
             </view>
           </view>
+
+          <view class="order-actions" v-if="activeStatus === 'paid' || o.status === 'paid'">
+            <view class="action-btn action-btn--primary" @click.stop="onConfirmShip(o)">
+              <text class="action-btn-text">{{ t('确认发送') }}</text>
+            </view>
+          </view>
         </view>
 
         <view class="list-footer">
@@ -84,6 +93,7 @@
 import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { getMyShopOrders, type MyShopOrder, type MyShopOrderListResponse } from '@/api/myshop';
+import { shipMyShopOrder } from '@/api/pay';
 import { useUserStore } from '@/stores/modules/userStore';
 
 import { useI18n } from '@/utils/i18n';
@@ -93,22 +103,23 @@ const { t } = useI18n();
 type StatusTabKey = '' | 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
 
 const tabs = computed(() => [
-  { key: '' as StatusTabKey, text: t('全部') },
+  // { key: '' as StatusTabKey, text: t('全部') },
   { key: 'pending' as StatusTabKey, text: t('待付款') },
   { key: 'paid' as StatusTabKey, text: t('待发货') },
-  { key: 'processing' as StatusTabKey, text: t('备货中') },
-  { key: 'shipped' as StatusTabKey, text: t('已发货') },
+  // { key: 'processing' as StatusTabKey, text: t('备货中') },
+  { key: 'shipped' as StatusTabKey, text: t('待收货') },
   { key: 'completed' as StatusTabKey, text: t('已完成') },
-  { key: 'cancelled' as StatusTabKey, text: t('已取消') },
+  // { key: 'cancelled' as StatusTabKey, text: t('已取消') },
 ]);
 
-const activeStatus = ref<StatusTabKey>('');
+const activeStatus = ref<StatusTabKey>('pending');
 const orderNo = ref('');
 
 const PAGE_SIZE = 10;
 const page = ref(0);
 const hasMore = ref(true);
 const loading = ref(false);
+const shipping = ref(false);
 const list = ref<MyShopOrder[]>([]);
 
 function statusText(status: string) {
@@ -116,7 +127,7 @@ function statusText(status: string) {
     pending: t('待付款'),
     paid: t('待发货'),
     processing: t('备货中'),
-    shipped: t('已发货'),
+    shipped: t('待收货'),
     delivered: t('待确认'),
     completed: t('已完成'),
     cancelled: t('已取消'),
@@ -139,6 +150,22 @@ function resetAndLoad() {
 function onTabClick(key: StatusTabKey) {
   activeStatus.value = key;
   resetAndLoad();
+}
+
+function onConfirmShip(order: MyShopOrder) {
+  if (shipping.value || !order?.id) return;
+  shipping.value = true;
+  shipMyShopOrder(order.id)
+    .then(() => {
+      uni.showToast({ title: t('操作成功'), icon: 'none' });
+      onTabClick('shipped');
+    })
+    .catch(() => {
+      uni.showToast({ title: t('操作失败'), icon: 'none' });
+    })
+    .finally(() => {
+      shipping.value = false;
+    });
 }
 
 function onSearch() {
@@ -191,46 +218,62 @@ onReachBottom(() => {
   flex-direction: column;
 }
 
+.order-tabs {
+  background: #fff;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.tabs-scroll {
+  white-space: nowrap;
+  width: 100%;
+}
+
+.tabs-wrap {
+  display: flex;
+  width: 100%;
+}
+
+.tab-item {
+  flex: 1;
+  padding: 24rpx 0;
+  box-sizing: border-box;
+  position: relative;
+  text-align: center;
+}
+
+.tab-text {
+  font-size: 28rpx;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.tab-item--active .tab-text {
+  color: #ff3e6c;
+  font-weight: 500;
+}
+
+.tab-item--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48rpx;
+  height: 4rpx;
+  background: #ff3e6c;
+  border-radius: 2rpx;
+}
+
 .filter-bar {
   background: #fff;
   padding: 16rpx 20rpx;
   border-bottom: 2rpx solid #f0f0f0;
 }
 
-.tabs-scroll {
-  white-space: nowrap;
-}
-
-.tabs-wrap {
-  display: inline-flex;
-  gap: 18rpx;
-  padding-bottom: 12rpx;
-}
-
-.tab-item {
-  padding: 12rpx 20rpx;
-  border-radius: 999rpx;
-  background: #f6f6f6;
-}
-
-.tab-item--active {
-  background: #ff3e6c;
-}
-
-.tab-text {
-  font-size: 26rpx;
-  color: #666;
-}
-
-.tab-item--active .tab-text {
-  color: #fff;
-}
-
 .search-row {
   display: flex;
   align-items: center;
   gap: 16rpx;
-  margin-top: 12rpx;
 }
 
 .search-input {
@@ -368,6 +411,43 @@ onReachBottom(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.order-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20rpx;
+  padding-top: 20rpx;
+  margin-top: 18rpx;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56rpx;
+  padding: 0 32rpx;
+  border-radius: 40rpx;
+  border: 2rpx solid #e5e5e5;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.action-btn--primary {
+  background: #ff3e6c;
+  border-color: #ff3e6c;
+}
+
+.action-btn-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1;
+}
+
+.action-btn--primary .action-btn-text {
+  color: #fff;
 }
 
 .order-time {
