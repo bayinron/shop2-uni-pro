@@ -58,7 +58,7 @@
         </view>
 
         <!-- 子分类网格 -->
-        <view class="subcate-grid" v-if="subCategories.length">
+        <!-- <view class="subcate-grid" v-if="subCategories.length">
           <view
             class="subcate-card"
             v-for="s in displaySubCategories"
@@ -73,7 +73,7 @@
             <uni-icons type="bottom" size="28" color="#9e9e9e" />
             <text class="subcate-more-text">{{ t('点击查看全部') }}</text>
           </view>
-        </view>
+        </view> -->
 
        
 

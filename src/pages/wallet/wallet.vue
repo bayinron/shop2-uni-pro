@@ -4,7 +4,7 @@
     <view class="wallet-header">
       <text class="wallet-label">{{ t('余额') }}</text>
       <text class="wallet-amount">{{ balance }}</text>
-      <view class="wallet-stats">
+      <!-- <view class="wallet-stats">
         <view class="stat-item">
           <text class="stat-label">{{ t('待结算') }}</text>
           <text class="stat-value">{{ formatAmount(financial?.pending_amount) }}</text>
@@ -17,7 +17,7 @@
           <text class="stat-label">{{ t('累计收益') }}</text>
           <text class="stat-value">{{ formatAmount(financial?.total_earned) }}</text>
         </view>
-      </view>
+      </view> -->
     </view>
 
     <!-- 功能列表 -->
@@ -160,7 +160,7 @@ function todo(type: string) {
 
 <style scoped lang="scss">
 .wallet-page {
-  min-height: 100vh;
+  //min-height: 100vh;
   background: #f5f5f5;
 }
 
