@@ -312,6 +312,7 @@ onLoad(() => {
   margin-bottom: 16rpx;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .product-img {
@@ -320,12 +321,15 @@ onLoad(() => {
   border-radius: 12rpx;
   background: #f5f5f5;
   margin-right: 20rpx;
+  flex-shrink: 0;
 }
 
 .product-info {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .product-name {
@@ -333,6 +337,10 @@ onLoad(() => {
   color: #333;
   margin-bottom: 12rpx;
   line-height: 1.4;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-stock {
@@ -423,19 +431,25 @@ onLoad(() => {
   height: 120rpx;
   border-radius: 14rpx;
   background: #f5f5f5;
+  flex-shrink: 0;
 }
 
 .sheet-info {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 10rpx;
   padding-top: 4rpx;
+  overflow: hidden;
 }
 
 .sheet-title {
   font-size: 30rpx;
   color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sheet-price {
