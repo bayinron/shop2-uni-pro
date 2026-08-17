@@ -15,7 +15,10 @@
         </view>
         <view class="my-shop-user-info">
           <view class="my-shop-id-row">
-            <text class="my-shop-id-label">{{ t('ID：') }}</text>
+            <text class="my-shop-id-label">{{ t('用户') }}ID：</text>
+            <text class="my-shop-id-value">{{ userInfo?.id || '-' }}</text>
+            <text class="my-shop-id-sep">|</text>
+            <text class="my-shop-id-label">{{ t('店铺') }}ID：</text>
             <text class="my-shop-id-value">{{ shopProfile?.id || '-' }}</text>
           </view>
           <view class="my-shop-name-row">
@@ -88,7 +91,7 @@
         <image class="banner-img" :src="shopCover" mode="aspectFill" />
       </view>
       <view v-else class="banner-wrap">
-        <image class="banner-img" src="/static/img/invitebg.png" mode="aspectFill" />
+        <image class="banner-img" src="/static/images/shopbanner.jpg" mode="aspectFill" />
       </view>
 
       <!-- 必备工具 -->
@@ -375,6 +378,8 @@ function onToolClick(type: string) {
   flex-direction: row;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .my-shop-id-label {
@@ -386,6 +391,12 @@ function onToolClick(type: string) {
   font-size: 28rpx;
   color: #ffffff;
   margin-left: 6rpx;
+}
+
+.my-shop-id-sep {
+  margin: 0 12rpx;
+  font-size: 24rpx;
+  color: rgba(255, 228, 196, 0.6);
 }
 
 .my-shop-name-row {
