@@ -289,7 +289,7 @@ function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
 function onProductClick(p: any) {
   const id = p?.product?.id ?? p?.product_id ?? p?.id;
   uni.navigateTo({
-    url: '/pages/goodsDetail/goodsDetail?id=' + id,
+    url: '/pages/goodsDetail/goodsDetail?id=' + id+'&shop_id='+p?.shop_id,
   });
 }
 

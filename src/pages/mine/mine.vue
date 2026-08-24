@@ -357,8 +357,8 @@ function addressClick() {
 
 function onServiceClick() {
   uni.navigateTo({
-    url: '/pages/service/index?url=' + 'https://www.baidu.com',
-  });
+      url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
+    });
 }
 
 function onShopClick() {
@@ -379,7 +379,7 @@ function onProductClick(p: any) {
     uni.showToast({ title: t('商品详情暂不可用'), icon: 'none' });
     return;
   }
-  uni.navigateTo({ url: '/pages/goodsDetail/goodsDetail?id=' + id });
+  uni.navigateTo({ url: '/pages/goodsDetail/goodsDetail?id=' + id+'&shop_id='+p?.shop_id });
 }
 
 function goCart() {

@@ -413,7 +413,7 @@ function onSubmit() {
 
 .form-value {
   font-size: 28rpx;
-  color: #333;
+  color: #c7c7c7;
 }
 
 .form-value.placeholder {
@@ -423,7 +423,7 @@ function onSubmit() {
 .form-value.readonly {
   flex: 1;
   text-align: right;
-  color: #666;
+  color: #c7c7c7;
 }
 
 .form-input {

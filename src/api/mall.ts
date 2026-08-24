@@ -209,10 +209,10 @@ export interface MallProductDetail {
   [key: string]: any;
 }
 
-export function getMallProductDetail(id: number) {
+export function getMallProductDetail(id: number, shop_id: number) {
   return http<MallProductDetail>({
     method: 'GET',
-    url: `mall/products/${id}`,
+    url: `mall/products/${id}?shop_id=${shop_id}`,
   });
 }
 

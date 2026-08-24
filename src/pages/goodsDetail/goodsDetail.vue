@@ -247,7 +247,7 @@ onLoad((options: any) => {
   if (options.id) {
     // 这里可以根据ID加载商品数据（测试数据）
     console.log(t('商品ID'), options.id);
-    getMallProductDetail(options.id).then((res: any) => {
+    getMallProductDetail(options.id, options.shop_id).then((res: any) => {
       console.log(res);
       goodsData.value = res?.data || res;
     });

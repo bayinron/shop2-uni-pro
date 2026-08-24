@@ -90,7 +90,7 @@ const loading = ref<boolean>(false);
 
 function onGoodsClick(item: any) {
   uni.navigateTo({
-    url: `/pages/goodsDetail/goodsDetail?id=${item.product.id}`,
+    url: `/pages/goodsDetail/goodsDetail?id=${item.product.id}&shop_id=${shopId.value}`,
   });
 }
 

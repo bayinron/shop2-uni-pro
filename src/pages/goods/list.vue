@@ -120,7 +120,7 @@ function productPrice(p: any) {
 function onProductClick(p: any) {
   const pid = p?.product?.id ?? p?.product_id ?? p?.id;
   uni.navigateTo({
-    url: '/pages/goodsDetail/goodsDetail?id=' + pid,
+    url: '/pages/goodsDetail/goodsDetail?id=' + pid+'&shop_id='+p?.shop_id,
   });
 }
 

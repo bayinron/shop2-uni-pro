@@ -18,7 +18,7 @@
             <text class="my-shop-id-label">{{ t('用户') }}ID：</text>
             <text class="my-shop-id-value">{{ userInfo?.id || '-' }}</text>
             <text class="my-shop-id-sep">|</text>
-            <text class="my-shop-id-label">{{ t('店铺') }}ID：</text>
+            <text class="my-shop-id-label">Code：</text>
             <text class="my-shop-id-value">{{ shopProfile?.id || '-' }}</text>
           </view>
           <view class="my-shop-name-row">

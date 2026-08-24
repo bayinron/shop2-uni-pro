@@ -246,21 +246,21 @@ function onCateClick(c: Category) {
   loadProducts();
 }
 
-function onSubCateClick(s: Category) {
-  uni.navigateTo({
-    url: `/pages/goods/list?category_id=${s.id}&title=${encodeURIComponent(s.name || '')}`,
-  });
-}
+// function onSubCateClick(s: Category) {
+//   uni.navigateTo({
+//     url: `/pages/goods/list?category_id=${s.id}&title=${encodeURIComponent(s.name || '')}`,
+//   });
+// }
 
-function onViewAll() {
-  if (subCategories.value.length > subPreviewCount && !subExpanded.value) {
-    subExpanded.value = true;
-    return;
-  }
-  uni.navigateTo({
-    url: `/pages/goods/list?category_id=${activeCateId.value}&title=${encodeURIComponent(activeCateName.value)}`,
-  });
-}
+// function onViewAll() {
+//   if (subCategories.value.length > subPreviewCount && !subExpanded.value) {
+//     subExpanded.value = true;
+//     return;
+//   }
+//   uni.navigateTo({
+//     url: `/pages/goods/list?category_id=${activeCateId.value}&title=${encodeURIComponent(activeCateName.value)}`,
+//   });
+// }
 
 function toggleExpand() {
   sidebarExpanded.value = !sidebarExpanded.value;
@@ -276,7 +276,7 @@ function onSearchConfirm(e: any) {
 function onProductClick(p: any) {
   const pid = p?.product?.id ?? p?.product_id ?? p?.id;
   uni.navigateTo({
-    url: '/pages/goodsDetail/goodsDetail?id=' + pid,
+    url: '/pages/goodsDetail/goodsDetail?id=' + pid+'&shop_id='+p?.shop_id,
   });
 }
 

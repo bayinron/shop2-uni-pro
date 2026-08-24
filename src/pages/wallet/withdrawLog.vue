@@ -8,7 +8,7 @@
       <view v-for="item in logs" :key="item.id" class="log-card">
         <view class="log-card-body">
           <view class="log-card-body-top">
-            <text class="log-amount"> {{ item.currency }} {{ item.amount }}</text>
+            <text class="log-amount"> {{ item.currency }} {{ Number(item.amount).toFixed(2) }}</text>
             <text class="log-status">{{ item.status_text }}</text>
 
           </view>

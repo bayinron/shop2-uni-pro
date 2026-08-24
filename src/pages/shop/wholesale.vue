@@ -3,16 +3,35 @@
       <!-- 顶部固定区域：Tab + 搜索框放在一起，顶置在顶部 -->
       <view class="top-bar">
         <!-- 商品类型 Tab（参考 shop.vue，一模一样的交互） -->
-        <scroll-view class="nav-wrap" scroll-x>
-          <view class="nav-inner">
-            <view
+        <!-- H5 用原生 div 横向滚动，PC 可滚轮/拖拽；小程序仍用 scroll-view -->
+        <div
+          v-if="isH5"
+          class="nav-wrap nav-wrap--scroll"
+          @wheel.prevent="onNavWheel"
+          @mousedown="onNavDragStart"
+          @mousemove="onNavDragMove"
+          @mouseup="onNavDragEnd"
+          @mouseleave="onNavDragEnd"
+        >
+          <div class="nav-track">
+            <div
               v-for="c in categories"
               :key="c.id"
               :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
               @click="onCateClick(c)"
             >
-              <text class="nav-text">{{ c.name }}</text>
-            </view>
+              <span class="nav-text">{{ c.name }}</span>
+            </div>
+          </div>
+        </div>
+        <scroll-view v-else class="nav-wrap" scroll-x :scroll-y="false">
+          <view
+            v-for="c in categories"
+            :key="c.id"
+            :class="['nav-item', activeCateId === c.id ? 'nav-item--active' : '']"
+            @click="onCateClick(c)"
+          >
+            <text class="nav-text">{{ c.name }}</text>
           </view>
         </scroll-view>
 
@@ -134,6 +153,7 @@ import { useI18n } from '@/utils/i18n';
 const { t } = useI18n();
   const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
+const isH5 = uni.getSystemInfoSync().uniPlatform === 'web';
   type Product = {
     id: number | string;
     name: string;
@@ -234,8 +254,50 @@ const prefixUrl = computed(() => userStore.prefixUrl);
     loadProducts(true);
   }
   
+  const navDrag = {
+    active: false,
+    moved: false,
+    startX: 0,
+    scrollLeft: 0,
+  };
+
+  function onNavWheel(e: WheelEvent) {
+    const el = e.currentTarget as HTMLElement | null;
+    if (!el) return;
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (!delta) return;
+    el.scrollLeft += delta;
+  }
+
+  function onNavDragStart(e: MouseEvent) {
+    const el = e.currentTarget as HTMLElement | null;
+    if (!el) return;
+    navDrag.active = true;
+    navDrag.moved = false;
+    navDrag.startX = e.clientX;
+    navDrag.scrollLeft = el.scrollLeft;
+  }
+
+  function onNavDragMove(e: MouseEvent) {
+    if (!navDrag.active) return;
+    e.preventDefault();
+    const el = e.currentTarget as HTMLElement | null;
+    if (!el) return;
+    const delta = e.clientX - navDrag.startX;
+    if (Math.abs(delta) > 3) navDrag.moved = true;
+    el.scrollLeft = navDrag.scrollLeft - delta;
+  }
+
+  function onNavDragEnd() {
+    navDrag.active = false;
+  }
+
   // 商品类型切换（参考 shop.vue）
   function onCateClick(c: Category) {
+    if (navDrag.moved) {
+      navDrag.moved = false;
+      return;
+    }
     activeCateId.value = c.id;
     keyword.value = '';
     loadProducts(true);
@@ -339,21 +401,39 @@ const prefixUrl = computed(() => userStore.prefixUrl);
   }
   
   .nav-wrap {
+    width: 100%;
     height: var(--top-nav-height);
     background: #ffffff;
     box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.04);
     white-space: nowrap;
-  }
-  
-  .nav-inner {
-    display: inline-flex;
-    align-items: center;
-    height: var(--top-nav-height);
     padding: 0 20rpx;
     box-sizing: border-box;
   }
+
+  .nav-wrap--scroll {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    user-select: none;
+    touch-action: pan-x;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .nav-track {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    min-width: 100%;
+    height: var(--top-nav-height);
+  }
   
   .nav-item {
+    display: inline-block;
     flex-shrink: 0;
     margin-right: 36rpx;
     padding: 20rpx 0 16rpx;

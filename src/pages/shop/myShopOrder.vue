@@ -42,10 +42,10 @@
             </text>
           </view>
 
-          <view class="buyer-row">
+          <!-- <view class="buyer-row">
             <text class="buyer-label">{{ t('买家：') }}</text>
             <text class="buyer-name">{{ o.buyer?.nickname || o.buyer?.username || '-' }}</text>
-          </view>
+          </view> -->
 
           <view class="order-products">
             <view v-for="it in o.items" :key="it.id" class="product-item">
