@@ -69,7 +69,7 @@
             </view>
           </view>
 
-          <view class="order-actions" v-if="activeStatus === 'paid' || o.status === 'paid'">
+          <view class="order-actions" v-if="activeStatus === 'pending_shipment' || o.status === 'pending_shipment' || o.status === 'paid'">
             <view class="action-btn action-btn--primary" @click.stop="onConfirmShip(o)">
               <text class="action-btn-text">{{ t('确认发送') }}</text>
             </view>
@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
-import { getMyShopOrders, type MyShopOrder, type MyShopOrderListResponse } from '@/api/myshop';
+import { getMyShopOrders, type MyShopOrder, type MyShopOrderListResponse, type MyShopOrderFilterStatus } from '@/api/myshop';
 import { shipMyShopOrder } from '@/api/pay';
 import { useUserStore } from '@/stores/modules/userStore';
 
@@ -100,19 +100,24 @@ import { useI18n } from '@/utils/i18n';
 const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
 const { t } = useI18n();
-type StatusTabKey = '' | 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
+type StatusTabKey = MyShopOrderFilterStatus;
+
+const LEGACY_STATUS_MAP: Record<string, StatusTabKey> = {
+  pending: 'pending_payment',
+  paid: 'pending_shipment',
+  processing: 'pending_receipt',
+  shipped: 'pending_receipt',
+  delivered: 'pending_receipt',
+};
 
 const tabs = computed(() => [
-  // { key: '' as StatusTabKey, text: t('全部') },
-  { key: 'pending' as StatusTabKey, text: t('待付款') },
-  { key: 'paid' as StatusTabKey, text: t('待发货') },
-  // { key: 'processing' as StatusTabKey, text: t('备货中') },
-  { key: 'shipped' as StatusTabKey, text: t('待收货') },
+  { key: 'pending_payment' as StatusTabKey, text: t('待付款') },
+  { key: 'pending_shipment' as StatusTabKey, text: t('待发货') },
+  { key: 'pending_receipt' as StatusTabKey, text: t('待收货') },
   { key: 'completed' as StatusTabKey, text: t('已完成') },
-  // { key: 'cancelled' as StatusTabKey, text: t('已取消') },
 ]);
 
-const activeStatus = ref<StatusTabKey>('pending');
+const activeStatus = ref<StatusTabKey>('pending_payment');
 const orderNo = ref('');
 
 const PAGE_SIZE = 10;
@@ -124,13 +129,16 @@ const list = ref<MyShopOrder[]>([]);
 
 function statusText(status: string) {
   const map: Record<string, string> = {
-    pending: t('待付款'),
-    paid: t('待发货'),
-    processing: t('备货中'),
-    shipped: t('待收货'),
-    delivered: t('待确认'),
+    pending_payment: t('待付款'),
+    pending_shipment: t('待发货'),
+    pending_receipt: t('待收货'),
     completed: t('已完成'),
     cancelled: t('已取消'),
+    pending: t('待付款'),
+    paid: t('待发货'),
+    processing: t('待收货'),
+    shipped: t('待收货'),
+    delivered: t('待确认'),
   };
   return map[status] || status || '-';
 }
@@ -158,7 +166,7 @@ function onConfirmShip(order: MyShopOrder) {
   shipMyShopOrder(order.id)
     .then(() => {
       uni.showToast({ title: t('操作成功'), icon: 'none' });
-      onTabClick('shipped');
+      onTabClick('pending_receipt');
     })
     .catch(() => {
       uni.showToast({ title: t('操作失败'), icon: 'none' });
@@ -200,7 +208,8 @@ function loadMore() {
 
 onLoad((options: any) => {
   if (options?.status) {
-    activeStatus.value = options.status as StatusTabKey;
+    const rawStatus = options.status as string;
+    activeStatus.value = LEGACY_STATUS_MAP[rawStatus] || (rawStatus as StatusTabKey);
   }
   resetAndLoad();
 });

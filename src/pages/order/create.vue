@@ -165,7 +165,7 @@ async function onSubmitOrder() {
     uni.hideLoading();
     globalTool.showToast(t('下单成功'), true, 'success');
     setTimeout(() => {
-      uni.navigateTo({ url: '/pages/order/order?status=pending' });
+      uni.navigateTo({ url: '/pages/order/order?status=pending_payment' });
     }, 800);
   } catch (e) {
     uni.hideLoading();

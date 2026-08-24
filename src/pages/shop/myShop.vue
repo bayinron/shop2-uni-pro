@@ -42,21 +42,21 @@
           </view>
         </view>
         <view class="order-icons">
-          <view class="order-icon-item" @click="goOrderByStatus('pending')">
+          <view class="order-icon-item" @click="goOrderByStatus('pending_payment')">
             <view class="order-icon-wrap">
               <image class="order-icon-img" src="/static/img/my_4.png" mode="aspectFill" />
               <view v-if="pendingOrderCount > 0" class="order-badge">{{ formatBadge(pendingOrderCount) }}</view>
             </view>
             <text class="order-icon-text">{{ t('待付款') }}</text>
           </view>
-          <view class="order-icon-item" @click="goOrderByStatus('paid')">
+          <view class="order-icon-item" @click="goOrderByStatus('pending_shipment')">
             <view class="order-icon-wrap">
               <image class="order-icon-img" src="/static/img/my_5.png" mode="aspectFill" />
               <view v-if="paidOrderCount > 0" class="order-badge">{{ formatBadge(paidOrderCount) }}</view>
             </view>
             <text class="order-icon-text">{{ t('待发货') }}</text>
           </view>
-          <view class="order-icon-item" @click="goOrderByStatus('shipped')">
+          <view class="order-icon-item" @click="goOrderByStatus('pending_receipt')">
             <image class="order-icon-img" src="/static/img/my_6.png" mode="aspectFill" />
             <text class="order-icon-text">{{ t('待收货') }}</text>
           </view>

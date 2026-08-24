@@ -379,18 +379,17 @@ export function createMallOrder(data: MallCreateOrderPayload) {
 }
 
 // 2. 我的訂單列表 - GET /api/mall/orders
-export type MallOrderStatus =
-  | 'pending'
-  | 'paid'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'completed'
-  | 'cancelled'
-  | string;
+/** 訂單列表篩選狀態（status 查詢參數） */
+export type MallOrderFilterStatus =
+  | 'pending_payment'
+  | 'pending_shipment'
+  | 'pending_receipt'
+  | 'completed';
+
+export type MallOrderStatus = MallOrderFilterStatus | 'cancelled' | string;
 
 export interface MallOrderListParams {
-  status?: MallOrderStatus;
+  status?: MallOrderFilterStatus;
   page?: number;
   limit?: number;
 }

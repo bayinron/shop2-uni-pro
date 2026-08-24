@@ -422,7 +422,7 @@ async function onBuyNow(quantity = 1) {
     if (!orderId) {
       uni.showToast({ title: t('下单成功，请到订单页付款'), icon: 'none' });
       setTimeout(() => {
-        uni.navigateTo({ url: '/pages/order/order?status=pending' });
+        uni.navigateTo({ url: '/pages/order/order?status=pending_payment' });
       }, 500);
       return;
     }
@@ -436,7 +436,7 @@ async function onBuyNow(quantity = 1) {
         if (!r.confirm) {
           uni.showToast({ title: t('已创建订单'), icon: 'none' });
           setTimeout(() => {
-            uni.navigateTo({ url: '/pages/order/order?status=pending' });
+            uni.navigateTo({ url: '/pages/order/order?status=pending_payment' });
           }, 300);
           return;
         }
@@ -445,7 +445,7 @@ async function onBuyNow(quantity = 1) {
           await payMallOrder(orderId, { payment_method: 'wallet' });
           uni.showToast({ title: t('支付成功'), icon: 'none' });
           setTimeout(() => {
-            uni.navigateTo({ url: '/pages/order/order?status=paid' });
+            uni.navigateTo({ url: '/pages/order/order?status=pending_shipment' });
           }, 300);
         } catch {
           // 错误提示由 request 拦截器统一处理

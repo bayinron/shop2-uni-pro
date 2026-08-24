@@ -176,19 +176,19 @@ const avatarSrc = computed(() => {
 
 const orderMenus = computed(() => [
   {
-    status: 'pending',
+    status: 'pending_payment',
     label: t('待付款'),
     icon: '/static/images/about_me/icon_order_pay.png',
     badge: orderCounts.value.pending || 0,
   },
   {
-    status: 'paid',
+    status: 'pending_shipment',
     label: t('待发货'),
     icon: '/static/images/about_me/icon_order_toship.png',
     badge: 0,
   },
   {
-    status: 'processing',
+    status: 'pending_receipt',
     label: t('待收货'),
     icon: '/static/images/about_me/icon_order_ship.png',
     badge: 0,

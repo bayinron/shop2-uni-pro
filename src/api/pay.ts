@@ -521,7 +521,7 @@ export interface ShipMyShopOrderPayload {
  * 賣家發貨
  * POST /api/mall/my-shop/orders/:id/ship
  *
- * 前提：訂單 status 必須為 paid；成功後 status 變為 shipped。
+ * 前提：訂單 status 必須為 pending_shipment；成功後 status 變為 pending_receipt。
  */
 export function shipMyShopOrder(orderId: number, data: ShipMyShopOrderPayload = {}) {
   return http<any>({

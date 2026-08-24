@@ -397,7 +397,7 @@ export interface MyShopStats {
  * GET /api/mall/my-shop/stats
  *
  * 不提供 total_sales / pending_orders 等平面欄位。
- * 待出貨請改用 GET mall/my-shop/orders?status=paid。
+ * 待出貨請改用 GET mall/my-shop/orders?status=pending_shipment。
  */
 export function getMyShopStats() {
   return http<MyShopStats>({
@@ -450,9 +450,16 @@ export interface MyShopOrder {
   [key: string]: any;
 }
 
+/** 店鋪訂單列表篩選狀態（status 查詢參數） */
+export type MyShopOrderFilterStatus =
+  | 'pending_payment'
+  | 'pending_shipment'
+  | 'pending_receipt'
+  | 'completed';
+
 export interface GetMyShopOrdersParams {
-  /** 訂單狀態篩選（同商城訂單狀態機） */
-  status?: string;
+  /** 訂單狀態篩選 */
+  status?: MyShopOrderFilterStatus;
   payment_status?: 'unpaid' | 'paid' | 'refunding' | 'refunded' | string;
   /** 訂單編號模糊搜尋 */
   order_no?: string;
@@ -530,7 +537,7 @@ export interface ShipMyShopOrderPayload {
  * 4. 賣家發貨
  * POST /api/mall/my-shop/orders/:id/ship
  *
- * 前提：訂單 status 必須為 paid；成功後 status 變為 shipped。
+ * 前提：訂單 status 必須為 pending_shipment；成功後 status 變為 pending_receipt。
  */
 export function shipMyShopOrder(orderId: number, data: ShipMyShopOrderPayload = {}) {
   return http<MyShopOrder>({

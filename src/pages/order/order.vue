@@ -105,6 +105,7 @@ import {
   getMallOrderList,
   payMallOrder,
   cancelMallOrder,
+  type MallOrderFilterStatus,
   type MallOrderStatus,
   type MallOrder,
   type MallOrderListResponse,
@@ -115,8 +116,16 @@ import { useI18n } from '@/utils/i18n';
 const { t } = useI18n();
 const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
-// 本页面展示用的订单状态子集
-type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed';
+// 本页面展示用的订单状态子集（与 GET mall/orders?status= 一致）
+type OrderStatus = MallOrderFilterStatus;
+
+const LEGACY_STATUS_MAP: Record<string, OrderStatus> = {
+  pending: 'pending_payment',
+  paid: 'pending_shipment',
+  processing: 'pending_receipt',
+  shipped: 'pending_receipt',
+  delivered: 'pending_receipt',
+};
 
 type OrderItem = {
   name: string;
@@ -127,7 +136,7 @@ type OrderItem = {
 };
 
 type OrderAction = {
-  key: 'cancel' | 'pay' | 'track' | 'confirm';
+  key: 'cancel' | 'pay' ;
   text: string;
   type: 'primary' | 'default';
 };
@@ -158,19 +167,19 @@ type StatusState = {
 type StatusStateMap = Record<OrderStatus, StatusState>;
 
 const orderTabs = computed(() => [
-  { key: 'pending' as OrderStatus, text: t('待付款') },
-  { key: 'paid' as OrderStatus, text: t('待发货') },
-  { key: 'processing' as OrderStatus, text: t('待收货') },
+  { key: 'pending_payment' as OrderStatus, text: t('待付款') },
+  { key: 'pending_shipment' as OrderStatus, text: t('待发货') },
+  { key: 'pending_receipt' as OrderStatus, text: t('待收货') },
   { key: 'completed' as OrderStatus, text: t('已完成') },
 ]);
 
-const activeTab = ref<OrderStatus>('pending');
+const activeTab = ref<OrderStatus>('pending_payment');
 const PAGE_SIZE = 10;
 
 const statusState = ref<StatusStateMap>({
-  pending: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
-  paid: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
-  processing: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+  pending_payment: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+  pending_shipment: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
+  pending_receipt: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
   completed: { list: [], page: 0, hasMore: true, loading: false, loaded: false },
 });
 
@@ -180,13 +189,17 @@ const currentOrders = computed(() => {
 
 function getStatusText(status: string) {
   const map: Record<string, string> = {
-    pending: t('待付款'),
-    paid: t('待发货'),
-    processing: t('备货中'),
-    shipped: t('已发货'),
-    delivered: t('待确认'),
+    pending_payment: t('待付款'),
+    pending_shipment: t('待发货'),
+    pending_receipt: t('待收货'),
     completed: t('已完成'),
     cancelled: t('已取消'),
+    // 兼容旧状态值展示
+    pending: t('待付款'),
+    paid: t('待发货'),
+    processing: t('待收货'),
+    shipped: t('待收货'),
+    delivered: t('待确认'),
   };
   return map[status] || status || '';
 }
@@ -199,18 +212,22 @@ function removeOrderFromState(status: OrderStatus, orderId: number) {
 
 function buildActions(order: MallOrder): OrderAction[] {
   const actions: OrderAction[] = [];
-  if (order.status === 'pending') {
+  const status = order.status as string;
+  if (status === 'pending_payment' || status === 'pending') {
     actions.push(
       { key: 'cancel', text: t('取消订单'), type: 'default' },
       { key: 'pay', text: t('立即付款'), type: 'primary' },
     );
-  } else if (order.status === 'shipped' || order.status === 'delivered') {
+  } else if (
+    status === 'pending_receipt'
+    || status === 'shipped'
+    || status === 'delivered'
+    || status === 'processing'
+  ) {
     actions.push(
-      { key: 'track', text: t('查看物流'), type: 'default' },
-      { key: 'confirm', text: t('确认收货'), type: 'primary' },
+     
     );
-  } else if (order.status === 'completed') {
-    actions.push({ key: 'track', text: t('查看物流'), type: 'default' });
+  } else if (status === 'completed') {
   }
   return actions;
 }
@@ -328,11 +345,12 @@ function loadOrders(status: OrderStatus, loadMore: boolean) {
 }
 
 onLoad((options: any) => {
-  const status = (options.status as OrderStatus) || 'pending';
+  const rawStatus = (options.status as string) || 'pending_payment';
+  const status = LEGACY_STATUS_MAP[rawStatus] || (rawStatus as OrderStatus);
   if (orderTabs.value.some((t) => t.key === status)) {
     activeTab.value = status;
   } else {
-    activeTab.value = 'pending';
+    activeTab.value = 'pending_payment';
   }
   loadOrders(activeTab.value, false);
 });
@@ -351,9 +369,7 @@ function onOrderClick(order: ViewOrder) {
 function onActionClick(order: ViewOrder, action: OrderAction) {
   const actionMap: Record<OrderAction['key'], string> = {
     cancel: t('取消订单'),
-    pay: t('立即付款'),
-    track: t('查看物流'),
-    confirm: t('确认收货'),
+    pay: t('立即付款')
   };
 
   if (action.key === 'cancel') {
@@ -394,10 +410,10 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
           uni.hideLoading();
           uni.showToast({ title: t('支付成功'), icon: 'none' });
           // 先从待付款列表移除，避免切回看到旧数据
-          removeOrderFromState('pending', order.id);
-          // 自动跳到「待发货/已付款」并刷新
-          activeTab.value = 'paid';
-          loadOrders('paid', false);
+          removeOrderFromState('pending_payment', order.id);
+          // 自动跳到「待发货」并刷新
+          activeTab.value = 'pending_shipment';
+          loadOrders('pending_shipment', false);
         } catch (e) {
           uni.hideLoading();
           // uni.showToast({ title: t('支付失败'), icon: 'none' });
@@ -531,18 +547,18 @@ function onActionClick(order: ViewOrder, action: OrderAction) {
   font-weight: 500;
 }
 
+.order-status--pending_payment,
 .order-status--pending {
   color: #ff3e6c;
 }
 
+.order-status--pending_shipment,
 .order-status--paid {
   color: #ff9500;
 }
 
-.order-status--shipping {
-  color: #2c7bff;
-}
-
+.order-status--pending_receipt,
+.order-status--shipping,
 .order-status--receiving {
   color: #2c7bff;
 }
