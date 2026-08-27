@@ -24,7 +24,7 @@
         :key="product.id"
         class="product-card"
       >
-        <image class="product-img" :src="prefixUrl + product.product.images?.[0]?.url" mode="aspectFill" />
+        <image class="product-img" :src="prefixUrl + product.product.cover_image" mode="aspectFill" />
         <view class="product-info">
           <text class="product-name breakcss">{{ product.product.name }}</text>
           <text class="product-stock">{{ t('库存:') }}{{ product.product.display_stock }}</text>
@@ -63,7 +63,7 @@
       <view class="sheet-content">
         <image
           class="sheet-img"
-          :src="prefixUrl + (currentProduct?.product?.images?.[0]?.url || currentProduct?.product?.cover_image || '/static/img/empty.svg')"
+          :src="prefixUrl + currentProduct?.product?.cover_image"
           mode="aspectFill"
         />
         <view class="sheet-info">
