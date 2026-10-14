@@ -36,7 +36,7 @@
         >
           <image
             class="goods-img"
-            :src="prefixUrl + item.product.cover_image"
+            :src="productImage(item)"
             mode="aspectFill"
           />
           <view class="goods-body">
@@ -70,12 +70,15 @@ import { ref, computed } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 
 import { useUserStore } from '@/stores/modules/userStore';
-
+import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
   const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
+function productImage(item: any) {
+  return globalTool.resolveProductImageUrl(item, prefixUrl.value);
+}
 
 // 商品列表（从服务器加载）
 const goodsList = ref<any[]>([]);

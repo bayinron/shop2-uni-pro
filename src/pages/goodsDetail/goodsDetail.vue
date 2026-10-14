@@ -3,8 +3,8 @@
     <!-- 商品图片轮播 -->
     <view class="goods-images">
       <swiper class="swiper" :indicator-dots="true" :autoplay="false" :interval="3000" :duration="500">
-        <swiper-item v-for="(img, idx) in goodsData.images" :key="idx">
-          <image class="swiper-img" :src="prefixUrl + img.url" mode="aspectFill" />
+        <swiper-item v-for="(img, idx) in displayImages" :key="idx">
+          <image class="swiper-img" :src="mediaUrl(img.url)" mode="aspectFill" />
         </swiper-item>
       </swiper>
     </view>
@@ -67,7 +67,7 @@
     <view class="detail-section">
       <text class="detail-title">{{ t('商品详情') }}</text>
       <view class="detail-content">
-        <image v-for="(img, idx) in goodsData.images" :key="idx" class="detail-img" :src="prefixUrl + img.url" mode="widthFix" />
+        <image v-for="(img, idx) in displayImages" :key="idx" class="detail-img" :src="mediaUrl(img.url)" mode="widthFix" />
         <text class="detail-text">{{ goodsData.description }}</text>
       </view>
     </view>
@@ -97,7 +97,7 @@
       <view class="sheet-content">
         <image
           class="sheet-img"
-          :src="prefixUrl + (goodsData.images?.[0]?.url || goodsData.cover_image || '')"
+          :src="productImageUrl(goodsData)"
           mode="aspectFill"
         />
         <view class="sheet-info">
@@ -142,11 +142,18 @@ import { onLoad } from '@dcloudio/uni-app';
 import { addMallCartItem, createMallOrder, getMallCart, getMallProductDetail, getUserAddresses, payMallOrder } from '@/api';
 import type { MallOrder, UserAddress } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
+import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
 const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
+function mediaUrl(path: string) {
+  return globalTool.resolveMediaPath(path, prefixUrl.value);
+}
+function productImageUrl(product: any) {
+  return globalTool.resolveProductImageUrl(product, prefixUrl.value);
+}
 type GoodsData = {
   id: string;
   shop_id: string;
@@ -237,6 +244,8 @@ const goodsData = ref<GoodsData>({
   images: [],
   display_sold_count: 0
 });
+
+const displayImages = computed(() => globalTool.getProductDisplayImages(goodsData.value));
 
 const isFavorite = ref(false);
 const cartCount = ref(0);

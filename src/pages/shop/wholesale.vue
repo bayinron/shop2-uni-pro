@@ -62,10 +62,10 @@
             class="grid-item"
           >
             <view class="card">
-              <image class="card-img" :src="prefixUrl + product.cover_image" mode="aspectFill" />
+              <image class="card-img" :src="productImageUrl(product)" mode="aspectFill" />
               <view class="card-body">
                 <text class="card-title breakcss">{{ product.name }}</text>
-                <text class="card-stock">{{ t('库存：') }}{{ product.stock }}</text>
+                <text class="card-stock">{{ t('库存：') }}{{ product.is_unlimited_stock == 1 ? '9999+' : product.stock }}</text>
                 <view class="card-bottom">
                   <text class="card-price">฿{{ formatPrice(product.displayPrice) }}</text>
                   <button
@@ -109,7 +109,7 @@
       <view v-if="shipSheetVisible" class="sheet-mask" @click="closeShipSheet" />
       <view v-if="shipSheetVisible" class="sheet" @click.stop>
         <view class="sheet-content">
-          <image class="sheet-img" :src="prefixUrl + currentProduct?.cover_image || ''" mode="aspectFill" />
+          <image class="sheet-img" :src="productImageUrl(currentProduct)" mode="aspectFill" />
           <view class="sheet-info">
             <text class="sheet-title breakcss">{{ currentProduct?.name || '' }}</text>
             <text class="sheet-price">฿{{ formatPrice(currentProduct?.displayPrice) }}</text>
@@ -161,7 +161,12 @@ const isH5 = uni.getSystemInfoSync().uniPlatform === 'web';
     stock: number;
     displayPrice: number | string;
     in_my_shop: boolean;
+    is_unlimited_stock: boolean;
   };
+
+function productImageUrl(product: Product | null | undefined) {
+  return globalTool.resolveProductImageUrl(product, prefixUrl.value);
+}
   
   const products = ref<Product[]>([]);
   const keyword = ref<string>('');
@@ -223,6 +228,7 @@ const isH5 = uni.getSystemInfoSync().uniPlatform === 'web';
         displayPrice: item.sale_price ?? item.original_price ?? item.wholesale_price ?? item.price ?? 0,
         // 兼容不同字段：in_my_shop / is_in_my_shop / shop_product_id / already_added
         in_my_shop: Boolean(item.in_my_shop ?? item.is_in_my_shop ?? item.shop_product_id ?? item.already_added),
+        is_unlimited_stock: Number(item.is_unlimited_stock ?? item.is_unlimited ?? item.is_unlimited_stock ?? item.is_unlimited) == 1,
       }));
   
       if (reset) {

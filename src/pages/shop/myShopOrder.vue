@@ -62,7 +62,7 @@
           </view>
 
           <view class="order-card-footer">
-            <text class="order-time">{{ o.created_at }}</text>
+            <text class="order-time"></text>
             <view class="order-total">
               <text class="total-label">{{ t('合计：') }}</text>
               <text class="total-price">฿{{ o.total_amount }}</text>

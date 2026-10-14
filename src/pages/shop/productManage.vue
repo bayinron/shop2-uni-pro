@@ -24,7 +24,7 @@
         :key="product.id"
         class="product-card"
       >
-        <image class="product-img" :src="prefixUrl + product.product.cover_image" mode="aspectFill" />
+        <image class="product-img" :src="productImage(product)" mode="aspectFill" />
         <view class="product-info">
           <text class="product-name breakcss">{{ product.product.name }}</text>
           <text class="product-stock">{{ t('库存:') }}{{ product.product.display_stock }}</text>
@@ -63,7 +63,7 @@
       <view class="sheet-content">
         <image
           class="sheet-img"
-          :src="prefixUrl + currentProduct?.product?.cover_image"
+          :src="productImage(currentProduct)"
           mode="aspectFill"
         />
         <view class="sheet-info">
@@ -108,6 +108,9 @@ import { useI18n } from '@/utils/i18n';
 const { t } = useI18n();
   const userStore = useUserStore();
 const prefixUrl = computed(() => userStore.prefixUrl);
+function productImage(product: MyShopProduct | null | undefined) {
+  return globalTool.resolveProductImageUrl(product, prefixUrl.value);
+}
 const products = ref<MyShopProduct[]>([]);
 const keyword = ref<string>('');
 

@@ -65,7 +65,7 @@
 
           <!-- 订单底部 -->
           <view class="order-card-footer">
-            <text class="order-time">{{ order.time }}</text>
+            <text class="order-time"></text>
             <view class="order-total">
               <text class="total-label">{{ t('合计：') }}</text>
               <text class="total-price">฿{{ order.total }}</text>

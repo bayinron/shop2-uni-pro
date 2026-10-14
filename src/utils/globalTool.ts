@@ -257,6 +257,47 @@ export default {
         const path = url.replace(/^\/+/, '');
         return `${base}/${path}`;
     },
+    /** 拼接媒體路徑為完整展示 URL（本地 /static 資源不加前綴） */
+    resolveMediaPath: function (url: string, prefixUrl?: string): string {
+        if (!url) return '/static/img/empty.svg';
+        if (url.startsWith('/static/')) return url;
+        if (/^(https?:|blob:|data:)/i.test(url)) return url;
+        const prefix = prefixUrl ?? this.getMediaPrefixUrl();
+        if (!prefix) return url;
+        const base = String(prefix).replace(/\/+$/, '');
+        const path = url.replace(/^\/+/, '');
+        return `${base}/${path}`;
+    },
+    /** 從商品對象提取封面原始路徑 */
+    getProductImagePath: function (product: any): string {
+        if (!product) return '/static/img/empty.svg';
+        const p = product.product ?? product;
+        const url =
+            p?.cover_image ||
+            p?.images?.[0]?.url ||
+            product?.cover_image ||
+            product?.images?.[0]?.url ||
+            product?.image_url ||
+            product?.image ||
+            product?.img ||
+            '';
+        return url || '/static/img/empty.svg';
+    },
+    /** 拼接商品封面完整展示 URL */
+    resolveProductImageUrl: function (product: any, prefixUrl?: string): string {
+        return this.resolveMediaPath(this.getProductImagePath(product), prefixUrl);
+    },
+    /** 商品展示用圖片列表（images 為空時回退 cover_image） */
+    getProductDisplayImages: function (product: any): Array<{ url: string }> {
+        if (!product) return [{ url: '/static/img/empty.svg' }];
+        const p = product.product ?? product;
+        const images = p?.images;
+        if (Array.isArray(images) && images.length > 0) {
+            const valid = images.filter((img: any) => img?.url);
+            if (valid.length > 0) return valid;
+        }
+        return [{ url: this.getProductImagePath(product) }];
+    },
     /** 去掉展示前綴，還原為 API 提交用的原始路徑 */
     stripMediaUrl: function (url: string): string {
         if (!url) return '';

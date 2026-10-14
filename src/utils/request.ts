@@ -176,7 +176,7 @@ export const http = <T>(options: UniApp.RequestOptions & { noLoading?: boolean }
             fail(err) {
                 uni.showToast({
                     icon: 'none',
-                    title: t('网络错误，换个网络试试')
+                    title: t('网络错误')
                 });
                 // uni.reLaunch({ url: '/pages/login' });
                 reject(err);

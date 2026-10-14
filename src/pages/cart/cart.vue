@@ -117,6 +117,7 @@ import {
   updateMallCartItem,
 } from '@/api';
 import { useUserStore } from '@/stores/modules/userStore';
+import globalTool from '@/utils/globalTool';
 import { useI18n } from '@/utils/i18n';
 
 const { t } = useI18n();
@@ -216,7 +217,7 @@ function loadCart() {
             title: item.product?.name ?? t('商品'),
             price: Number(item.product?.sale_price ?? 0),
             qty: Number(item.quantity ?? 1),
-            img: item.product?.images?.[0]?.url ?? '/static/img/empty.svg',
+            img: globalTool.getProductImagePath(item.product),
             checked: false,
           });
         });
@@ -242,7 +243,7 @@ function loadCart() {
             title: item.product?.name ?? t('商品'),
             price: Number(item.product?.sale_price ?? 0),
             qty: Number(item.quantity ?? 1),
-            img: item.product?.images?.[0]?.url ?? '/static/img/empty.svg',
+            img: globalTool.getProductImagePath(item.product),
             checked: false,
           })),
         };

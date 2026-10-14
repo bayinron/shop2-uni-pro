@@ -209,7 +209,7 @@ export function uploadFile(
       fail(err) {
         uni.showToast({
           icon: 'none',
-          title: t('网络错误，换个网络试试'),
+          title: t('网络错误'),
         });
         reject(err);
       },
