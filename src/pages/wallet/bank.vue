@@ -173,7 +173,7 @@ function onSave() {
         boundAccount.value = data as UserPaymentMethod;
       }
       globalTool.showToast(t('保存成功'), () => {
-        loadPaymentMethod();
+        uni.switchTab({ url: '/pages/home/index' });
       }, 'success');
     })
     .catch((err: any) => {

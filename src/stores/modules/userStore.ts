@@ -180,6 +180,7 @@ export const useUserStore = defineStore('user', () => {
                 }
             }
             userInfo.value = data;
+            // userInfo.value.user_role = 'customer';
             return data;
         });
     }

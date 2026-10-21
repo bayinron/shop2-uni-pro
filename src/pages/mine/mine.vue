@@ -1,101 +1,73 @@
 <template>
   <view class="mine">
-    <!-- 橙色头部 -->
-    <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="header-title">{{ t('我的账户') }}</view>
+    <view class="topbar" >
+      <view class="topbar-inner">
+        <text class="topbar-title">{{ t('我的账户') }}</text>
+        
+      </view>
+    </view>
 
+    <!-- 橙色头部 -->
+    <view class="header">
       <view class="header-body">
-        <view class="user-row" @click="onAvatarClick">
-          <image class="avatar" :src="avatarSrc" mode="aspectFill" />
-          <view class="user-meta">
-            <view class="name-row">
-              <text class="user-name">{{ displayAccount }}</text>
-              <image v-if="isLoggedIn" class="edit-icon" src="/static/images/about_me/icon_edit.png" mode="aspectFit"
-                @click.stop="onEditUserInfo" />
-            </view>
-            <view class="level-row">
-              <text class="level-label">{{ t('购物达人等级：') }}</text>
-              <view class="level-pill">
-                <text class="level-text">Classic</text>
-                <!-- <text class="level-arrow">›</text> -->
-              </view>
-            </view>
+        <view class="user-block" @click="onAvatarClick">
+          <view class="avatar-wrap">
+            <image class="avatar" :src="avatarSrc" mode="widthFix" />
+          </view>
+          <view class="name-row">
+            <text class="user-name">{{ displayAccount }}</text>
+            <image
+              v-if="isLoggedIn"
+              class="edit-icon"
+              src="/static/images/about_me/icon_edit.png"
+              mode="aspectFit"
+              @click.stop="onEditUserInfo"
+            />
+          </view>
+          <view class="id-pill">
+            <text class="id-pill-text">ID：{{ userInfo.id || '-' }}</text>
+            <text
+              v-if="userInfo.id"
+              class="iconfont icon-fuzhi id-copy-icon"
+              @click.stop="onCopyId"
+            />
           </view>
         </view>
 
         <view class="header-actions">
+          <view class="action-btn" @click="goCart">
+            <image class="action-icon" src="/static/images/about_me/icon_settings.png" mode="aspectFit" />
+          </view>
+          <view class="action-btn" @click="onServiceClick">
+            <image class="action-icon" src="/static/images/mine/OnlineSupport.png" mode="aspectFit" />
+          </view>
           <view class="action-btn" @click="onSettings">
             <image class="action-icon" src="/static/images/about_me/icon_support_header.png" mode="aspectFit" />
           </view>
-          <view class="action-btn" @click="goCart">
-            <image class="action-icon" src="/static/images/about_me/icon_settings.png" mode="aspectFit" />
-            <!-- <view v-if="cartCount > 0" class="action-badge">{{ cartCount > 99 ? '99+' : cartCount }}</view> -->
-          </view>
-          <view class="action-btn" @click="onServiceClick">
-            <image class="action-icon" src="/static/images/about_me/icon_cart_header.png" mode="aspectFit" />
-          </view>
         </view>
-      </view>
-
-      <!-- VIP 横条 -->
-      <view class="vip-bar">
-        <view class="vip-badge">
-          <image class="vip-crown" src="/static/images/about_me/icon_vip_or_deco.png" mode="aspectFit" />
-          <text class="vip-badge-text">VIP</text>
-        </view>
-        <text class="vip-text">{{ t('开通 VIP 享专属权益') }}</text>
-        <!-- <text class="vip-arrow">›</text> -->
       </view>
     </view>
 
-    <!-- 新用户礼包 -->
-    <!-- <view class="gift-card">
-      <view class="gift-head">
-        <text class="gift-title">新用户专属礼包</text>
-        <view class="countdown">
-          <text class="cd-box">{{ countdown.h }}</text>
-          <text class="cd-sep">:</text>
-          <text class="cd-box">{{ countdown.m }}</text>
-          <text class="cd-sep">:</text>
-          <text class="cd-box">{{ countdown.s }}</text>
-        </view>
-      </view>
-      <view class="gift-coupons">
-        <view class="coupon coupon--discount">
-          <image class="coupon-icon" src="/static/images/about_me/icon_coupon_discount.png" mode="aspectFit" />
-          <view class="coupon-dash" />
-          <view class="coupon-info">
-            <text class="coupon-main coupon-main--red">立减 50%</text>
-            <text class="coupon-sub">满 ฿0 可用</text>
-          </view>
-        </view>
-        <view class="coupon coupon--ship">
-          <image class="coupon-icon" src="/static/images/about_me/icon_coupon_shipping.png" mode="aspectFit" />
-          <view class="coupon-dash" />
-          <view class="coupon-info">
-            <text class="coupon-main coupon-main--teal">免运费券</text>
-            <text class="coupon-sub">满 ฿0 可用</text>
-          </view>
-        </view>
-      </view>
-      <image class="gift-deco" src="/static/images/about_me/deco_gift_box.png" mode="aspectFit" />
-    </view> -->
-
     <!-- 我的订单 -->
     <view class="order-card">
-      <view class="order-header">
-        <text class="order-title">{{ t('我的订单') }}</text>
-        <view class="order-link" @click="onViewAllOrders">
-          <text class="order-link-text">{{ t('查看购买历史') }}</text>
-          <text class="order-link-arrow">›</text>
+      <text class="order-title">{{ t('我的订单') }}</text>
+      <view class="order-grid">
+        <view
+          v-for="(item, idx) in orderMenus"
+          :key="item.status"
+          class="order-item"
+          :class="{
+            'order-item--right': idx % 2 === 1,
+            'order-item--bottom': idx >= 2,
+          }"
+          @click="onOrderStatusClick(item.status)"
+        >
+          <image class="order-icon" :src="item.icon" mode="aspectFit" />
+          <text class="order-label">{{ item.label }}</text>
         </view>
       </view>
-      <view v-for="(item, idx) in orderMenus" :key="item.status" class="order-row"
-        :class="{ 'order-row--last': idx === orderMenus.length - 1 }" @click="onOrderStatusClick(item.status)">
-        <image class="order-icon" :src="item.icon" mode="aspectFit" />
-        <text class="order-label">{{ item.label }}</text>
-        <!-- <view v-if="item.badge" class="order-badge">{{ item.badge }}</view> -->
-        <text class="order-row-arrow">›</text>
+      <view class="order-link" @click="onViewAllOrders">
+        <text class="order-link-text">{{ t('查看购买历史') }}</text>
       </view>
     </view>
 
@@ -103,17 +75,17 @@
     <view class="others-card">
       <text class="others-title">{{ t('其他') }}</text>
       <view class="others-grid">
-        <view class="others-item" @click="onShopClick">
-          <image class="others-icon" src="/static/images/about_me/icon_service_shop.png" mode="aspectFit" />
-          <text class="others-text">{{ userInfo.user_role == 'merchant' ? t('我的店铺') : t('开店铺') }}</text>
-        </view>
         <view class="others-item" @click="addressClick">
-          <image class="others-icon" src="/static/images/about_me/icon_service_address.png" mode="aspectFit" />
+          <image class="others-icon" src="/static/images/mine/HomeAddress.png" mode="aspectFit" />
           <text class="others-text">{{ t('收货地址') }}</text>
         </view>
         <view class="others-item" @click="onServiceClick">
-          <image class="others-icon" src="/static/images/about_me/icon_service_contact.png" mode="aspectFit" />
+          <image class="others-icon" src="/static/images/mine/OnlineSupport.png" mode="aspectFit" />
           <text class="others-text">{{ t('联系我们') }}</text>
+        </view>
+        <view class="others-item" @click="onShopClick">
+          <image class="others-icon" src="/static/images/mine/shop.png" mode="aspectFit" />
+          <text class="others-text">{{ userInfo.user_role == 'merchant' ? t('我的店铺') : t('开店铺') }}</text>
         </view>
       </view>
     </view>
@@ -171,32 +143,32 @@ const avatarSrc = computed(() => {
       ? av
       : prefixUrl.value + av;
   }
-  return '/static/images/about_me/avatar.png';
+  return '/static/images/logo2.png';
 });
 
 const orderMenus = computed(() => [
   {
     status: 'pending_payment',
     label: t('待付款'),
-    icon: '/static/images/about_me/icon_order_pay.png',
+    icon: '/static/images/mine/CardPayment.png',
     badge: orderCounts.value.pending || 0,
   },
   {
     status: 'pending_shipment',
     label: t('待发货'),
-    icon: '/static/images/about_me/icon_order_toship.png',
+    icon: '/static/images/mine/DeliveryTime.png',
     badge: 0,
   },
   {
     status: 'pending_receipt',
     label: t('待收货'),
-    icon: '/static/images/about_me/icon_order_ship.png',
+    icon: '/static/images/mine/TimeMachine.png',
     badge: 0,
   },
   {
     status: 'completed',
     label: t('已完成'),
-    icon: '/static/images/about_me/icon_order_completed.png',
+    icon: '/static/images/mine/Checkmark.png',
     badge: 0,
   },
 ]);
@@ -289,6 +261,18 @@ function onAvatarClick() {
   onEditUserInfo();
 }
 
+function onCopyId() {
+  const id = userInfo.value.id;
+  if (!id) return;
+  uni.setClipboardData({
+    data: String(id),
+    showToast: false,
+    success: () => {
+      uni.showToast({ title: t('已复制到剪贴板'), icon: 'none' });
+    },
+  });
+}
+
 function onExit() {
   uni.removeStorageSync('token');
   uni.removeStorageSync('userInfo');
@@ -310,7 +294,6 @@ function onSettings() {
     success: (res) => {
       if (res.tapIndex === 0) onEditUserInfo();
       else if (res.tapIndex === 1) {
-        // uni.navigateTo({ url: '/pages/wallet/recharge' });
         uni.navigateTo({
           url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
         });
@@ -357,8 +340,8 @@ function addressClick() {
 
 function onServiceClick() {
   uni.navigateTo({
-      url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
-    });
+    url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
+  });
 }
 
 function onShopClick() {
@@ -379,7 +362,7 @@ function onProductClick(p: any) {
     uni.showToast({ title: t('商品详情暂不可用'), icon: 'none' });
     return;
   }
-  uni.navigateTo({ url: '/pages/goodsDetail/goodsDetail?id=' + id+'&shop_id='+p?.shop_id });
+  uni.navigateTo({ url: '/pages/goodsDetail/goodsDetail?id=' + id + '&shop_id=' + p?.shop_id });
 }
 
 function goCart() {
@@ -411,64 +394,103 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .mine {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #f0f0f0;
   padding-bottom: 40rpx;
+}
+
+/* ===== Topbar（与店铺页一致） ===== */
+.topbar {
+  background: #ee4d2d;
+  flex-shrink: 0;
+}
+
+.topbar-inner {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 24rpx;
+}
+
+.topbar-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.topbar-action {
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar-icon {
+  width: 44rpx;
+  height: 44rpx;
 }
 
 /* ===== Header ===== */
 .header {
-  background: linear-gradient(105deg, #e02d1f 0%, #ee4d2d 55%, #ff6a2a 100%);
-  padding: 12rpx 24rpx 20rpx;
+  background: url('/static/images/mine/top-bg.png') no-repeat center top;
+  background-size: 100% 100%;
+  padding: 12rpx 32rpx 48rpx;
+  border-radius: 0 0 48rpx 48rpx;
   position: relative;
-}
-
-.header-title {
-  text-align: center;
-  color: #fff;
-  font-size: 32rpx;
-  font-weight: 600;
-  padding: 8rpx 0 20rpx;
+  overflow: hidden;
 }
 
 .header-body {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding-bottom: 24rpx;
+  flex-direction: column;
+  align-items: center;
 }
 
-.user-row {
+.user-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.avatar-wrap {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #fff;
+  padding: 6rpx;
+  box-sizing: border-box;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
-  flex: 1;
-  min-width: 0;
+  justify-content: center;
 }
 
 .avatar {
-  width: 110rpx;
-  height: 110rpx;
-  border-radius: 50%;
+  width: 60%;
+  height: auto;
   background: #fff;
-  flex-shrink: 0;
-}
-
-.user-meta {
-  margin-left: 20rpx;
-  flex: 1;
-  min-width: 0;
 }
 
 .name-row {
+  margin-top: 20rpx;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10rpx;
 }
 
 .user-name {
-  font-size: 34rpx;
+  font-size: 36rpx;
   font-weight: 700;
   color: #fff;
-  max-width: 320rpx;
+  max-width: 480rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -480,348 +502,125 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.level-row {
-  margin-top: 12rpx;
+.id-pill {
+  margin-top: 16rpx;
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  justify-content: center;
+  gap: 10rpx;
+  background: #f5c542;
+  border-radius: 28rpx;
+  padding: 8rpx 24rpx;
 }
 
-.level-label {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.level-pill {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-radius: 20rpx;
-  padding: 2rpx 14rpx 2rpx 16rpx;
-}
-
-.level-text {
-  font-size: 22rpx;
-  color: #ee4d2d;
+.id-pill-text {
+  font-size: 24rpx;
+  color: #ffffff;
   font-weight: 600;
 }
 
-.level-arrow {
-  font-size: 24rpx;
-  color: #ee4d2d;
-  margin-left: 2rpx;
+.id-copy-icon {
+  font-size: 28rpx;
+  color: #ffffff;
   line-height: 1;
 }
 
 .header-actions {
+  margin-top: 36rpx;
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  margin-top: 4rpx;
-  flex-shrink: 0;
+  justify-content: center;
+  gap: 56rpx;
 }
 
 .action-btn {
   position: relative;
-  width: 56rpx;
-  height: 56rpx;
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .action-icon {
-  width: 44rpx;
-  height: 44rpx;
-}
-
-.action-badge {
-  position: absolute;
-  top: -4rpx;
-  right: -6rpx;
-  min-width: 28rpx;
-  height: 28rpx;
-  padding: 0 6rpx;
-  background: #fff;
-  color: #ee4d2d;
-  font-size: 18rpx;
-  border-radius: 14rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-/* VIP */
-.vip-bar {
-  display: flex;
-  align-items: center;
-  background: #f7ecd8;
-  border-radius: 12rpx;
-  padding: 14rpx 16rpx;
-  gap: 12rpx;
-}
-
-.vip-badge {
-  position: relative;
-  width: 64rpx;
-  height: 40rpx;
-  background: linear-gradient(135deg, #f0a020, #e07810);
-  border-radius: 8rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.vip-crown {
-  position: absolute;
-  top: -10rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 22rpx;
-  height: 22rpx;
-}
-
-.vip-badge-text {
-  font-size: 22rpx;
-  font-weight: 800;
-  color: #ffe9a8;
-  letter-spacing: 1rpx;
-}
-
-.vip-text {
-  flex: 1;
-  font-size: 22rpx;
-  color: #8a5a2b;
-  line-height: 1.35;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.vip-arrow {
-  color: #8a5a2b;
-  font-size: 28rpx;
-  flex-shrink: 0;
-}
-
-/* ===== Gift ===== */
-.gift-card {
-  margin: 20rpx 20rpx 0;
-  background: #ffe8d6;
-  border-radius: 16rpx;
-  padding: 20rpx 20rpx 24rpx;
-  position: relative;
-  overflow: hidden;
-  border: 1rpx solid #f5d5b8;
-}
-
-.gift-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-  padding-right: 80rpx;
-}
-
-.gift-title {
-  font-size: 26rpx;
-  color: #a05a3c;
-  font-weight: 600;
-}
-
-.countdown {
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-}
-
-.cd-box {
-  background: #1a1a1a;
-  color: #fff;
-  font-size: 22rpx;
-  font-weight: 700;
-  min-width: 40rpx;
-  height: 36rpx;
-  line-height: 36rpx;
-  text-align: center;
-  border-radius: 6rpx;
-  padding: 0 6rpx;
-}
-
-.cd-sep {
-  font-size: 22rpx;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.gift-coupons {
-  display: flex;
-  gap: 12rpx;
-}
-
-.coupon {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  border-radius: 12rpx;
-  padding: 16rpx 12rpx;
-  min-height: 110rpx;
-  position: relative;
-}
-
-.coupon--discount {
-  background: #fff8f5;
-}
-
-.coupon--ship {
-  background: #f2fbf9;
-}
-
-.coupon-icon {
-  width: 64rpx;
-  height: 64rpx;
-  flex-shrink: 0;
-}
-
-.coupon-dash {
-  width: 0;
-  height: 72rpx;
-  border-left: 2rpx dashed #e0cfc0;
-  margin: 0 12rpx;
-  flex-shrink: 0;
-}
-
-.coupon--ship .coupon-dash {
-  border-left-color: #c5ddd8;
-}
-
-.coupon-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-  min-width: 0;
-}
-
-.coupon-main {
-  font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.coupon-main--red {
-  color: #ee4d2d;
-}
-
-.coupon-main--teal {
-  color: #26aa99;
-}
-
-.coupon-sub {
-  font-size: 20rpx;
-  color: #999;
-}
-
-.gift-deco {
-  position: absolute;
-  right: -4rpx;
-  bottom: -8rpx;
-  width: 100rpx;
-  height: 100rpx;
-  pointer-events: none;
+  width: 48rpx;
+  height: 48rpx;
 }
 
 /* ===== Orders ===== */
 .order-card {
-  margin: 20rpx 20rpx 0;
+  margin: 24rpx 24rpx 0;
   background: #fff;
-  border-radius: 16rpx;
+  border-radius: 24rpx;
+  padding: 28rpx 20rpx 24rpx;
   overflow: hidden;
 }
 
-.order-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28rpx 28rpx 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
 .order-title {
+  display: block;
+  text-align: center;
   font-size: 30rpx;
   font-weight: 700;
   color: #222;
+  margin-bottom: 8rpx;
+}
+
+.order-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.order-item {
+  width: 50%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx 12rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.order-item--right {
+  border-right: none;
+}
+
+.order-item--bottom {
+  border-bottom: none;
+}
+
+.order-icon {
+  width: 56rpx;
+  height: 56rpx;
+  margin-bottom: 12rpx;
+}
+
+.order-label {
+  font-size: 26rpx;
+  color: #555;
+  text-align: center;
 }
 
 .order-link {
+  margin-top: 8rpx;
   display: flex;
-  align-items: center;
-  gap: 4rpx;
+  justify-content: center;
+  padding: 8rpx 0 4rpx;
 }
 
 .order-link-text {
   font-size: 24rpx;
   color: #999;
-}
-
-.order-link-arrow {
-  font-size: 28rpx;
-  color: #bbb;
-  line-height: 1;
-}
-
-.order-row {
-  display: flex;
-  align-items: center;
-  padding: 28rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.order-row--last {
-  border-bottom: none;
-}
-
-.order-icon {
-  width: 48rpx;
-  height: 48rpx;
-  flex-shrink: 0;
-  margin-right: 20rpx;
-}
-
-.order-label {
-  flex: 1;
-  font-size: 28rpx;
-  color: #333;
-}
-
-.order-badge {
-  min-width: 36rpx;
-  height: 36rpx;
-  padding: 0 10rpx;
-  background: #ee4d2d;
-  color: #fff;
-  font-size: 22rpx;
-  font-weight: 600;
-  border-radius: 18rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12rpx;
-}
-
-.order-row-arrow {
-  font-size: 32rpx;
-  color: #ccc;
-  line-height: 1;
+  text-decoration: underline;
 }
 
 /* ===== Others ===== */
 .others-card {
-  margin: 20rpx 20rpx 0;
+  margin: 24rpx 24rpx 0;
   background: #fff;
-  border-radius: 16rpx;
-  padding: 28rpx 20rpx 24rpx;
+  border-radius: 24rpx;
+  padding: 28rpx 20rpx 28rpx;
 }
 
 .others-title {
@@ -829,44 +628,46 @@ onUnmounted(() => {
   font-weight: 700;
   color: #222;
   display: block;
-  margin-bottom: 20rpx;
-  padding-left: 8rpx;
+  text-align: center;
+  margin-bottom: 24rpx;
 }
 
 .others-grid {
   display: flex;
-  gap: 12rpx;
+  gap: 16rpx;
 }
 
 .others-item {
   flex: 1;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8rpx;
+  gap: 12rpx;
   border: 1rpx solid #eee;
-  border-radius: 12rpx;
-  padding: 22rpx 8rpx;
+  border-radius: 16rpx;
+  padding: 24rpx 8rpx;
   background: #fff;
 }
 
 .others-icon {
-  width: 66rpx;
-  height: 66rpx;
+  width: 56rpx;
+  height: 56rpx;
   flex-shrink: 0;
 }
 
 .others-text {
   font-size: 24rpx;
-  color: #e8664a;
+  color: #666;
   font-weight: 500;
-  white-space: nowrap;
+  text-align: center;
+  line-height: 1.3;
 }
 
 .exit-btn {
-  margin: 20rpx 20rpx 0;
+  margin: 24rpx 24rpx 0;
   background: #fff;
-  border-radius: 16rpx;
+  border-radius: 24rpx;
   padding: 28rpx;
   display: flex;
   justify-content: center;
@@ -888,7 +689,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  padding: 0 24rpx 16rpx;
+  padding: 0 28rpx 16rpx;
 }
 
 .recommend-flame {
@@ -903,7 +704,7 @@ onUnmounted(() => {
 }
 
 .recommend-grid {
-  padding: 0 16rpx;
+  padding: 0 20rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12rpx;

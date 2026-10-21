@@ -29,7 +29,7 @@
           <text class="product-name breakcss">{{ product.product.name }}</text>
           <text class="product-stock">{{ t('库存:') }}{{ product.product.display_stock }}</text>
           <view class="product-bottom">
-            <text class="product-price">{{ t('批发价: ฿') }}{{ product.product.original_price }}</text>
+            <text class="product-price">{{ t('批发价: ฿') }}{{ product.product.actual_price }}</text>
             <view class="product-actions">
               <button class="btn-listed" :class="{ 'btn-listed--active': product.product.status === 'published' }">
                 {{ product.product.status === 'published' ? t('已上架') : t('未上架') }}

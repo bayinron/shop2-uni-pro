@@ -4,29 +4,27 @@
       <!-- 品牌标题 -->
       <view class="brand-header">
         <text class="brand-title">{{ t('申请共同开设店铺') }}</text>
-        <image class="brand-logo" src="/static/images/logo_shopee_orange.png" mode="aspectFit" />
+        <image class="brand-logo" src="/static/images/shopee_logo_400.png" mode="aspectFit" />
       </view>
-      <view class="brand-divider"></view>
 
-      <text class="page-hint">- {{ t('请填写店铺信息') }}</text>
 
       <!-- 店铺头像 -->
-      <view class="section">
-        <text class="section-label">{{ t('店铺头像') }}</text>
-        <view class="avatar-row" @click="onUploadAvatar">
-          <view class="avatar-circle">
-            <image v-if="form.avatar" class="avatar-img" :src="resolveMediaUrl(form.avatar)" mode="aspectFill" />
-            <uni-icons v-else type="image" size="36" color="#bfbfbf" />
-          </view>
-          <text class="pick-hint">← {{ t('请选择图片') }}</text>
+      <view class="section avatar-section" @click="onUploadAvatar">
+        <view class="avatar-circle">
+          <image v-if="form.avatar" class="avatar-img" :src="resolveMediaUrl(form.avatar)" mode="widthFix" />
+          <template v-else>
+            <uni-icons type="shop" size="46" color="#ee4d2d" />
+            <text class="avatar-pick-hint"> {{ t('请选择图片') }}</text>
+          </template>
         </view>
+        <text class="section-label underline-label">{{ t('店铺头像') }}</text>
       </view>
 
       <!-- 店铺名称 -->
-      <view class="section">
+      <view class="section field-section">
         <text class="section-label">{{ t('店铺名称') }}</text>
         <input
-          class="underline-input"
+          class="rounded-input"
           type="text"
           v-model="form.name"
           :placeholder="t('请输入店铺名称')"
@@ -35,9 +33,9 @@
       </view>
 
       <!-- 商品类别 -->
-      <view class="section">
+      <view class="section field-section">
         <text class="section-label">{{ t('商品类别') }}</text>
-        <view class="underline-select" @click="onSelectCategory">
+        <view class="rounded-select" @click="onSelectCategory">
           <text :class="['select-text', !form.category_id ? 'input-placeholder' : '']">
             {{ selectedCategoryName || t('请选择商品类别') }}
           </text>
@@ -46,78 +44,82 @@
       </view>
 
       <!-- 个人资料 -->
-      <view class="section">
-        <text class="section-label">{{ t('个人资料') }}</text>
-        <input
-          class="underline-input"
-          type="text"
-          v-model="form.owner_name"
-          :placeholder="t('请输入姓名和姓氏')"
-          placeholder-class="input-placeholder"
-        />
-        <input
-          class="underline-input"
-          type="number"
-          v-model="form.phone"
-          :placeholder="t('请输入电话号码')"
-          placeholder-class="input-placeholder"
-        />
-        <input
-          class="underline-input"
-          type="text"
-          v-model="form.address"
-          :placeholder="t('请输入地址')"
-          placeholder-class="input-placeholder"
-        />
+      <view class="section field-section">
+        <text class="section-label underline-label">{{ t('个人资料') }}</text>
+        <view class="group-box">
+          <input
+            class="group-input"
+            type="text"
+            v-model="form.owner_name"
+            :placeholder="t('请输入姓名和姓氏')"
+            placeholder-class="input-placeholder"
+          />
+          <input
+            class="group-input"
+            type="number"
+            v-model="form.phone"
+            :placeholder="t('请输入电话号码')"
+            placeholder-class="input-placeholder"
+          />
+          <input
+            class="group-input group-input-last"
+            type="text"
+            v-model="form.address"
+            :placeholder="t('请输入地址')"
+            placeholder-class="input-placeholder"
+          />
+        </view>
       </view>
 
       <!-- 身份验证文件 -->
-      <view class="section">
-        <text class="section-label">{{ t('身份验证文件') }}</text>
-        <view class="underline-select" @click="onSelectDocType">
-          <text :class="['select-text', !form.doc_type ? 'input-placeholder' : '']">
-            {{ selectedDocTypeName || t('请选择证件类型') }}
-          </text>
-          <uni-icons type="bottom" size="14" color="#666" />
-        </view>
+      <view class="section field-section">
+        <text class="section-label underline-label">{{ t('身份验证文件') }}</text>
+        <view class="group-box id-group-box">
+          <view class="group-select" @click="onSelectDocType">
+            <text :class="['select-text', !form.doc_type ? 'input-placeholder' : '']">
+              {{ selectedDocTypeName || t('请选择证件类型') }}
+            </text>
+            <uni-icons type="bottom" size="14" color="#666" />
+          </view>
 
-        <view class="id-photos">
-          <view class="id-photo-col">
-            <text class="id-photo-label">-{{ t('证件正面照片') }}</text>
-            <view class="id-photo-box" @click="onUploadIdPhotoFront">
-              <image
-                v-if="form.id_photo_front"
-                class="id-photo-img"
-                :src="resolveMediaUrl(form.id_photo_front)"
-                mode="aspectFill"
-              />
-              <view v-else class="id-photo-placeholder">
-                <view class="id-icon id-icon-front">
-                  <view class="id-icon-face"></view>
-                  <view class="id-icon-lines">
-                    <view class="id-icon-line"></view>
-                    <view class="id-icon-line"></view>
-                    <view class="id-icon-line short"></view>
+          <view class="id-photos">
+            <view class="id-photo-col" @click="onUploadIdPhotoFront">
+              <text class="id-photo-label">-{{ t('证件正面照片') }}</text>
+              <view class="id-photo-box">
+                <image
+                  v-if="form.id_photo_front"
+                  class="id-photo-img"
+                  :src="resolveMediaUrl(form.id_photo_front)"
+                  mode="aspectFill"
+                />
+                <view v-else class="id-photo-placeholder">
+                  <view class="id-icon id-icon-front">
+                    <view class="id-icon-face"></view>
+                    <view class="id-icon-lines">
+                      <view class="id-icon-line"></view>
+                      <view class="id-icon-line"></view>
+                      <view class="id-icon-line short"></view>
+                    </view>
                   </view>
+                  <text class="pick-hint">← {{ t('请选择图片') }}</text>
                 </view>
-                <text class="pick-hint">← {{ t('请选择图片') }}</text>
               </view>
             </view>
-          </view>
-          <view class="id-photo-col">
-            <text class="id-photo-label">-{{ t('证件背面照片') }}</text>
-            <view class="id-photo-box" @click="onUploadIdPhotoBack">
-              <image
-                v-if="form.id_photo_back"
-                class="id-photo-img"
-                :src="resolveMediaUrl(form.id_photo_back)"
-                mode="aspectFill"
-              />
-              <view v-else class="id-photo-placeholder">
-                <view class="id-icon id-icon-back">
-                  <view class="id-icon-stripe"></view>
+            <view class="id-photo-col" @click="onUploadIdPhotoBack">
+              <text class="id-photo-label">-{{ t('证件背面照片') }}</text>
+              <view class="id-photo-box">
+                <image
+                  v-if="form.id_photo_back"
+                  class="id-photo-img"
+                  :src="resolveMediaUrl(form.id_photo_back)"
+                  mode="aspectFill"
+                />
+                <view v-else class="id-photo-placeholder">
+                  <view class="id-icon id-icon-back">
+                    <view class="id-icon-stripe"></view>
+                  </view>
+                  <text class="pick-hint">← {{ t('请选择图片') }}</text>
                 </view>
-                <text class="pick-hint">← {{ t('请选择图片') }}</text>
               </view>
             </view>
           </view>
@@ -290,9 +292,9 @@ onLoad(async () => {
 
 <style scoped lang="scss">
 $orange: #ee4d2d;
-$text: #222222;
-$muted: #bdbdbd;
-$line: #e5e5e5;
+$text: #333333;
+$muted: #9e9e9e;
+$field-bg: #ececec;
 
 .apply-page {
   min-height: 100vh;
@@ -303,48 +305,48 @@ $line: #e5e5e5;
 
 .content {
   flex: 1;
-  padding: 24rpx 36rpx 0;
+  padding: 24rpx 48rpx 0;
   box-sizing: border-box;
 }
 
 .brand-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 20rpx;
-  padding: 12rpx 0 20rpx;
+  gap: 16rpx;
+  padding: 8rpx 0 20rpx;
 }
 
 .brand-title {
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 500;
   color: $orange;
-  line-height: 1.35;
+  line-height: 1.4;
+  text-align: center;
 }
 
 .brand-logo {
-  flex-shrink: 0;
-  width: 200rpx;
-  border-radius: 10rpx;
-  height: 72rpx;
-}
-
-.brand-divider {
-  height: 2rpx;
-  background: #8b3a2a;
-  margin-bottom: 28rpx;
+  width: 220rpx;
+  height: 80rpx;
 }
 
 .page-hint {
   display: block;
-  font-size: 30rpx;
-  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 500;
   color: $text;
-  margin-bottom: 28rpx;
+  margin-bottom: 32rpx;
 }
 
 .section {
-  margin-bottom: 36rpx;
+  margin-bottom: 40rpx;
+}
+
+.field-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .section-label {
@@ -352,98 +354,162 @@ $line: #e5e5e5;
   font-size: 28rpx;
   color: $text;
   font-weight: 500;
-  padding-bottom: 6rpx;
-  border-bottom: 2rpx solid $text;
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
+  text-align: center;
 }
 
-.avatar-row {
+.underline-label {
+  padding-bottom: 4rpx;
+  border-bottom: 2rpx solid $text;
+}
+
+.avatar-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24rpx;
+  margin-bottom: 48rpx;
 }
 
 .avatar-circle {
-  width: 120rpx;
-  height: 120rpx;
+  width: 220rpx;
+  height: 220rpx;
   border-radius: 50%;
-  border: 2rpx solid #d8d8d8;
-  background: #fafafa;
+  background: $field-bg;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12rpx;
   overflow: hidden;
+  margin-bottom: 20rpx;
 }
 
 .avatar-img {
-  width: 100%;
-  height: 100%;
+  width: 70%;
+  height: 70%;
 }
 
-.pick-hint {
-  font-size: 24rpx;
+.avatar-pick-hint {
+  font-size: 22rpx;
   color: $muted;
+  margin-top: -20rpx;
 }
 
-.underline-input {
+.rounded-input,
+.rounded-select {
   width: 100%;
-  height: 72rpx;
+  height: 80rpx;
+  background: $field-bg;
+  border-radius: 40rpx;
+  padding: 0 32rpx;
+  box-sizing: border-box;
   font-size: 28rpx;
   color: $text;
-  border-bottom: 2rpx solid $line;
-  margin-bottom: 8rpx;
+  text-align: center;
 }
 
-.underline-select {
+.rounded-select {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 72rpx;
-  border-bottom: 2rpx solid $line;
+  justify-content: center;
+  position: relative;
+}
+
+.rounded-select .uni-icons {
+  position: absolute;
+  right: 32rpx;
 }
 
 .select-text {
   flex: 1;
   font-size: 28rpx;
   color: $text;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .input-placeholder {
   color: $muted;
+  text-align: center;
+}
+
+.group-box {
+  width: 100%;
+  background: $field-bg;
+  border-radius: 32rpx;
+  padding: 8rpx 28rpx;
+  box-sizing: border-box;
+}
+
+.group-input {
+  width: 100%;
+  height: 76rpx;
+  font-size: 28rpx;
+  color: $text;
+  text-align: center;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.group-input-last {
+  border-bottom: none;
+}
+
+.group-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 76rpx;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 8rpx;
+}
+
+.group-select .uni-icons {
+  position: absolute;
+  right: 0;
+}
+
+.id-group-box {
+  padding-bottom: 28rpx;
 }
 
 .id-photos {
   display: flex;
-  gap: 20rpx;
-  margin-top: 24rpx;
+  gap: 24rpx;
+  margin-top: 16rpx;
 }
 
 .id-photo-col {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .id-photo-label {
   display: block;
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: $text;
   margin-bottom: 12rpx;
+  text-align: center;
 }
 
 .id-photo-box {
-  height: 220rpx;
-  border: 2rpx solid #333333;
-  border-radius: 8rpx;
-  background: #ffffff;
-  overflow: hidden;
+  width: 100%;
+  height: 180rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .id-photo-img {
   width: 100%;
   height: 100%;
+  border-radius: 12rpx;
 }
 
 .id-photo-placeholder {
@@ -451,14 +517,18 @@ $line: #e5e5e5;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16rpx;
-  padding: 12rpx;
+  gap: 14rpx;
+}
+
+.pick-hint {
+  font-size: 22rpx;
+  color: $muted;
 }
 
 .id-icon {
   width: 88rpx;
   height: 60rpx;
-  border: 3rpx solid #bdbdbd;
+  border: 3rpx solid #b0b0b0;
   border-radius: 6rpx;
   position: relative;
   box-sizing: border-box;
@@ -518,7 +588,7 @@ $line: #e5e5e5;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20rpx 36rpx;
+  padding: 20rpx 48rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   background: #ffffff;
 }

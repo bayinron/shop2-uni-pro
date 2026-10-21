@@ -219,6 +219,7 @@ export interface MyShopProduct {
     reserved_stock: number;
     original_price: string;
     sale_price: string;
+    actual_price:string;
     discount_type: string;
     discount_value: string;
     storage_type: string;
