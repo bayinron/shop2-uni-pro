@@ -39,7 +39,7 @@
             <image class="action-icon" src="/static/images/about_me/icon_settings.png" mode="aspectFit" />
           </view>
           <view class="action-btn" @click="onServiceClick">
-            <image class="action-icon" src="/static/images/mine/OnlineSupport.png" mode="aspectFit" />
+            <image class="action-icon" src="/static/images/mine/OnlineSupport_white.png" mode="aspectFit" />
           </view>
           <view class="action-btn" @click="onSettings">
             <image class="action-icon" src="/static/images/about_me/icon_support_header.png" mode="aspectFit" />
