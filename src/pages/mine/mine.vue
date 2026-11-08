@@ -294,9 +294,7 @@ function onSettings() {
     success: (res) => {
       if (res.tapIndex === 0) onEditUserInfo();
       else if (res.tapIndex === 1) {
-        uni.navigateTo({
-          url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
-        });
+        userStore.navigateToKefu();
       } else if (res.tapIndex === 2) onExit();
     },
   });
@@ -339,9 +337,7 @@ function addressClick() {
 }
 
 function onServiceClick() {
-  uni.navigateTo({
-    url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
-  });
+  userStore.navigateToKefu();
 }
 
 function onShopClick() {

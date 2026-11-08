@@ -58,6 +58,8 @@ export function createApp() {
     userStore.reqUserInfo();
     // 啟動時預拉取客服外部連結（免登入）
     userStore.reqKefuLink();
+    // 預熱瀏覽器 fingerprint，供客服 visitor_id 使用
+    userStore.warmFingerprint();
 
     return {
         app

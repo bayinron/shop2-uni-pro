@@ -304,9 +304,11 @@ function onToolClick(type: string) {
       url: '/pages/login/login',
     });
   } else if (type === 'service') {
-    if (!userStore.openKefu()) {
-      uni.showToast({ title: t('联系客服'), icon: 'none' });
-    }
+    userStore.openKefu().then((ok) => {
+      if (!ok) {
+        uni.showToast({ title: t('联系客服'), icon: 'none' });
+      }
+    });
   } else if (type === 'order') {
     uni.navigateTo({
       url: '/pages/shop/myShopOrder',

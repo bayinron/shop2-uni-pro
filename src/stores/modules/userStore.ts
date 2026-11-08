@@ -3,6 +3,7 @@ import { store } from '@/stores';
 import { ref } from 'vue';
 import globalTool from '@/utils/globalTool';
 import { type AuthMeResponse, type KefuLinkResponse, authGetMe, getHomeConfig, getKefuLink } from '@/api';
+import { appendVisitorIdToUrl, buildVisitorId, getFingerprint } from '@/utils/fingerprint';
 // import { getSystemConfig, type SystemConfig, } from '@/api';
 import langData from '@/static/lang.json'
 
@@ -141,9 +142,32 @@ export const useUserStore = defineStore('user', () => {
             .catch(() => kefuConfig.value);
     }
 
+    /** 預熱 fingerprint，減少首次打開客服等待 */
+    function warmFingerprint() {
+        getFingerprint().catch(() => {});
+    }
+
+    /** 帶 visitor_id 的客服外部連結：visitor_id = userId_fingerprint */
+    async function getKefuExternalUrlWithVisitor(): Promise<string> {
+        const base = kefuConfig.value.external_url || kefuConfig.value.url || '';
+        if (!base) return '';
+        const visitorId = await buildVisitorId(userInfo.value?.id);
+        return appendVisitorIdToUrl(base, visitorId);
+    }
+
+    /** 跳轉 web-view 客服頁（不手動 encode，由路由編碼一次即可） */
+    async function navigateToKefu(): Promise<boolean> {
+        const link = await getKefuExternalUrlWithVisitor();
+        if (!link) return false;
+        uni.navigateTo({
+            url: '/pages/service/index?url=' + link,
+        });
+        return true;
+    }
+
     /** 開啟客服外部連結（新分頁 / 系統瀏覽器） */
-    function openKefu() {
-        const link = kefuConfig.value.url || kefuConfig.value.external_url;
+    async function openKefu() {
+        const link = await getKefuExternalUrlWithVisitor();
         if (!kefuConfig.value.enabled || !link) {
             return false;
         }
@@ -192,6 +216,9 @@ export const useUserStore = defineStore('user', () => {
         reqUserInfo,
         kefuConfig,
         reqKefuLink,
+        warmFingerprint,
+        getKefuExternalUrlWithVisitor,
+        navigateToKefu,
         openKefu,
     };
 });

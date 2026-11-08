@@ -274,9 +274,7 @@ function onQuickClick(key: 'shop' | 'cs' | 'help' | 'about' | 'order') {
       uni.navigateTo({ url: '/pages/shop/apply' });
     }
   } else if (key === 'cs') {
-    uni.navigateTo({
-      url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
-    });
+    userStore.navigateToKefu();
   } else if (key === 'help') {
     uni.navigateTo({ url: '/pages/content/page?slug=help' });
   } else if (key === 'about') {

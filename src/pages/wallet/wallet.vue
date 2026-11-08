@@ -120,9 +120,7 @@ onShow(() => {
 });
 
 function goRecharge() {
-  uni.navigateTo({
-    url: '/pages/service/index?url=' + userStore.kefuConfig.external_url,
-  });
+  userStore.navigateToKefu();
 }
 
 function withdrawClick() {

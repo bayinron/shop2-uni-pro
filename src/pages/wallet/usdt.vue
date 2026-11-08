@@ -26,15 +26,11 @@ function goBank() {
   });
 }
 
-function goCustomerService() {
-  const url = userStore.kefuConfig?.external_url;
-  if (!url) {
+async function goCustomerService() {
+  const ok = await userStore.navigateToKefu();
+  if (!ok) {
     uni.showToast({ title: t('请联系客服'), icon: 'none' });
-    return;
   }
-  uni.navigateTo({
-    url: '/pages/service/index?url=' + url,
-  });
 }
 </script>
 
